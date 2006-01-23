@@ -1,0 +1,25 @@
+Maven 2 FindBugs Plugin
+
+ This plugin generates a FindBugs report.
+
+
+*How to Generate FindBugs Reports
+
+**Configuration Parameters
+
+ Optionally, the threshold can be set. Please look up the FindBugs documentation about more information.
+
+-------------------
+<reporting>
+  ...
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-findbugs-plugin</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <configuration>
+        <threshold>High|Normal|Low|Exp|Ignore</threshold>
+      </configuration>
+    </plugin>
+  ...
+</reporting>
+-------------------

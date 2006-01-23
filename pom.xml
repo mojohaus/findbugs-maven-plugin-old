@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>mojo-sandbox</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>2-SNAPSHOT</version>
+    </parent>
+    <artifactId>findbugs-maven-plugin</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>maven-plugin</packaging>
+    <name>Maven FindBugs PlugIn</name>
+    <description>This Plug-In generates reports based on the FindBugs Library</description>
+    <developers>
+        <developer>
+            <id>cr</id>
+            <name>Cyrill Ruettimann</name>
+            <email>mypublicaddress@mac.com</email>
+            <organization></organization>
+            <roles>
+                <role>Documentation</role>
+                <role>Java Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>src/site/resources/license.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-impl</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>findbugs</groupId>
+            <artifactId>findbugs</artifactId>
+            <version>0.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>findbugs</groupId>
+            <artifactId>bcel</artifactId>
+            <version>5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>findbugs</groupId>
+            <artifactId>coreplugin</artifactId>
+            <version>0.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+    </dependencies>
+</project>
