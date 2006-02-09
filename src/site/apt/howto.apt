@@ -13,8 +13,8 @@ Maven 2 FindBugs Plugin
 <reporting>
   ...
     <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-findbugs-plugin</artifactId>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>findbugs-maven-plugin</artifactId>
       <version>1.0-SNAPSHOT</version>
       <configuration>
         <threshold>High|Normal|Low|Exp|Ignore</threshold>
