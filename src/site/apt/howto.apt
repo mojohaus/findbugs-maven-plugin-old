@@ -23,3 +23,7 @@ Maven 2 FindBugs Plugin
   ...
 </reporting>
 -------------------
+ 
+*Known limitation
+ 
+ The underlining JavaNCSS tool is not currently able to analyze code written to compile with JDK 1.5+
