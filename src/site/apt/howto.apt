@@ -1,4 +1,4 @@
-Maven 2 FindBugs Plugin
+Maven 2 FindBugs Plugin - How to Use
 
  This plugin generates a FindBugs report.
 
@@ -43,6 +43,8 @@ Maven 2 FindBugs Plugin
   ...
 </pluginRepositories>
 -------------------
+
+ Findbugs also cross-references with the JXR plugin to display code where issues exist.
  
 *Known Issues and Limitations
  

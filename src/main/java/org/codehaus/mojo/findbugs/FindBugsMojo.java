@@ -23,15 +23,15 @@ package org.codehaus.mojo.findbugs;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.repository.DefaultArtifactRepository;
+import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.AbstractMavenReport;
@@ -54,7 +54,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * 
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
  * 
- * $Revision: 34 $
+ * $Revision: 38 $
  * $Date$
  * $Author: cyrill $
  */
@@ -109,7 +109,7 @@ public final class FindBugsMojo
      * The path to the findbugs coreplugin library.
      * 
      */
-    private static final String FINDBUGS_PATH = "findbugs" + File.separator + "coreplugin" + File.separator;
+    private static final String FINDBUGS_PATH = "findbugs/coreplugin/";
 
     /**
      * The name of the coreplugin.
@@ -122,6 +122,12 @@ public final class FindBugsMojo
      * 
      */
     private static final String FINDBUGS_VERSION_KEY = "report.findbugs.version";
+
+    /**
+     * The key to get the jxr-plugin artifactId from the bundle.
+     * 
+     */
+    private static final String JXR_ARTIFACT_ID_KEY = "report.findbugs.jxrplugin.artifactid";
 
     /**
      * Location where generated html will be created.
@@ -237,6 +243,7 @@ public final class FindBugsMojo
         throws MavenReportException
     {
         List sourceFiles = new ArrayList();
+        FindBugs findBugs = null;
 
         debugSourceDirectory( pLocale, classFilesDirectory );
 
@@ -251,7 +258,15 @@ public final class FindBugsMojo
             throw exception;
         }
 
-        final FindBugs findBugs = initialiseFindBugs( pLocale, sourceFiles );
+        try
+        {
+            findBugs = initialiseFindBugs( pLocale, sourceFiles );
+        }
+        catch ( DependencyResolutionRequiredException pException )
+        {
+            final MavenReportException exception = new MavenReportException( "Failed executing FindBugs", pException );
+            throw exception;
+        }
 
         try
         {
@@ -282,11 +297,11 @@ public final class FindBugsMojo
      * @param pSourceFiles
      *            The source files FindBugs should analyse.
      * @return An initialised FindBugs object.
-     * @throws MavenReportException 
+     * @throws DependencyResolutionRequiredException Exception that occurs when an artifact file is used, but has not been resolved.
      * 
      */
     protected FindBugs initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
-        throws MavenReportException
+        throws DependencyResolutionRequiredException
     {
         final Sink sink = getSink();
         final ResourceBundle bundle = getBundle( pLocale );
@@ -294,8 +309,8 @@ public final class FindBugsMojo
 
         // Load Findbugs detector plugin
         final String version = bundle.getString( FINDBUGS_VERSION_KEY );
-        final String baseDirectory = localRepository.getBasedir();
-        final String corepluginpath = baseDirectory + File.separator + FINDBUGS_PATH + version + File.separator
+        final String basedir = localRepository.getBasedir();
+        final String corepluginpath = basedir + File.separator + FINDBUGS_PATH + version + File.separator
             + FINDBUGS_COREPLUGIN + "-" + version + ".jar";
 
         final File[] plugins = new File[1];
@@ -305,6 +320,7 @@ public final class FindBugsMojo
         final Reporter bugReporter = initialiseReporter( sink, bundle, log );
         final Project findBugsProject = new Project();
         addJavaSourcesToFindBugsProject( pSourceFiles, findBugsProject );
+        addClasspathEntriesToFindBugsProject( findBugsProject );
 
         final FindBugs findBugs = new FindBugs( bugReporter, findBugsProject );
 
@@ -368,7 +384,8 @@ public final class FindBugsMojo
             }
         }
 
-        final Reporter bugReporter = new Reporter( pSink, pBundle, pLog, thresholdParameter );
+        final boolean isJXRPluginEnabled = isJXRPluginEnabled(pBundle);
+        final Reporter bugReporter = new Reporter( pSink, pBundle, pLog, thresholdParameter, isJXRPluginEnabled );
         bugReporter.setPriorityThreshold( thresholdParameter.getValue() );
 
         return bugReporter;
@@ -421,6 +438,24 @@ public final class FindBugsMojo
             final File currentSourceFile = (File) iterator.next();
             final String filePath = currentSourceFile.getAbsolutePath();
             pFindBugsProject.addFile( filePath );
+        }
+    }
+
+    /** Adds the dependend libraries of the project to the findbugs aux classpath.
+     *
+     * @param pFindBugsProject The find bugs project to add the aux classpath entries.
+     * @throws DependencyResolutionRequiredException Exception that occurs when an artifact file is used, but has not been resolved.
+     * 
+     */
+    protected void addClasspathEntriesToFindBugsProject( final Project pFindBugsProject )
+        throws DependencyResolutionRequiredException
+    {
+        final List entries = getProject().getCompileClasspathElements();
+        final Iterator iterator = entries.iterator();
+        while ( iterator.hasNext() )
+        {
+            final String currentEntry = (String) iterator.next();
+            pFindBugsProject.addAuxClasspathEntry( currentEntry );
         }
     }
 
@@ -477,5 +512,29 @@ public final class FindBugsMojo
             final File currentFile = (File) iterator.next();
             getLog().debug( "    " + currentFile.getAbsolutePath() );
         }
+    }
+
+    /** Determines if the JXR-Plugin is included in the report section of the POM.
+     *
+     * @param pBundle The bundle to load the artifactIf of the jxr plugin.
+     * @return True if the JXR-Plugin is included in the POM, false otherwise.
+     * 
+     */
+    protected boolean isJXRPluginEnabled(final ResourceBundle pBundle) {
+        boolean isEnabled = false;
+
+        final String artifactId = pBundle.getString( JXR_ARTIFACT_ID_KEY );
+
+        final List reportPlugins = getProject().getReportPlugins();
+        final Iterator iterator = reportPlugins.iterator();
+        while(iterator.hasNext()) {
+            final ReportPlugin currentPlugin = (ReportPlugin) iterator.next();
+            final String currentArtifactId = currentPlugin.getArtifactId();
+            if (artifactId.equals( currentArtifactId )) {
+                isEnabled = true;
+            }
+        }
+
+        return isEnabled;
     }
 }

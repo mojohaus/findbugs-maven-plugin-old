@@ -5,7 +5,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <version>2-SNAPSHOT</version>
     </parent>
-    <artifactId>findbugs-maven-plugin</artifactId>
+    <artifactId>maven-findbugs-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Maven FindBugs PlugIn</name>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>findbugs</groupId>
             <artifactId>findbugs</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.6</version>
         </dependency>
         <dependency>
             <groupId>findbugs</groupId>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>findbugs</groupId>
             <artifactId>coreplugin</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.6</version>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
-            <version>1.1-beta-6</version>
+            <version>1.1-beta-9</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,7 @@
+Maven 2 FindBugs Plugin - FAQ
+
+*Why are there debug information on the console?
+
+ The Findbugs-Library contains <System.out.println("")> statements which print out
+ debugging information. I am not able to suppress those statements.
+

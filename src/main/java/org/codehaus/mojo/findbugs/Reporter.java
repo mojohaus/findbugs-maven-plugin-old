@@ -39,11 +39,11 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
  * back methods which gets called by FindBugs if a bug is found.
  * 
  * @author $Author: cyrill $
- * @version $Revision: 34 $ $Date$
+ * @version $Revision: 38 $ $Date$
  * 
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
  * 
- * $Revision: 34 $
+ * $Revision: 38 $
  * $Date$
  * $Author: cyrill $
  */
@@ -111,6 +111,18 @@ public final class Reporter
      */
     private static final String THRESHOLD_KEY = "report.findbugs.threshold";
 
+    /** 
+     * The character to separate URL tokens.
+     * 
+     */
+    private static final String URL_SEPARATOR = "/";
+
+    /** 
+     * The key to get the jxr-plugin path prefix.
+     * 
+     */
+    private static final String JXR_PATHPREFIX_KEY = "report.findbugs.jxrplugin.pathprefix";
+
     /**
      * The sink to write the report to.
      * 
@@ -139,13 +151,19 @@ public final class Reporter
      * The name of the current class which is analysed by FindBugs.
      * 
      */
-    private transient String currentClassName;
+    private transient String mCurrentClassName;
 
     /**
      * Signals if the report for the current class is opened.
      * 
      */
-    private transient boolean isCurrentClassReportOpened = false;
+    private transient boolean mIsCurrentClassReportOpened = false;
+
+    /** 
+     * Signals if the jxr report plugin is enabled.
+     * 
+     */
+    private transient boolean mIsJXRReportEnabled = false;
 
     /**
      * Hide default constructor.
@@ -170,9 +188,11 @@ public final class Reporter
      *            The resource bundle to get the messages from.
      * @param pLog
      *            The logger.
-     *            @param pThreshold The threshold for the report.
+     * @param pThreshold The threshold for the report.
+     * @param pIsJXRReportEnabled Is the jxr report plugin enabled.
      */
-    public Reporter( final Sink pSink, final ResourceBundle pBundle, final Log pLog, ThresholdParameter pThreshold )
+    public Reporter( final Sink pSink, final ResourceBundle pBundle, final Log pLog,
+                     final ThresholdParameter pThreshold, final boolean pIsJXRReportEnabled )
     {
         super();
 
@@ -195,10 +215,12 @@ public final class Reporter
         {
             throw new IllegalArgumentException( "pThreshold not allowed to be null" );
         }
+
         mSink = pSink;
         mBundle = pBundle;
         mLog = pLog;
         mThreshold = pThreshold;
+        mIsJXRReportEnabled = pIsJXRReportEnabled;
 
         initialiseReport();
     }
@@ -281,7 +303,7 @@ public final class Reporter
         mLog.debug( "Finished searching for bugs!" );
 
         // close the last class report section
-        if ( isCurrentClassReportOpened )
+        if ( mIsCurrentClassReportOpened )
         {
             closeClassReportSection();
         }
@@ -309,14 +331,14 @@ public final class Reporter
     {
         mLog.debug( "Observe class: " + clazz.getClassName() );
 
-        currentClassName = clazz.getClassName();
+        mCurrentClassName = clazz.getClassName();
 
-        if ( isCurrentClassReportOpened )
+        if ( mIsCurrentClassReportOpened )
         {
             closeClassReportSection();
         }
 
-        isCurrentClassReportOpened = false;
+        mIsCurrentClassReportOpened = false;
     }
 
     /**
@@ -421,10 +443,10 @@ public final class Reporter
         final String lineNumber = valueForLine( line );
         final String category = pattern.getCategory();
 
-        if ( !isCurrentClassReportOpened )
+        if ( !mIsCurrentClassReportOpened )
         {
             openClassReportSection();
-            isCurrentClassReportOpened = true;
+            mIsCurrentClassReportOpened = true;
         }
 
         mSink.tableRow();
@@ -441,9 +463,16 @@ public final class Reporter
 
         // line
         mSink.tableCell();
-        mSink.text( lineNumber );
-        mSink.tableCell_();
+        if ( mIsJXRReportEnabled )
+        {
+            mSink.rawText( assembleJXRHyperlink( line , lineNumber) );
+        }
+        else
+        {
+            mSink.text( lineNumber );
+        }
 
+        mSink.tableCell_();
         mSink.tableRow_();
     }
 
@@ -476,6 +505,31 @@ public final class Reporter
         return value;
     }
 
+    /** Assembles the hyperlink to point to the source code.
+     *
+     * @param pLine The line number object with the bug.
+     * @param pLineNumber The line number to show in the hyperlink.
+     * @return The hyperlink which points to the code.
+     * 
+     */
+    protected String assembleJXRHyperlink( final SourceLineAnnotation pLine , final String pLineNumber)
+    {
+        String hyperlink = null;
+        final String prefix = mBundle.getString( JXR_PATHPREFIX_KEY );
+        final String path = prefix + URL_SEPARATOR + mCurrentClassName.replaceAll( "[.]", "/" );
+
+        if ( pLine == null )
+        {
+            hyperlink = "<a href=" + path + ".html>" + pLineNumber + "</a>";
+        }
+        else
+        {
+            hyperlink = "<a href=" + path + ".html#" + pLine.getStartLine() + ">" + pLineNumber + "</a>";
+        }
+
+        return hyperlink;
+    }
+
     /**
      * Initialised a bug report section in the report for a particular class.
      */
@@ -487,7 +541,7 @@ public final class Reporter
 
         mSink.section2();
         mSink.sectionTitle2();
-        mSink.text( currentClassName );
+        mSink.text( mCurrentClassName );
         mSink.sectionTitle2_();
         mSink.table();
         mSink.tableRow();
