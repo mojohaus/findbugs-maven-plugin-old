@@ -39,13 +39,8 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
  * back methods which gets called by FindBugs if a bug is found.
  * 
  * @author $Author: cyrill $
- * @version $Revision: 38 $ $Date$
- * 
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
- * 
- * $Revision: 38 $
- * $Date$
- * $Author: cyrill $
+ * @version $Id$
  */
 public final class Reporter
     extends AbstractBugReporter
@@ -74,6 +69,12 @@ public final class Reporter
      * 
      */
     private static final String COLUMN_CATEGORY_KEY = "report.findbugs.column.category";
+
+    /**
+     * The key to get the column title for the details.
+     * 
+     */
+    private static final String COLUMN_DETAILS_KEY = "report.findbugs.column.details";
 
     /**
      * The key to get the report title of the Plug-In from the bundle.
@@ -124,6 +125,18 @@ public final class Reporter
     private static final String JXR_PATHPREFIX_KEY = "report.findbugs.jxrplugin.pathprefix";
 
     /**
+     * The key to get the effort of the report from the bundle.
+     * 
+     */
+    private static final String EFFORT_KEY = "report.findbugs.effort";
+
+    /**
+     * The key to get the link to FindBugs description page from the bundle.
+     * 
+     */
+    private static final String DETAILSLINK_KEY = "report.findbugs.detailslink";
+
+    /**
      * The sink to write the report to.
      * 
      */
@@ -142,10 +155,16 @@ public final class Reporter
     private final transient Log mLog;
 
     /**
-     * The logger to write logs to.
+     * The threshold of bugs severity.
      * 
      */
-    private final transient ThresholdParameter mThreshold;
+    private transient ThresholdParameter mThreshold;
+
+    /**
+     * The used effort for searching bugs.
+     * 
+     */
+    private transient EffortParameter mEffort;
 
     /**
      * The name of the current class which is analysed by FindBugs.
@@ -173,10 +192,12 @@ public final class Reporter
     {
         super();
 
-        mSink = null;
-        mBundle = null;
-        mLog = null;
-        mThreshold = null;
+        this.mSink = null;
+        this.mBundle = null;
+        this.mLog = null;
+        this.mThreshold = null;
+        this.mEffort = null;
+        this.mEffort = null;
     }
 
     /**
@@ -190,9 +211,11 @@ public final class Reporter
      *            The logger.
      * @param pThreshold The threshold for the report.
      * @param pIsJXRReportEnabled Is the jxr report plugin enabled.
+     * @param pEffort The used effort.
      */
     public Reporter( final Sink pSink, final ResourceBundle pBundle, final Log pLog,
-                     final ThresholdParameter pThreshold, final boolean pIsJXRReportEnabled )
+                     final ThresholdParameter pThreshold, final boolean pIsJXRReportEnabled,
+                     final EffortParameter pEffort )
     {
         super();
 
@@ -216,13 +239,19 @@ public final class Reporter
             throw new IllegalArgumentException( "pThreshold not allowed to be null" );
         }
 
-        mSink = pSink;
-        mBundle = pBundle;
-        mLog = pLog;
-        mThreshold = pThreshold;
-        mIsJXRReportEnabled = pIsJXRReportEnabled;
+        if ( pEffort == null )
+        {
+            throw new IllegalArgumentException( "pEffort not allowed to be null" );
+        }
 
-        initialiseReport();
+        this.mSink = pSink;
+        this.mBundle = pBundle;
+        this.mLog = pLog;
+        this.mThreshold = pThreshold;
+        this.mIsJXRReportEnabled = pIsJXRReportEnabled;
+        this.mEffort = pEffort;
+
+        this.initialiseReport();
     }
 
     /**
@@ -230,69 +259,83 @@ public final class Reporter
      */
     private void initialiseReport()
     {
-        mSink.head();
-        mSink.title();
-        mSink.text( getReportTitle() );
-        mSink.title_();
-        mSink.head_();
+        this.mSink.head();
+        this.mSink.title();
+        this.mSink.text( this.getReportTitle() );
+        this.mSink.title_();
+        this.mSink.head_();
 
-        mSink.body();
+        this.mSink.body();
 
         // the title of the report
-        mSink.section1();
-        mSink.sectionTitle1();
-        mSink.text( getReportTitle() );
-        mSink.sectionTitle1_();
+        this.mSink.section1();
+        this.mSink.sectionTitle1();
+        this.mSink.text( this.getReportTitle() );
+        this.mSink.sectionTitle1_();
 
         // information about FindBugs
-        mSink.paragraph();
-        mSink.text( getReportLinkTitle() + " " );
-        mSink.link( getFindBugsLink() );
-        mSink.text( getFindBugsName() );
-        mSink.link_();
-        mSink.paragraph_();
+        this.mSink.paragraph();
+        this.mSink.text( this.getReportLinkTitle() + " " );
+        this.mSink.link( this.getFindBugsLink() );
+        this.mSink.text( this.getFindBugsName() );
+        this.mSink.link_();
+        this.mSink.paragraph_();
 
-        mSink.paragraph();
-        mSink.text( getThresholdTitle() + " " );
-        mSink.italic();
-        mSink.text( mThreshold.getName() );
-        mSink.italic_();
-        mSink.paragraph_();
+        // ##TODO## FindBugs.getReleaseName();
+
+        this.mSink.paragraph();
+        this.mSink.text( this.getThresholdTitle() + " " );
+        this.mSink.italic();
+        this.mSink.text( this.mThreshold.getName() );
+        this.mSink.italic_();
+        this.mSink.paragraph_();
+
+        this.mSink.paragraph();
+        this.mSink.text( this.getEffortTitle() + " " );
+        this.mSink.italic();
+        this.mSink.text( this.mEffort.getName() );
+        this.mSink.italic_();
+        this.mSink.paragraph_();
 
         // the files section
-        mSink.section1_();
-        mSink.sectionTitle1();
-        mSink.text( getFilesTitle() );
-        mSink.sectionTitle1_();
+        this.mSink.section1_();
+        this.mSink.sectionTitle1();
+        this.mSink.text( this.getFilesTitle() );
+        this.mSink.sectionTitle1_();
     }
 
     /**
+     * @param pBugInstance the bug to report
      * @see edu.umd.cs.findbugs.AbstractBugReporter
      *      #doReportBug(edu.umd.cs.findbugs.BugInstance)
      */
     protected void doReportBug( final BugInstance pBugInstance )
     {
-        mLog.debug( "  Found a bug: " + pBugInstance.getMessage() );
+        this.mLog.debug( "  Found a bug: " + pBugInstance.getMessage() );
 
-        addBugReport( pBugInstance );
+        this.addBugReport( pBugInstance );
     }
 
     /**
+     * Report a queued error.
+     * @param pAnalysisError the queued error
      * @see edu.umd.cs.findbugs.AbstractBugReporter
      *      #reportAnalysisError(edu.umd.cs.findbugs.AnalysisError)
      */
     public void reportAnalysisError( final AnalysisError pAnalysisError )
     {
-        mLog.debug( "  Found an analysisError: " + pAnalysisError.getMessage() );
+        this.mLog.debug( "  Found an analysisError: " + pAnalysisError.getMessage() );
     }
 
     /**
+     * Report a missing class.
+     * @param pMissingClass the name of the class
      * @see edu.umd.cs.findbugs.AbstractBugReporter
      *      #reportMissingClass(java.lang.String)
      */
     public void reportMissingClass( final String pMissingClass )
     {
-        mLog.debug( "  Found a missing class: " + pMissingClass );
+        this.mLog.debug( "  Found a missing class: " + pMissingClass );
     }
 
     /**
@@ -300,22 +343,27 @@ public final class Reporter
      */
     public void finish()
     {
-        mLog.debug( "Finished searching for bugs!" );
+        this.mLog.debug( "Finished searching for bugs!" );
 
         // close the last class report section
-        if ( mIsCurrentClassReportOpened )
+        if ( this.mIsCurrentClassReportOpened )
         {
-            closeClassReportSection();
+            this.closeClassReportSection();
         }
 
         // close the report, write it
-        mSink.section1_();
-        mSink.body_();
-        mSink.flush();
-        mSink.close();
+        this.mSink.section1_();
+        this.mSink.body_();
+        this.mSink.flush();
+        this.mSink.close();
     }
 
     /**
+     * Get the real bug reporter at the end of a chain of delegating bug reporters.
+     * All non-delegating bug reporters should simply "return this".
+     * 
+     * @return the real bug reporter at the end of the chain, or
+     *          this object if there is no delegation
      * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
      */
     public BugReporter getRealBugReporter()
@@ -324,21 +372,24 @@ public final class Reporter
     }
 
     /**
+     * Observe a class.
+     *
+     * @param clazz the class
      * @see edu.umd.cs.findbugs.ba.ClassObserver
      *      #observeClass(org.apache.bcel.classfile.JavaClass)
      */
     public void observeClass( final JavaClass clazz )
     {
-        mLog.debug( "Observe class: " + clazz.getClassName() );
+        this.mLog.debug( "Observe class: " + clazz.getClassName() );
 
-        mCurrentClassName = clazz.getClassName();
+        this.mCurrentClassName = clazz.getClassName();
 
-        if ( mIsCurrentClassReportOpened )
+        if ( this.mIsCurrentClassReportOpened )
         {
-            closeClassReportSection();
+            this.closeClassReportSection();
         }
 
-        mIsCurrentClassReportOpened = false;
+        this.mIsCurrentClassReportOpened = false;
     }
 
     /**
@@ -346,8 +397,8 @@ public final class Reporter
      */
     protected void closeClassReportSection()
     {
-        mSink.table_();
-        mSink.section2_();
+        this.mSink.table_();
+        this.mSink.section2_();
     }
 
     /**
@@ -358,7 +409,7 @@ public final class Reporter
      */
     protected String getReportTitle()
     {
-        final String reportTitle = mBundle.getString( REPORT_TITLE_KEY );
+        final String reportTitle = this.mBundle.getString( Reporter.REPORT_TITLE_KEY );
 
         return reportTitle;
     }
@@ -371,7 +422,7 @@ public final class Reporter
      */
     protected String getReportLinkTitle()
     {
-        final String reportLink = mBundle.getString( LINKTITLE_KEY );
+        final String reportLink = this.mBundle.getString( Reporter.LINKTITLE_KEY );
 
         return reportLink;
     }
@@ -384,7 +435,7 @@ public final class Reporter
      */
     protected String getFindBugsLink()
     {
-        final String link = mBundle.getString( LINK_KEY );
+        final String link = this.mBundle.getString( Reporter.LINK_KEY );
 
         return link;
     }
@@ -397,7 +448,7 @@ public final class Reporter
      */
     protected String getFindBugsName()
     {
-        final String name = mBundle.getString( NAME_KEY );
+        final String name = this.mBundle.getString( Reporter.NAME_KEY );
 
         return name;
     }
@@ -410,7 +461,7 @@ public final class Reporter
      */
     protected String getFilesTitle()
     {
-        final String fileTitle = mBundle.getString( FILES_KEY );
+        final String fileTitle = this.mBundle.getString( Reporter.FILES_KEY );
 
         return fileTitle;
     }
@@ -423,9 +474,37 @@ public final class Reporter
      */
     protected String getThresholdTitle()
     {
-        final String threshholdTitle = mBundle.getString( THRESHOLD_KEY );
+        final String threshholdTitle = this.mBundle.getString( Reporter.THRESHOLD_KEY );
 
         return threshholdTitle;
+    }
+
+    /**
+     * Gets the effort title of the report.
+     * 
+     * @return The effort title of the report.
+     * 
+     */
+    protected String getEffortTitle()
+    {
+        final String effortTitle = this.mBundle.getString( Reporter.EFFORT_KEY );
+
+        return effortTitle;
+    }
+
+    /**
+     * Gets the link to details description on findbugs site.
+     * 
+     * @param pType the bug type
+     * @return The report link.
+     * 
+     */
+    protected String getDetailsLink( final String pType )
+    {
+        final String link = this.mBundle.getString( Reporter.DETAILSLINK_KEY )
+          + "#" + pType;
+
+        return link;
     }
 
     /**
@@ -440,40 +519,48 @@ public final class Reporter
     {
         final SourceLineAnnotation line = pBugInstance.getPrimarySourceLineAnnotation();
         final BugPattern pattern = pBugInstance.getBugPattern();
-        final String lineNumber = valueForLine( line );
+        final String lineNumber = this.valueForLine( line );
         final String category = pattern.getCategory();
+        final String type = pattern.getType();
 
-        if ( !mIsCurrentClassReportOpened )
+        if ( !this.mIsCurrentClassReportOpened )
         {
-            openClassReportSection();
-            mIsCurrentClassReportOpened = true;
+            this.openClassReportSection();
+            this.mIsCurrentClassReportOpened = true;
         }
 
-        mSink.tableRow();
+        this.mSink.tableRow();
 
         // bug
-        mSink.tableCell();
-        mSink.text( pBugInstance.getMessage() );
-        mSink.tableCell_();
+        this.mSink.tableCell();
+        this.mSink.text( pBugInstance.getMessageWithoutPrefix() );
+        this.mSink.tableCell_();
 
         // category
-        mSink.tableCell();
-        mSink.text( category );
-        mSink.tableCell_();
+        this.mSink.tableCell();
+        this.mSink.text( category );
+        this.mSink.tableCell_();
+
+        // description link
+        this.mSink.tableCell();
+        this.mSink.link( this.getDetailsLink( type ) );
+        this.mSink.text( type );
+        this.mSink.link_();
+        this.mSink.tableCell_();
 
         // line
-        mSink.tableCell();
-        if ( mIsJXRReportEnabled )
+        this.mSink.tableCell();
+        if ( this.mIsJXRReportEnabled )
         {
-            mSink.rawText( assembleJXRHyperlink( line , lineNumber) );
+            this.mSink.rawText( this.assembleJXRHyperlink( line, lineNumber ) );
         }
         else
         {
-            mSink.text( lineNumber );
+            this.mSink.text( lineNumber );
         }
 
-        mSink.tableCell_();
-        mSink.tableRow_();
+        this.mSink.tableCell_();
+        this.mSink.tableRow_();
     }
 
     /**
@@ -492,14 +579,28 @@ public final class Reporter
 
         if ( pLine == null )
         {
-            value = mBundle.getString( NOLINE_KEY );
+            value = this.mBundle.getString( Reporter.NOLINE_KEY );
         }
         else
         {
             final int startLine = pLine.getStartLine();
             final int endLine = pLine.getEndLine();
 
-            value = String.valueOf( startLine ) + "-" + String.valueOf( endLine );
+            if ( startLine == endLine )
+            {
+                if ( startLine == -1 )
+                {
+                    value = this.mBundle.getString( Reporter.NOLINE_KEY );
+                }
+                else
+                {
+                    value = String.valueOf( startLine );
+                }
+            }
+            else
+            {
+                value = String.valueOf( startLine ) + "-" + String.valueOf( endLine );
+            }
         }
 
         return value;
@@ -512,11 +613,11 @@ public final class Reporter
      * @return The hyperlink which points to the code.
      * 
      */
-    protected String assembleJXRHyperlink( final SourceLineAnnotation pLine , final String pLineNumber)
+    protected String assembleJXRHyperlink( final SourceLineAnnotation pLine, final String pLineNumber )
     {
         String hyperlink = null;
-        final String prefix = mBundle.getString( JXR_PATHPREFIX_KEY );
-        final String path = prefix + URL_SEPARATOR + mCurrentClassName.replaceAll( "[.]", "/" );
+        final String prefix = this.mBundle.getString( Reporter.JXR_PATHPREFIX_KEY );
+        final String path = prefix + Reporter.URL_SEPARATOR + this.mCurrentClassName.replaceAll( "[.]", "/" );
 
         if ( pLine == null )
         {
@@ -535,32 +636,38 @@ public final class Reporter
      */
     protected void openClassReportSection()
     {
-        final String columnBugText = mBundle.getString( COLUMN_BUG_KEY );
-        final String columnBugCategory = mBundle.getString( COLUMN_CATEGORY_KEY );
-        final String columnLineText = mBundle.getString( COLUMN_LINE_KEY );
+        final String columnBugText = this.mBundle.getString( Reporter.COLUMN_BUG_KEY );
+        final String columnBugCategory = this.mBundle.getString( Reporter.COLUMN_CATEGORY_KEY );
+        final String columnDescriptionLink = this.mBundle.getString( Reporter.COLUMN_DETAILS_KEY );
+        final String columnLineText = this.mBundle.getString( Reporter.COLUMN_LINE_KEY );
 
-        mSink.section2();
-        mSink.sectionTitle2();
-        mSink.text( mCurrentClassName );
-        mSink.sectionTitle2_();
-        mSink.table();
-        mSink.tableRow();
+        this.mSink.section2();
+        this.mSink.sectionTitle2();
+        this.mSink.text( this.mCurrentClassName );
+        this.mSink.sectionTitle2_();
+        this.mSink.table();
+        this.mSink.tableRow();
 
         // bug
-        mSink.tableHeaderCell();
-        mSink.text( columnBugText );
-        mSink.tableHeaderCell_();
+        this.mSink.tableHeaderCell();
+        this.mSink.text( columnBugText );
+        this.mSink.tableHeaderCell_();
 
         // category
-        mSink.tableHeaderCell();
-        mSink.text( columnBugCategory );
-        mSink.tableHeaderCell_();
+        this.mSink.tableHeaderCell();
+        this.mSink.text( columnBugCategory );
+        this.mSink.tableHeaderCell_();
+
+        // description link
+        this.mSink.tableHeaderCell();
+        this.mSink.text( columnDescriptionLink );
+        this.mSink.tableHeaderCell_();
 
         // line
-        mSink.tableHeaderCell();
-        mSink.text( columnLineText );
-        mSink.tableHeaderCell_();
+        this.mSink.tableHeaderCell();
+        this.mSink.text( columnLineText );
+        this.mSink.tableHeaderCell_();
 
-        mSink.tableRow_();
+        this.mSink.tableRow_();
     }
 }

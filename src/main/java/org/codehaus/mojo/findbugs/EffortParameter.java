@@ -21,62 +21,45 @@
 
 package org.codehaus.mojo.findbugs;
 
-import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 
 /**
- * Constant values for the configuration parameter <code>threshold</code>.
+ * Constant values for the configuration parameter <code>effort</code>.
  * 
  * @author $Author: cyrill $
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
  * @version $Id$
  */
-public final class ThresholdParameter
+public final class EffortParameter
 {
 
     /**
-     * High priority threshold.
+     * High effort.
      * 
      */
-    static final ThresholdParameter HIGH = new ThresholdParameter( "High", Detector.HIGH_PRIORITY );
+    static final EffortParameter MAX = new EffortParameter( "Max", FindBugs.MAX_EFFORT );
 
     /**
-     * Normal priority threshold.
+     * Normal effort.
      * 
      */
-    static final ThresholdParameter NORMAL = new ThresholdParameter( "Normal", Detector.NORMAL_PRIORITY );
+    static final EffortParameter DEFAULT = new EffortParameter( "Default", FindBugs.DEFAULT_EFFORT );
 
     /**
-     * Low priority threshold.
+     * Low effort.
      * 
      */
-    static final ThresholdParameter LOW = new ThresholdParameter( "Low", Detector.LOW_PRIORITY );
+    static final EffortParameter MIN = new EffortParameter( "Min", FindBugs.MIN_EFFORT );
 
     /**
-     * Experimental priority threshold.
+     * The effort value.
      * 
      */
-    static final ThresholdParameter EXP = new ThresholdParameter( "Exp", Detector.EXP_PRIORITY );
+    private final transient AnalysisFeatureSetting[] mValue;
 
     /**
-     * ??? priority threshold.
-     * 
-     */
-    static final ThresholdParameter IGNORE = new ThresholdParameter( "Ignore", Detector.IGNORE_PRIORITY );
-
-    /**
-     * Default priority threshold.
-     * 
-     */
-    static final ThresholdParameter DEFAULT = ThresholdParameter.LOW;
-
-    /**
-     * The threshold value.
-     * 
-     */
-    private final transient int mValue;
-
-    /**
-     * The threshold name.
+     * The effort name.
      * 
      */
     private final transient String mName;
@@ -85,11 +68,11 @@ public final class ThresholdParameter
      * Hide default constructor.
      * 
      */
-    private ThresholdParameter()
+    private EffortParameter()
     {
         super();
 
-        this.mValue = -1;
+        this.mValue = null;
         this.mName = null;
     }
 
@@ -97,31 +80,33 @@ public final class ThresholdParameter
      * Default constructor.
      * 
      * @param pName
-     *            The threshold name to set.
+     *            The effort name to set.
      * @param pValue
-     *            The threshold value to set.
+     *            The effort value to set.
      */
-    private ThresholdParameter( final String pName, final int pValue )
+    private EffortParameter( final String pName, final AnalysisFeatureSetting[] pValue )
     {
         super();
+
         if ( ( pName == null ) || ( pName.trim().length() == 0 ) )
         {
-            throw new IllegalArgumentException( "Argument pName not allowed to be null or empty" );
+            throw new IllegalArgumentException( "Argument pName not allowed to be null" );
         }
+
         this.mValue = pValue;
         this.mName = pName;
     }
 
     /**
-     * @return The threshold value.
+     * @return The effort value.
      */
-    public int getValue()
+    public AnalysisFeatureSetting[] getValue()
     {
         return this.mValue;
     }
 
     /**
-     * @return The threshold name.
+     * @return The effort name.
      */
     public String getName()
     {

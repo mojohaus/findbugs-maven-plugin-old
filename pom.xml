@@ -23,7 +23,19 @@
             <timezone>+1</timezone>
         </developer>
     </developers>
-    <licenses>
+	<contributors>
+    	<contributor>
+	      	<name>Detlef Pleiss</name>
+	      	<email>d.pleiss@comundus.com</email>
+	      	<organization>comundus GmbH</organization>
+	      	<organizationUrl>http://www.comundus.com</organizationUrl>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+    	</contributor>
+  	</contributors>
+  	<licenses>
         <license>
             <name>MIT</name>
             <url>src/site/resources/license.txt</url>
@@ -43,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>net.sourceforge.findbugs</groupId>
-            <artifactId>findbugs</artifactId>
+            <artifactId>coreplugin</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

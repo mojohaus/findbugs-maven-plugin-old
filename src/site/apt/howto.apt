@@ -7,7 +7,14 @@ Maven 2 FindBugs Plugin - How to Use
 
 **Configuration Parameters
 
- Optionally, the threshold can be set. Please look up the FindBugs documentation about more information.
+ The threshold filters out any reports that have lower severity than the threshold.
+
+ The effort allows to change the tradeof between increased precision (and thus more found bugs) and usage of more memory and time to complete.
+
+ The filters allow specifying by class and method which bug categories to include/exclude in/from the reports. The {{{http://findbugs.sourceforge.net/manual/filter.html}filter format specification}} contains also useful examples.
+ Another way to exclude bugs is to use FindBugs annotations, but those are not yet fully documented. The annotations also allow annotating more wanted usage information of fields and parameters allowing FindBugs to find more bugs. You can start by including the findbugs-annotations in your project classpath with provided scope.
+ 
+ Please look up the {{{http://findbugs.sourceforge.net/manual/index.html}FindBugs documentation}} about more information.
 
 -------------------
 <reporting>
@@ -18,6 +25,9 @@ Maven 2 FindBugs Plugin - How to Use
     <version>1.0-SNAPSHOT</version>
     <configuration>
       <threshold>High|Normal|Low|Exp|Ignore</threshold>
+      <effort>Min|Default|Max</threshold>
+      <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+      <includeFilterFile>findbugs-include.xml</includeFilterFile>
     </configuration>
   </plugin>
   ...
