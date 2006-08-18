@@ -13,7 +13,13 @@ Maven 2 FindBugs Plugin - How to Use
 
  The filters allow specifying by class and method which bug categories to include/exclude in/from the reports. The {{{http://findbugs.sourceforge.net/manual/filter.html}filter format specification}} contains also useful examples.
  Another way to exclude bugs is to use FindBugs annotations, but those are not yet fully documented. The annotations also allow annotating more wanted usage information of fields and parameters allowing FindBugs to find more bugs. You can start by including the findbugs-annotations in your project classpath with provided scope.
- 
+
+ The visitors option specifies a comma-separated list of bug detectors which should be run. The bug detectors are specified by their class names, without any package qualification. By default, all detectors which are not disabled by default are run.
+
+ The omitVisitors option is like the visitors attribute, except it specifies detectors which will not be run.
+
+ The pluginList option specifies a comma-separated list of optional BugDetector Jar files to add.
+
  Please look up the {{{http://findbugs.sourceforge.net/manual/index.html}FindBugs documentation}} about more information.
 
 -------------------
@@ -28,6 +34,9 @@ Maven 2 FindBugs Plugin - How to Use
       <effort>Min|Default|Max</threshold>
       <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
       <includeFilterFile>findbugs-include.xml</includeFilterFile>
+      <visitors>FindDeadLocalStores,UnreadFields</visitors>
+      <omitVisitors>FindDeadLocalStores,UnreadFields</omitVisitors>
+      <pluginList>/libs/fb-contrib/fb-contrib-2.8.0.jar</pluginList>
     </configuration>
   </plugin>
   ...

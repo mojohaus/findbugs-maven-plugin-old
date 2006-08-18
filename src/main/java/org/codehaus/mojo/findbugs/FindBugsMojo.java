@@ -30,7 +30,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.repository.DefaultArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -40,6 +45,8 @@ import org.codehaus.doxia.sink.Sink;
 import org.codehaus.doxia.site.renderer.SiteRenderer;
 import org.codehaus.plexus.util.FileUtils;
 
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -110,6 +117,12 @@ public final class FindBugsMojo
     private static final String JXR_ARTIFACT_ID_KEY = "report.findbugs.jxrplugin.artifactid";
 
     /**
+     * The name of the coreplugin.
+     * 
+     */
+    private static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin";
+
+    /**
      * Location where generated html will be created.
      * 
      * @parameter expression="${project.reporting.outputDirectory}/site"
@@ -133,6 +146,32 @@ public final class FindBugsMojo
     private transient File classFilesDirectory;
 
     /**
+     * List of artifacts this plugin depends on.
+     * Used for resolving the Findbugs coreplugin.
+     * @parameter expression="${plugin.artifacts}"
+     * @required
+     * @readonly
+     */
+    private transient ArrayList pluginArtifacts;
+
+    /**
+     * The local repository, needed to download the coreplugin jar.
+     * @parameter expression="${localRepository}"
+     * @required
+     * @readonly
+     */
+    private transient DefaultArtifactRepository localRepository;
+
+    /**
+     * Remote repositories which will be searched for the coreplugin jar.
+     *
+     * @parameter expression="${project.remoteArtifactRepositories}"
+     * @required
+     * @readonly
+     */
+    private List remoteArtifactRepositories;
+
+    /**
      * Maven Project
      * 
      * @parameter expression="${project}"
@@ -148,6 +187,15 @@ public final class FindBugsMojo
      * @parameter
      */
     private transient String threshold;
+
+    /**
+     * Artifact resolver, needed to download the coreplugin jar.
+     *
+     * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
+     * @required
+     * @readonly
+     */
+    private ArtifactResolver artifactResolver;
 
     /**
      * File name of the include filter. Only bugs in matching the filters are reported.
@@ -171,12 +219,37 @@ public final class FindBugsMojo
      */
     private transient String effort;
 
-    static
-    {
-        // Tell FindBugs that we do not have a findbugs.home
-        // Activate FindBugs mode jaws
-        System.setProperty( "findbugs.jaws", "true" );
-    }
+    /**
+     * turn on Findbugs debugging
+     *
+     * @parameter default-value="false"
+     * DP: not used yet
+     private transient Boolean debug;
+     */
+
+    /**
+     * The visitor list to run.
+     * This is a comma-delimited list.
+     *
+     * @parameter
+     */
+    private transient String visitors;
+
+    /**
+     * The visitor list to omit.
+     * This is a comma-delimited list.
+     *
+     * @parameter
+     */
+    private transient String omitVisitors;
+
+    /**
+     * The plugin list to include in the report.
+     * This is a comma-delimited list.
+     *
+     * @parameter
+     */
+    private transient String pluginList;
 
     /**
      * Returns report output file name, without the extension.
@@ -295,6 +368,14 @@ public final class FindBugsMojo
         {
             throw new MavenReportException( "Failed adding filters to FindBugs", pException );
         }
+        catch ( final ArtifactNotFoundException pException )
+        {
+            throw new MavenReportException( "Did not find coreplugin", pException );
+        }
+        catch ( final ArtifactResolutionException pException )
+        {
+            throw new MavenReportException( "Failed to resolve coreplugin", pException );
+        }
         // save the original out and err stream 
         final PrintStream tempOut = System.out;
         //final PrintStream tempErr = System.err;
@@ -330,7 +411,8 @@ public final class FindBugsMojo
      * PrintStream that prints just nothing.
      * Used to suppress FindBugs System.out Messages.
      */
-    private class VoidPrintStream extends PrintStream
+    private static class VoidPrintStream
+        extends PrintStream
     {
 
         /**
@@ -362,10 +444,13 @@ public final class FindBugsMojo
      *              Exception that occurs when an artifact file is used, but has not been resolved.
      * @throws IOException If filter file could not be read.
      * @throws FilterException If filter file was invalid.
+     * @throws ArtifactNotFoundException If the coreplugin could not be found.
+     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
      * 
      */
     protected FindBugs initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
-        throws DependencyResolutionRequiredException, IOException, FilterException
+        throws DependencyResolutionRequiredException, IOException, FilterException, ArtifactNotFoundException,
+        ArtifactResolutionException
     {
         final Sink sink = this.getSink();
         final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
@@ -376,12 +461,20 @@ public final class FindBugsMojo
         this.addJavaSourcesToFindBugsProject( pSourceFiles, findBugsProject );
         this.addClasspathEntriesToFindBugsProject( findBugsProject );
         final FindBugs findBugs = new FindBugs( bugReporter, findBugsProject );
+
+        this.addPluginsToFindBugs( pLocale );
+
         final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
-        preferences.enableAllDetectors( true );
+
+        this.addVisitorsToFindBugs( preferences );
+
         findBugs.setUserPreferences( preferences );
         findBugs.setAnalysisFeatureSettings( effortParameter.getValue() );
-        findBugs.setAnalysisFeatureSettings( effortParameter.getValue() );
+
+        // TO DO fix output to allow Findbugs debugging to work
+        //        this.setFindBugsDebug( findBugs );  
         this.addFiltersToFindBugs( findBugs );
+
         return findBugs;
     }
 
@@ -568,6 +661,165 @@ public final class FindBugsMojo
     }
 
     /**
+     * Adds the specified plugins to findbugs.
+     * The coreplugin is always added first.
+     * 
+     * @param pLocale
+     *            The locale to print out the messages. 
+     *            Used here to get the nameof the coreplugin from the properties.
+     * @throws ArtifactNotFoundException If the coreplugin could not be found.
+     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
+     * 
+     */
+    protected void addPluginsToFindBugs( final Locale pLocale )
+        throws ArtifactNotFoundException, ArtifactResolutionException
+    {
+
+        final File corepluginpath = this.getCorePluginPath( pLocale );
+        getLog().info( "  coreplugin Jar is located at " + corepluginpath.toString() );
+
+        File[] plugins;
+
+        if ( this.pluginList != null )
+        {
+            getLog().info( "  Adding Plugins " );
+            final String[] pluginJars = this.pluginList.split( "," );
+
+            plugins = new File[pluginJars.length + 1];
+
+            for ( int i = 0; i < pluginJars.length; i++ )
+            {
+                String pluginFile = pluginJars[i].trim();
+
+                if ( !pluginFile.endsWith( ".jar" ) )
+                {
+                    throw new IllegalArgumentException( "Plugin File is not a Jar file: " + pluginFile );
+                }
+
+                getLog().info( "  Adding Plugin: " + pluginFile );
+                plugins[i + 1] = new File( pluginFile );
+
+            }
+        }
+        else
+        {
+            plugins = new File[1];
+        }
+
+        getLog().info( "  Done Adding Plugins" );
+
+        plugins[0] = corepluginpath;
+        DetectorFactoryCollection.setPluginList( plugins );
+
+    }
+
+    /** 
+     * Get the File reference for the Findbugs core plugin.
+     *
+     * @param pLocale
+     *            The locale of the messages.
+     * @return The File reference to the coreplugin JAR
+     * @throws ArtifactNotFoundException If the coreplugin could not be found.
+     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
+     * 
+     */
+    protected File getCorePluginPath( final Locale pLocale )
+        throws ArtifactNotFoundException, ArtifactResolutionException
+    {
+        for ( Iterator it = this.pluginArtifacts.iterator(); it.hasNext(); )
+        {
+            final Artifact artifact = (Artifact) it.next();
+            if ( artifact.getArtifactId().equals( getCorePlugin( pLocale ) ) )
+            {
+                this.artifactResolver.resolve( artifact, this.remoteArtifactRepositories, this.localRepository );
+                return artifact.getFile();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retrieve the coreplugin module name
+     * 
+     * @param pLocale
+     *            The locale to print out the messages.
+     * @return corePluginName
+     *            The coreplugin module name.
+     * 
+     */
+    protected String getCorePlugin( final Locale pLocale )
+    {
+        final ResourceBundle bundle = getBundle( pLocale );
+        final String corePluginName = bundle.getString( FINDBUGS_COREPLUGIN );
+
+        return corePluginName;
+
+    }
+
+    /**
+     * Adds the specified visitors to findbugs.
+     *
+     * @param preferences The find bugs UserPreferences.
+     * 
+     */
+    protected void addVisitorsToFindBugs( final UserPreferences preferences )
+    {
+        // This is done in this order to make sure only one of vistors or omitVisitors options is run
+        // This is consistent with the way the Findbugs commandline and Ant Tasks run
+        if ( this.visitors != null || this.omitVisitors != null )
+        {
+            boolean enableVisitor = true;
+            String[] visitorList;
+
+            if ( this.omitVisitors != null )
+            {
+                enableVisitor = false;
+                visitorList = this.omitVisitors.split( "," );
+                this.getLog().info( "  Omitting visitors : " + this.omitVisitors );
+
+            }
+            else
+            {
+                visitorList = this.visitors.split( "," );
+                this.getLog().info( "  Including visitors : " + this.visitors );
+                preferences.enableAllDetectors( false );
+            }
+
+            for ( int i = 0; i < visitorList.length; i++ )
+            {
+                String visitorName = visitorList[i].trim();
+                DetectorFactory factory = DetectorFactoryCollection.instance().getFactory( visitorName );
+                if ( factory == null )
+                {
+                    throw new IllegalArgumentException( "Unknown detector: " + visitorName );
+                }
+
+                preferences.enableDetector( factory, enableVisitor );
+            }
+        }
+    }
+
+    /**
+     * Sets the Debug Level
+     *
+     * @param pFindBugs The find bugs to add the filters.
+     * DP: not used yet
+     protected void setFindBugsDebug( final FindBugs pFindBugs )
+     {
+     System.setProperty( "findbugs.debug", debug.toString() );
+
+     if ( debug.booleanValue() )
+     {
+     this.getLog().info( "  Debugging is On" );
+     }
+     else
+     {
+     this.getLog().info( "  Debugging is Off" );
+     }
+     }
+     */
+
+    /**
      * Returns the maven project.
      * 
      * @return the maven project
@@ -595,7 +847,7 @@ public final class FindBugsMojo
     }
 
     /**
-     * Returns the effort parameter to use
+     * Returns the effort parameter to use.
      * 
      * @return A valid effort parameter.
      * 
@@ -671,7 +923,8 @@ public final class FindBugsMojo
         }
     }
 
-    /** Determines if the JXR-Plugin is included in the report section of the POM.
+    /** 
+     * Determines if the JXR-Plugin is included in the report section of the POM.
      *
      * @param pBundle The bundle to load the artifactIf of the jxr plugin.
      * @return True if the JXR-Plugin is included in the POM, false otherwise.
@@ -697,4 +950,5 @@ public final class FindBugsMojo
 
         return isEnabled;
     }
+
 }

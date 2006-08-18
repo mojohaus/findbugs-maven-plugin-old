@@ -137,6 +137,12 @@ public final class Reporter
     private static final String DETAILSLINK_KEY = "report.findbugs.detailslink";
 
     /**
+     * The key to get the version title for FindBugs from the bundle.
+     * 
+     */
+    private static final String VERSIONTITLE_KEY = "report.findbugs.versiontitle";
+
+    /**
      * The sink to write the report to.
      * 
      */
@@ -158,13 +164,13 @@ public final class Reporter
      * The threshold of bugs severity.
      * 
      */
-    private transient ThresholdParameter mThreshold;
+    private final transient ThresholdParameter mThreshold;
 
     /**
      * The used effort for searching bugs.
      * 
      */
-    private transient EffortParameter mEffort;
+    private final transient EffortParameter mEffort;
 
     /**
      * The name of the current class which is analysed by FindBugs.
@@ -196,7 +202,6 @@ public final class Reporter
         this.mBundle = null;
         this.mLog = null;
         this.mThreshold = null;
-        this.mEffort = null;
         this.mEffort = null;
     }
 
@@ -281,7 +286,12 @@ public final class Reporter
         this.mSink.link_();
         this.mSink.paragraph_();
 
-        // ##TODO## FindBugs.getReleaseName();
+        this.mSink.paragraph();
+        this.mSink.text( getVersionTitle() + " " );
+        this.mSink.italic();
+        this.mSink.text( getFindBugsVersion() );
+        this.mSink.italic_();
+        this.mSink.paragraph_();
 
         this.mSink.paragraph();
         this.mSink.text( this.getThresholdTitle() + " " );
@@ -399,6 +409,30 @@ public final class Reporter
     {
         this.mSink.table_();
         this.mSink.section2_();
+    }
+
+    /**
+     * Gets the Findbugs Version title of the report.
+     * 
+     * @return The Findbugs Version used on the report.
+     * 
+     */
+    protected String getVersionTitle()
+    {
+        final String versionTitle = this.mBundle.getString( VERSIONTITLE_KEY );
+
+        return versionTitle;
+    }
+
+    /**
+     * Gets the Findbugs Version of the report.
+     * 
+     * @return The Findbugs Version used on the report.
+     * 
+     */
+    protected String getFindBugsVersion()
+    {
+        return edu.umd.cs.findbugs.Version.RELEASE;
     }
 
     /**

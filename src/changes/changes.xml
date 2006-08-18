@@ -5,6 +5,15 @@
     </properties>
     <body>
         <release version="1.0-SNAPSHOT" date="in SVN" description="First release">
+            <action dev="gl" type="update">
+                Added support for using third-party plugins
+            </action>
+            <action dev="gl" type="update">
+                Added support for specifying Visitors to include and exclude
+            </action>
+            <action dev="gl" type="update">
+                Added Findbugs version to report header
+            </action>
             <action dev="dp" type="fix">
                 Fixed resolution of FindBugs coreplugin.
             </action>
