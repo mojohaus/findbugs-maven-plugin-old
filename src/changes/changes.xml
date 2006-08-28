@@ -1,10 +1,12 @@
-<document>
+﻿<document>
     <properties>
         <title>Maven Findbugs plugin changelog</title>
         <author email="mypublicaddress@mac.com">Cyrill Rüttimann</author>
     </properties>
     <body>
-        <release version="1.0-SNAPSHOT" date="in SVN" description="First release">
+        <release version="1.0-SNAPSHOT" date="in SVN" description="Findbugs plugin">
+        </release>
+        <release version="1.0-beta-1" date="2005-08-28" description="First beta release">
             <action dev="gl" type="update">
                 Added support for using third-party plugins
             </action>
