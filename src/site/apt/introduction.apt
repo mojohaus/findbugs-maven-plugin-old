@@ -17,3 +17,5 @@ Maven 2 FindBugs Plugin - Introduction
  FindBugs uses BCEL to analyze Java bytecode.  It uses dom4j for XML manipulation.
  
  This introduction is an excerpt from the Facts Sheet at {{{http://findbugs.sourceforge.net/factSheet.html}FindBugs home page}}
+
+ See a {{{findbugs.html}sample report}}.
