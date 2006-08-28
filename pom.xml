@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>mojo</artifactId>
@@ -8,7 +6,7 @@
     <version>12</version>
   </parent>
   <artifactId>findbugs-maven-plugin</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-beta-1</version>
   <packaging>maven-plugin</packaging>
   <name>Maven FindBugs PlugIn</name>
   <description>This Plug-In generates reports based on the FindBugs Library</description>
@@ -17,7 +15,7 @@
       <id>cr</id>
       <name>Cyrill Ruettimann</name>
       <email>mypublicaddress@mac.com</email>
-      <organization></organization>
+      <organization />
       <roles>
         <role>Documentation</role>
         <role>Java Developer</role>
@@ -39,7 +37,7 @@
     <contributor>
       <name>Garvin LeClaire</name>
       <email>gleclaire@codehaus.org</email>
-      <organization></organization>
+      <organization />
       <roles>
         <role>Documentation</role>
         <role>Java Developer</role>
@@ -76,4 +74,10 @@
       <version>1.0.0</version>
     </dependency>
   </dependencies>
+
+  <scm>
+    <connection>scm:svn:https://svn.codehaus.org/mojo/tags/findbugs-maven-plugin-1.0-beta-1</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/tags/findbugs-maven-plugin-1.0-beta-1</developerConnection>
+    <url>https://svn.codehaus.org/mojo/tags/findbugs-maven-plugin-1.0-beta-1</url>
+  </scm>
 </project>
