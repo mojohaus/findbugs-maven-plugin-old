@@ -8,8 +8,11 @@
       <action dev="gl" type="update">
         Added support for Findbugs v1.1.1
       </action>
-      <action dev="gl" type="update">
+      <action dev="gl" type="update" issue="JIRA-MOJO-511">
         Add xml report output option.
+      </action>
+      <action dev="gl" type="fix" issue="JIRA-MOJO-513">
+        Fix a typo on the usage page.
       </action>
       <action dev="gl" type="fix" issue="JIRA-MOJO-499">
         changed JXR dependencies to maven-jxr-plugin from jxr-maven-plugin.
