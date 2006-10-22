@@ -24,6 +24,18 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
+    <developer>
+      <id>gl</id>
+      <name>Garvin LeClaire</name>
+      <email>gleclaire@codehaus.org</email>
+      <url>http://gdleclaire.blogspot.com</url>
+      <organization />
+      <roles>
+        <role>Documentation</role>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+5</timezone>
+    </developer>
   </developers>
   <contributors>
     <contributor>
@@ -35,16 +47,6 @@
         <role>Java Developer</role>
       </roles>
       <timezone>+1</timezone>
-    </contributor>
-    <contributor>
-      <name>Garvin LeClaire</name>
-      <email>gleclaire@codehaus.org</email>
-      <organization />
-      <roles>
-        <role>Documentation</role>
-        <role>Java Developer</role>
-      </roles>
-      <timezone>+5</timezone>
     </contributor>
     </contributors>
     <licenses>
@@ -71,9 +73,14 @@
       <version>2.0</version>
     </dependency>
     <dependency>
+    <groupId>org.apache.maven.doxia</groupId>
+  <artifactId>doxia-core</artifactId>
+    <version>1.0-alpha-8</version>
+    </dependency>
+    <dependency>
       <groupId>net.sourceforge.findbugs</groupId>
-      <artifactId>coreplugin</artifactId>
-      <version>1.0.0</version>
+      <artifactId>findbugs</artifactId>
+      <version>1.1.1</version>
     </dependency>
   </dependencies>
   <reporting>
@@ -81,6 +88,17 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
     </plugins>
   </reporting>

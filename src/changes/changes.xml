@@ -5,6 +5,15 @@
   </properties>
   <body>
     <release version="1.0-SNAPSHOT" date="in SVN" description="Findbugs plugin">
+      <action dev="gl" type="update">
+        Added support for Findbugs v1.1.1
+      </action>
+      <action dev="gl" type="update">
+        Add xml report output option.
+      </action>
+      <action dev="gl" type="fix" issue="JIRA-MOJO-499">
+        changed JXR dependencies to maven-jxr-plugin from jxr-maven-plugin.
+      </action>
     </release>
     <release version="1.0-beta-1" date="2005-08-28" description="First beta release">
       <action dev="gl" type="update">

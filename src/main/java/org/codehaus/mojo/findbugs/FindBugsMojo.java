@@ -22,8 +22,10 @@ package org.codehaus.mojo.findbugs;
  */
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +47,7 @@ import org.codehaus.doxia.sink.Sink;
 import org.codehaus.doxia.site.renderer.SiteRenderer;
 import org.codehaus.plexus.util.FileUtils;
 
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -61,10 +64,10 @@ import edu.umd.cs.findbugs.filter.FilterException;
  * 
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
  * @author <a href="mailto:d.pleiss@comundus.com">Detlef Pleiss</a>
+ * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
-public final class FindBugsMojo
-    extends AbstractMavenReport
+public final class FindBugsMojo extends AbstractMavenReport
 {
 
     /**
@@ -123,11 +126,36 @@ public final class FindBugsMojo
     private static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin";
 
     /**
+     * Returns the resource bundle for a specific locale.
+     * 
+     * @param pLocale
+     *            The locale to get the bundle for.
+     * @return A resource Bundle.
+     * 
+     */
+    protected static ResourceBundle getBundle( final Locale pLocale )
+    {
+        final ClassLoader loader = FindBugsMojo.class.getClassLoader();
+        final ResourceBundle bundle = ResourceBundle.getBundle( FindBugsMojo.BUNDLE_NAME, pLocale, loader );
+
+        return bundle;
+    }
+
+    /**
      * Location where generated html will be created.
      * 
-     * @parameter expression="${project.reporting.outputDirectory}/site"
+     * @parameter expression="${project.reporting.outputDirectory}"
      */
-    private transient String outputDirectory;
+
+    private String outputDirectory;
+
+    /**
+     * Specifies the directory where the temporary files generated.
+     * 
+     * @parameter default-value="${project.build.directory}"
+     * @required
+     */
+    private File tempOutputDirectory;
 
     /**
      * Doxia Site Renderer.
@@ -136,14 +164,14 @@ public final class FindBugsMojo
      * @required
      * @readonly
      */
-    private transient SiteRenderer siteRenderer;
+    private SiteRenderer siteRenderer;
 
     /**
      * Directory containing the class files for FindBugs to analyze.
      * @parameter default-value="${project.build.outputDirectory}"
      * @required
      */
-    private transient File classFilesDirectory;
+    private File classFilesDirectory;
 
     /**
      * List of artifacts this plugin depends on.
@@ -152,7 +180,7 @@ public final class FindBugsMojo
      * @required
      * @readonly
      */
-    private transient ArrayList pluginArtifacts;
+    private ArrayList pluginArtifacts;
 
     /**
      * The local repository, needed to download the coreplugin jar.
@@ -160,7 +188,7 @@ public final class FindBugsMojo
      * @required
      * @readonly
      */
-    private transient DefaultArtifactRepository localRepository;
+    private DefaultArtifactRepository localRepository;
 
     /**
      * Remote repositories which will be searched for the coreplugin jar.
@@ -178,7 +206,7 @@ public final class FindBugsMojo
      * @required
      * @readonly
      */
-    private transient MavenProject project;
+    private MavenProject project;
 
     /**
      * Threshold of minimum bug severity to report. 
@@ -186,7 +214,7 @@ public final class FindBugsMojo
      *
      * @parameter
      */
-    private transient String threshold;
+    private String threshold;
 
     /**
      * Artifact resolver, needed to download the coreplugin jar.
@@ -202,14 +230,14 @@ public final class FindBugsMojo
      * 
      * @parameter
      */
-    private transient String includeFilterFile;
+    private String includeFilterFile;
 
     /**
      * File name of the exclude filter. Bugs matching the filters are not reported.
      * 
      * @parameter
      */
-    private transient String excludeFilterFile;
+    private String excludeFilterFile;
 
     /**
      * Effort of the bug finders.
@@ -217,15 +245,15 @@ public final class FindBugsMojo
      * 
      * @parameter
      */
-    private transient String effort;
+    private String effort;
 
     /**
      * turn on Findbugs debugging
      *
      * @parameter default-value="false"
      * DP: not used yet
-     private transient Boolean debug;
      */
+    private Boolean debug;
 
     /**
      * The visitor list to run.
@@ -233,7 +261,7 @@ public final class FindBugsMojo
      *
      * @parameter
      */
-    private transient String visitors;
+    private String visitors;
 
     /**
      * The visitor list to omit.
@@ -241,7 +269,7 @@ public final class FindBugsMojo
      *
      * @parameter
      */
-    private transient String omitVisitors;
+    private String omitVisitors;
 
     /**
      * The plugin list to include in the report.
@@ -249,36 +277,32 @@ public final class FindBugsMojo
      *
      * @parameter
      */
-    private transient String pluginList;
+    private String pluginList;
 
     /**
-     * Returns report output file name, without the extension.
-     * 
-     * Called by AbstractMavenReport.execute() for creating the sink.
-     * 
-     * @return name of the generated page
-     * @see org.apache.maven.reporting.MavenReport#getOutputName()
+     * The output format of the report.
+     *
+     * @parameter default-value="html"
      */
-    public String getOutputName()
-    {
-        return FindBugsMojo.PLUGIN_NAME;
-    }
+    private String reportFormat;
 
     /**
-     * Returns the plugins name for the "generated reports" overview page and the menu.
-     * 
-     * @param pLocale
-     *            the locale the report should be generated for
-     * 
-     * @return name of the report
-     * @see org.apache.maven.reporting.MavenReport#getName(java.util.Locale)
+     * The Base FindBugs reporter Class for reports.
+     *
+     * @parameter
+     * @readonly
      */
-    public String getName( final Locale pLocale )
-    {
-        final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
-        final String name = bundle.getString( FindBugsMojo.NAME_KEY );
+    private BugReporter bugReporter;
 
-        return name;
+    /**
+     * Checks whether prerequisites for generating this report are given.
+     * 
+     * @return true if report can be generated, otherwise false
+     * @see org.apache.maven.reporting.MavenReport#canGenerateReport()
+     */
+    public boolean canGenerateReport()
+    {
+        return this.classFilesDirectory.exists();
     }
 
     /**
@@ -299,299 +323,33 @@ public final class FindBugsMojo
     }
 
     /**
-     * Returns the report output directory.
-     * 
-     * Called by AbstractMavenReport.execute() for creating the sink.
-     * 
-     * @return full path to the directory where the files in the site get copied
-     *         to
-     * @see org.apache.maven.reporting.AbstractMavenReport#getOutputDirectory()
-     */
-    protected String getOutputDirectory()
-    {
-        return this.outputDirectory;
-    }
-
-    /**
-     * Checks whether prerequisites for generating this report are given.
-     * 
-     * @return true if report can be generated, otherwise false
-     * @see org.apache.maven.reporting.MavenReport#canGenerateReport()
-     */
-    public boolean canGenerateReport()
-    {
-        return this.classFilesDirectory.exists();
-    }
-
-    /**
-     * Returns the doxia site renderer.
-     * 
-     * @return the doxia Renderer
-     * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
-     */
-    protected SiteRenderer getSiteRenderer()
-    {
-        return this.siteRenderer;
-    }
-
-    /**
-     * Executes the generation of the report.
-     * 
-     * Callback from Maven Site Plugin or from AbstractMavenReport.execute() =>
-     * generate().
+     * Returns the plugins name for the "generated reports" overview page and the menu.
      * 
      * @param pLocale
      *            the locale the report should be generated for
-     * @throws MavenReportException
-     *             if anything goes wrong
-     * @see org.apache.maven.reporting.AbstractMavenReport
-     *      #executeReport(java.util.Locale)
-     */
-    protected void executeReport( final Locale pLocale )
-        throws MavenReportException
-    {
-        FindBugs findBugs = null;
-        this.debugSourceDirectory( pLocale, this.classFilesDirectory );
-        try
-        {
-            findBugs = this.initialiseFindBugs( pLocale, this.getJavaSources( pLocale, this.classFilesDirectory ) );
-        }
-        catch ( final IOException pException )
-        {
-            throw new MavenReportException( "A java source file could not be added", pException );
-        }
-        catch ( final DependencyResolutionRequiredException pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
-        }
-        catch ( final FilterException pException )
-        {
-            throw new MavenReportException( "Failed adding filters to FindBugs", pException );
-        }
-        catch ( final ArtifactNotFoundException pException )
-        {
-            throw new MavenReportException( "Did not find coreplugin", pException );
-        }
-        catch ( final ArtifactResolutionException pException )
-        {
-            throw new MavenReportException( "Failed to resolve coreplugin", pException );
-        }
-        // save the original out and err stream 
-        final PrintStream tempOut = System.out;
-        //final PrintStream tempErr = System.err;
-        try
-        {
-            // redirect the streams 
-            //final OutputStream pipedOut = new ByteArrayOutputStream();
-            System.setOut( new VoidPrintStream() );
-            //System.setErr( new PrintStream( pipedOut ) );
-            findBugs.execute();
-        }
-        catch ( final IOException pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
-        }
-        catch ( final InterruptedException pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
-        }
-        catch ( final Exception pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
-        }
-        finally
-        {
-            // restore to the old streams
-            System.setOut( tempOut );
-            //System.setErr( tempErr );
-        }
-    }
-
-    /**
-     * PrintStream that prints just nothing.
-     * Used to suppress FindBugs System.out Messages.
-     */
-    private static class VoidPrintStream
-        extends PrintStream
-    {
-
-        /**
-         * contructor
-         */
-        public VoidPrintStream()
-        {
-            super( new PrintStream( System.out ) );
-        }
-
-        /**
-         * @param s String to print
-         */
-        public void println( String s )
-        {
-            // do nothing
-        }
-    }
-
-    /**
-     * Initialise FindBugs.
      * 
-     * @param pLocale
-     *            The locale.
-     * @param pSourceFiles
-     *            The source files FindBugs should analyse.
-     * @return An initialised FindBugs object.
-     * @throws DependencyResolutionRequiredException 
-     *              Exception that occurs when an artifact file is used, but has not been resolved.
-     * @throws IOException If filter file could not be read.
-     * @throws FilterException If filter file was invalid.
-     * @throws ArtifactNotFoundException If the coreplugin could not be found.
-     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
-     * 
+     * @return name of the report
+     * @see org.apache.maven.reporting.MavenReport#getName(java.util.Locale)
      */
-    protected FindBugs initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
-        throws DependencyResolutionRequiredException, IOException, FilterException, ArtifactNotFoundException,
-        ArtifactResolutionException
+    public String getName( final Locale pLocale )
     {
-        final Sink sink = this.getSink();
         final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
-        final Log log = this.getLog();
-        final EffortParameter effortParameter = this.getEffortParameter();
-        final Reporter bugReporter = this.initialiseReporter( sink, bundle, log, effortParameter );
-        final Project findBugsProject = new Project();
-        this.addJavaSourcesToFindBugsProject( pSourceFiles, findBugsProject );
-        this.addClasspathEntriesToFindBugsProject( findBugsProject );
-        final FindBugs findBugs = new FindBugs( bugReporter, findBugsProject );
+        final String name = bundle.getString( FindBugsMojo.NAME_KEY );
 
-        this.addPluginsToFindBugs( pLocale );
-
-        final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
-
-        this.addVisitorsToFindBugs( preferences );
-
-        findBugs.setUserPreferences( preferences );
-        findBugs.setAnalysisFeatureSettings( effortParameter.getValue() );
-
-        // TO DO fix output to allow Findbugs debugging to work
-        //        this.setFindBugsDebug( findBugs );  
-        this.addFiltersToFindBugs( findBugs );
-
-        return findBugs;
+        return name;
     }
 
     /**
-     * Initialises a reporter.
+     * Returns report output file name, without the extension.
      * 
-     * @param pSink
-     *            The sink to write the report to.
-     * @param pBundle
-     *            The bundle to get messages from.
-     * @param pLog
-     *            The logger to write logs to.
-     * @param pEffortParameter
-     *            The effort to use.
-     * @return An initialised reporter.
+     * Called by AbstractMavenReport.execute() for creating the sink.
      * 
+     * @return name of the generated page
+     * @see org.apache.maven.reporting.MavenReport#getOutputName()
      */
-    protected Reporter initialiseReporter( final Sink pSink, final ResourceBundle pBundle, final Log pLog,
-                                           final EffortParameter pEffortParameter )
+    public String getOutputName()
     {
-        ThresholdParameter thresholdParameter = ThresholdParameter.DEFAULT;
-
-        if ( this.threshold == null )
-        {
-            this.getLog().info( "  No threshold provided, using default threshold." );
-        }
-        else
-        {
-            if ( this.threshold.equals( ThresholdParameter.HIGH.getName() ) )
-            {
-                thresholdParameter = ThresholdParameter.HIGH;
-                this.getLog().info( "  Using high threshold." );
-            }
-            else if ( this.threshold.equals( ThresholdParameter.NORMAL.getName() ) )
-            {
-                thresholdParameter = ThresholdParameter.NORMAL;
-                this.getLog().info( "  Using normal threshold." );
-            }
-            else if ( this.threshold.equals( ThresholdParameter.LOW.getName() ) )
-            {
-                thresholdParameter = ThresholdParameter.LOW;
-                this.getLog().info( "  Using low threshold." );
-            }
-            else if ( this.threshold.equals( ThresholdParameter.EXP.getName() ) )
-            {
-                thresholdParameter = ThresholdParameter.EXP;
-                this.getLog().info( "  Using exp threshold." );
-            }
-            else if ( this.threshold.equals( ThresholdParameter.IGNORE.getName() ) )
-            {
-                thresholdParameter = ThresholdParameter.IGNORE;
-                this.getLog().info( "  Using ignore threshold." );
-            }
-            else
-            {
-                this.getLog().info( "  Threshold not recognised, using default threshold" );
-            }
-        }
-
-        final boolean isJXRPluginEnabled = this.isJXRPluginEnabled( pBundle );
-        final Reporter bugReporter = new Reporter( pSink, pBundle, pLog, thresholdParameter, isJXRPluginEnabled,
-                                                   pEffortParameter );
-        bugReporter.setPriorityThreshold( thresholdParameter.getValue() );
-
-        return bugReporter;
-    }
-
-    /**
-     * Collects the java sources from the source roots.
-     * 
-     * @param pSourceDirectory
-     *            The source directory to search for java sources.
-     * @param pLocale
-     *            The locale to print out the messages.
-     * @return A list containing the java sources or an empty list if no java
-     *         sources are found.
-     * @throws IOException
-     *             If there are problems searching for java sources.
-     * 
-     */
-    protected List getJavaSources( final Locale pLocale, final File pSourceDirectory )
-        throws IOException
-    {
-        final List sourceFiles = new ArrayList();
-
-        if ( pSourceDirectory.exists() && pSourceDirectory.isDirectory() )
-        {
-            final List files = FileUtils.getFiles( pSourceDirectory, FindBugsMojo.JAVA_REGEX_PATTERN, null );
-            sourceFiles.addAll( files );
-        }
-
-        this.debugJavaSources( pLocale, sourceFiles );
-
-        return sourceFiles;
-    }
-
-    /**
-     * Adds the source files to the find bugs project. The return value of the
-     * method call <code>addFile</code> is omited, because we are not
-     * interested if the java source is already added.
-     * 
-     * @param pSourceFiles
-     *            The java sources (Type <code>java.io.File</code>) to add to
-     *            the project.
-     * @param pFindBugsProject
-     *            The find bugs project to add the java source to.
-     * 
-     */
-    protected void addJavaSourcesToFindBugsProject( final List pSourceFiles, final Project pFindBugsProject )
-    {
-        final Iterator iterator = pSourceFiles.iterator();
-        while ( iterator.hasNext() )
-        {
-            final File currentSourceFile = (File) iterator.next();
-            final String filePath = currentSourceFile.getAbsolutePath();
-            pFindBugsProject.addFile( filePath );
-        }
+        return FindBugsMojo.PLUGIN_NAME;
     }
 
     /**
@@ -609,7 +367,7 @@ public final class FindBugsMojo
         final Iterator iterator = entries.iterator();
         while ( iterator.hasNext() )
         {
-            final String currentEntry = (String) iterator.next();
+            final String currentEntry = ( String ) iterator.next();
             this.getLog().debug( "  Adding " + currentEntry + " to auxilary classpath" );
             pFindBugsProject.addAuxClasspathEntry( currentEntry );
         }
@@ -623,8 +381,7 @@ public final class FindBugsMojo
      * @throws FilterException If filter file was invalid.
      * 
      */
-    protected void addFiltersToFindBugs( final FindBugs pFindBugs )
-        throws IOException, FilterException
+    protected void addFiltersToFindBugs( final FindBugs pFindBugs ) throws IOException, FilterException
     {
         if ( this.includeFilterFile != null )
         {
@@ -661,6 +418,29 @@ public final class FindBugsMojo
     }
 
     /**
+     * Adds the source files to the find bugs project. The return value of the
+     * method call <code>addFile</code> is omited, because we are not
+     * interested if the java source is already added.
+     * 
+     * @param pSourceFiles
+     *            The java sources (Type <code>java.io.File</code>) to add to
+     *            the project.
+     * @param pFindBugsProject
+     *            The find bugs project to add the java source to.
+     * 
+     */
+    protected void addJavaSourcesToFindBugsProject( final List pSourceFiles, final Project pFindBugsProject )
+    {
+        final Iterator iterator = pSourceFiles.iterator();
+        while ( iterator.hasNext() )
+        {
+            final File currentSourceFile = ( File ) iterator.next();
+            final String filePath = currentSourceFile.getAbsolutePath();
+            pFindBugsProject.addFile( filePath );
+        }
+    }
+
+    /**
      * Adds the specified plugins to findbugs.
      * The coreplugin is always added first.
      * 
@@ -669,23 +449,34 @@ public final class FindBugsMojo
      *            Used here to get the nameof the coreplugin from the properties.
      * @throws ArtifactNotFoundException If the coreplugin could not be found.
      * @throws ArtifactResolutionException If the coreplugin could not be resolved.
+     * @throws MavenReportException
      * 
      */
     protected void addPluginsToFindBugs( final Locale pLocale )
-        throws ArtifactNotFoundException, ArtifactResolutionException
+        throws ArtifactNotFoundException, ArtifactResolutionException, MavenReportException
     {
 
-        final File corepluginpath = this.getCorePluginPath( pLocale );
-        getLog().info( "  coreplugin Jar is located at " + corepluginpath.toString() );
+        URL corepluginpath = null;
 
-        File[] plugins;
+        try
+        {
+            corepluginpath = this.getCorePluginPath( pLocale ).toURL();
+        }
+        catch ( final MalformedURLException pException )
+        {
+            throw new MavenReportException( "The core plugin has an invalid URL", pException );
+        }
+
+        this.getLog().info( "  coreplugin Jar is located at " + corepluginpath.toString() );
+
+        URL[] plugins;
 
         if ( this.pluginList != null )
         {
-            getLog().info( "  Adding Plugins " );
+            this.getLog().info( "  Adding Plugins " );
             final String[] pluginJars = this.pluginList.split( "," );
 
-            plugins = new File[pluginJars.length + 1];
+            plugins = new URL[pluginJars.length + 1];
 
             for ( int i = 0; i < pluginJars.length; i++ )
             {
@@ -696,63 +487,28 @@ public final class FindBugsMojo
                     throw new IllegalArgumentException( "Plugin File is not a Jar file: " + pluginFile );
                 }
 
-                getLog().info( "  Adding Plugin: " + pluginFile );
-                plugins[i + 1] = new File( pluginFile );
+                try
+                {
+                    plugins[i + 1] = new File( pluginFile ).toURL();
+                }
+                catch ( final MalformedURLException pException )
+                {
+                    throw new MavenReportException( "The addin plugin has an invalid URL", pException );
+                }
+                this.getLog().info( "  Adding Plugin: " + plugins[i + 1].toString() );
 
             }
         }
         else
         {
-            plugins = new File[1];
+            plugins = new URL[1];
         }
-
-        getLog().info( "  Done Adding Plugins" );
 
         plugins[0] = corepluginpath;
-        DetectorFactoryCollection.setPluginList( plugins );
 
-    }
+        DetectorFactoryCollection.rawInstance().setPluginList( plugins );
 
-    /** 
-     * Get the File reference for the Findbugs core plugin.
-     *
-     * @param pLocale
-     *            The locale of the messages.
-     * @return The File reference to the coreplugin JAR
-     * @throws ArtifactNotFoundException If the coreplugin could not be found.
-     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
-     * 
-     */
-    protected File getCorePluginPath( final Locale pLocale )
-        throws ArtifactNotFoundException, ArtifactResolutionException
-    {
-        for ( Iterator it = this.pluginArtifacts.iterator(); it.hasNext(); )
-        {
-            final Artifact artifact = (Artifact) it.next();
-            if ( artifact.getArtifactId().equals( getCorePlugin( pLocale ) ) )
-            {
-                this.artifactResolver.resolve( artifact, this.remoteArtifactRepositories, this.localRepository );
-                return artifact.getFile();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Retrieve the coreplugin module name
-     * 
-     * @param pLocale
-     *            The locale to print out the messages.
-     * @return corePluginName
-     *            The coreplugin module name.
-     * 
-     */
-    protected String getCorePlugin( final Locale pLocale )
-    {
-        final ResourceBundle bundle = getBundle( pLocale );
-        final String corePluginName = bundle.getString( FINDBUGS_COREPLUGIN );
-
-        return corePluginName;
+        this.getLog().info( "  Done Adding Plugins" );
 
     }
 
@@ -764,8 +520,11 @@ public final class FindBugsMojo
      */
     protected void addVisitorsToFindBugs( final UserPreferences preferences )
     {
-        // This is done in this order to make sure only one of vistors or omitVisitors options is run
-        // This is consistent with the way the Findbugs commandline and Ant Tasks run
+        /*
+         * This is done in this order to make sure only one of vistors
+         *  or omitVisitors options is run. 
+         * This is consistent with the way the Findbugs commandline and Ant Tasks run.
+         */
         if ( this.visitors != null || this.omitVisitors != null )
         {
             boolean enableVisitor = true;
@@ -800,50 +559,146 @@ public final class FindBugsMojo
     }
 
     /**
-     * Sets the Debug Level
-     *
-     * @param pFindBugs The find bugs to add the filters.
-     * DP: not used yet
-     protected void setFindBugsDebug( final FindBugs pFindBugs )
-     {
-     System.setProperty( "findbugs.debug", debug.toString() );
-
-     if ( debug.booleanValue() )
-     {
-     this.getLog().info( "  Debugging is On" );
-     }
-     else
-     {
-     this.getLog().info( "  Debugging is Off" );
-     }
-     }
+     * Lists absolute paths of java source files for denugging purposes. 
+     * @param pLocale
+     *            The locale to print out the messages.
+     * @param pSourceFiles
+     *              List of source files.
      */
-
-    /**
-     * Returns the maven project.
-     * 
-     * @return the maven project
-     * @see org.apache.maven.reporting.AbstractMavenReport#getProject()
-     */
-    protected MavenProject getProject()
+    protected void debugJavaSources( final Locale pLocale, final List pSourceFiles )
     {
-        return this.project;
+        final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
+        final String javaSourceMessage = bundle.getString( FindBugsMojo.JAVA_SOURCES_KEY );
+        this.getLog().debug( "  " + javaSourceMessage );
+
+        final Iterator iterator = pSourceFiles.iterator();
+        while ( iterator.hasNext() )
+        {
+            final File currentFile = ( File ) iterator.next();
+            this.getLog().debug( "    " + currentFile.getAbsolutePath() );
+        }
     }
 
     /**
-     * Returns the resource bundle for a specific locale.
+     * Prints out the source roots to the logger with severity debug.
      * 
      * @param pLocale
-     *            The locale to get the bundle for.
-     * @return A resource Bundle.
+     *            The locale to print out the messages.
+     * @param pSourceDirectory
+     *            The source directory to print.
      * 
      */
-    protected static ResourceBundle getBundle( final Locale pLocale )
+    protected void debugSourceDirectory( final Locale pLocale, final File pSourceDirectory )
     {
-        final ClassLoader loader = FindBugsMojo.class.getClassLoader();
-        final ResourceBundle bundle = ResourceBundle.getBundle( FindBugsMojo.BUNDLE_NAME, pLocale, loader );
+        final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
+        final String sourceRootMessage = bundle.getString( FindBugsMojo.SOURCE_ROOT_KEY );
+        this.getLog().debug( "  " + sourceRootMessage );
+        this.getLog().debug( "    " + pSourceDirectory.getAbsolutePath() );
+    }
 
-        return bundle;
+    /**
+     * Executes the generation of the report.
+     * 
+     * Callback from Maven Site Plugin or from AbstractMavenReport.execute() =>
+     * generate().
+     * 
+     * @param pLocale
+     *            the locale the report should be generated for
+     * @throws MavenReportException
+     *             if anything goes wrong
+     * @see org.apache.maven.reporting.AbstractMavenReport
+     *      #executeReport(java.util.Locale)
+     */
+    protected void executeReport( final Locale pLocale ) throws MavenReportException
+    {
+        FindBugs findBugs = null;
+        this.debugSourceDirectory( pLocale, this.classFilesDirectory );
+        try
+        {
+            findBugs = this.initialiseFindBugs( pLocale, this.getJavaSources( pLocale, this.classFilesDirectory ) );
+        }
+        catch ( final IOException pException )
+        {
+            throw new MavenReportException( "A java source file could not be added", pException );
+        }
+        catch ( final DependencyResolutionRequiredException pException )
+        {
+            throw new MavenReportException( "Failed executing FindBugs", pException );
+        }
+        catch ( final FilterException pException )
+        {
+            throw new MavenReportException( "Failed adding filters to FindBugs", pException );
+        }
+        catch ( final ArtifactNotFoundException pException )
+        {
+            throw new MavenReportException( "Did not find coreplugin", pException );
+        }
+        catch ( final ArtifactResolutionException pException )
+        {
+            throw new MavenReportException( "Failed to resolve coreplugin", pException );
+        }
+
+        try
+        {
+
+            findBugs.execute();
+
+        }
+        catch ( final IOException pException )
+        {
+            throw new MavenReportException( "Failed executing FindBugs", pException );
+        }
+        catch ( final InterruptedException pException )
+        {
+            throw new MavenReportException( "Failed executing FindBugs", pException );
+        }
+        catch ( final Exception pException )
+        {
+            throw new MavenReportException( "Failed executing FindBugs", pException );
+        }
+    }
+
+    /**
+     * Retrieve the coreplugin module name
+     * 
+     * @param pLocale
+     *            The locale to print out the messages.
+     * @return corePluginName
+     *            The coreplugin module name.
+     * 
+     */
+    protected String getCorePlugin( final Locale pLocale )
+    {
+        final ResourceBundle bundle = getBundle( pLocale );
+        final String corePluginName = bundle.getString( FINDBUGS_COREPLUGIN );
+
+        return corePluginName;
+
+    }
+
+    /** 
+     * Get the File reference for the Findbugs core plugin.
+     *
+     * @param pLocale
+     *            The locale of the messages.
+     * @return The File reference to the coreplugin JAR
+     * @throws ArtifactNotFoundException If the coreplugin could not be found.
+     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
+     * 
+     */
+    protected File getCorePluginPath( final Locale pLocale )
+        throws ArtifactNotFoundException, ArtifactResolutionException
+    {
+        for ( Iterator it = this.pluginArtifacts.iterator(); it.hasNext(); )
+        {
+            final Artifact artifact = ( Artifact ) it.next();
+            if ( artifact.getArtifactId().equals( this.getCorePlugin( pLocale ) ) )
+            {
+                this.artifactResolver.resolve( artifact, this.remoteArtifactRepositories, this.localRepository );
+                return artifact.getFile();
+            }
+        }
+        return null;
     }
 
     /**
@@ -886,41 +741,211 @@ public final class FindBugsMojo
     }
 
     /**
-     * Prints out the source roots to the logger with severity debug.
+     * Collects the java sources from the source roots.
      * 
+     * @param pSourceDirectory
+     *            The source directory to search for java sources.
      * @param pLocale
      *            The locale to print out the messages.
-     * @param pSourceDirectory
-     *            The source directory to print.
+     * @return A list containing the java sources or an empty list if no java
+     *         sources are found.
+     * @throws IOException
+     *             If there are problems searching for java sources.
      * 
      */
-    protected void debugSourceDirectory( final Locale pLocale, final File pSourceDirectory )
+    protected List getJavaSources( final Locale pLocale, final File pSourceDirectory ) throws IOException
     {
-        final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
-        final String sourceRootMessage = bundle.getString( FindBugsMojo.SOURCE_ROOT_KEY );
-        this.getLog().debug( "  " + sourceRootMessage );
-        this.getLog().debug( "    " + pSourceDirectory.getAbsolutePath() );
+        final List sourceFiles = new ArrayList();
+
+        if ( pSourceDirectory.exists() && pSourceDirectory.isDirectory() )
+        {
+            final List files = FileUtils.getFiles( pSourceDirectory, FindBugsMojo.JAVA_REGEX_PATTERN, null );
+            sourceFiles.addAll( files );
+        }
+
+        this.debugJavaSources( pLocale, sourceFiles );
+
+        return sourceFiles;
     }
 
     /**
-     * Lists absolute paths of java source files for denugging purposes. 
-     * @param pLocale
-     *            The locale to print out the messages.
-     * @param pSourceFiles
-     *              List of source files.
+     * Returns the report output directory.
+     * 
+     * Called by AbstractMavenReport.execute() for creating the sink.
+     * 
+     * @return full path to the directory where the files in the site get copied
+     *         to
+     * @see org.apache.maven.reporting.AbstractMavenReport#getOutputDirectory()
      */
-    protected void debugJavaSources( final Locale pLocale, final List pSourceFiles )
+    protected String getOutputDirectory()
     {
-        final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
-        final String javaSourceMessage = bundle.getString( FindBugsMojo.JAVA_SOURCES_KEY );
-        this.getLog().debug( "  " + javaSourceMessage );
+        return this.outputDirectory;
+    }
 
-        final Iterator iterator = pSourceFiles.iterator();
-        while ( iterator.hasNext() )
+    /**
+     * Returns the maven project.
+     * 
+     * @return the maven project
+     * @see org.apache.maven.reporting.AbstractMavenReport#getProject()
+     */
+    protected MavenProject getProject()
+    {
+        return this.project;
+    }
+
+    /**
+     * Returns the doxia site renderer.
+     * 
+     * @return the doxia Renderer
+     * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
+     */
+    protected SiteRenderer getSiteRenderer()
+    {
+        return this.siteRenderer;
+    }
+
+    /**
+     * Returns the threshold parameter to use.
+     * 
+     * @return A valid threshold parameter.
+     * 
+     */
+    protected ThresholdParameter getThresholdParameter()
+    {
+
+        ThresholdParameter thresholdParameter = ThresholdParameter.DEFAULT;
+
+        if ( this.threshold == null )
         {
-            final File currentFile = (File) iterator.next();
-            this.getLog().debug( "    " + currentFile.getAbsolutePath() );
+            this.getLog().info( "  No threshold provided, using default threshold." );
         }
+        else
+        {
+            if ( this.threshold.equals( ThresholdParameter.HIGH.getName() ) )
+            {
+                thresholdParameter = ThresholdParameter.HIGH;
+                this.getLog().info( "  Using high threshold." );
+            }
+            else if ( this.threshold.equals( ThresholdParameter.NORMAL.getName() ) )
+            {
+                thresholdParameter = ThresholdParameter.NORMAL;
+                this.getLog().info( "  Using normal threshold." );
+            }
+            else if ( this.threshold.equals( ThresholdParameter.LOW.getName() ) )
+            {
+                thresholdParameter = ThresholdParameter.LOW;
+                this.getLog().info( "  Using low threshold." );
+            }
+            else if ( this.threshold.equals( ThresholdParameter.EXP.getName() ) )
+            {
+                thresholdParameter = ThresholdParameter.EXP;
+                this.getLog().info( "  Using exp threshold." );
+            }
+            else if ( this.threshold.equals( ThresholdParameter.IGNORE.getName() ) )
+            {
+                thresholdParameter = ThresholdParameter.IGNORE;
+                this.getLog().info( "  Using ignore threshold." );
+            }
+            else
+            {
+                this.getLog().info( "  Threshold not recognised, using default threshold" );
+            }
+        }
+
+        return thresholdParameter;
+
+    }
+
+    /**
+     * Initialise FindBugs.
+     * 
+     * @param pLocale
+     *            The locale.
+     * @param pSourceFiles
+     *            The source files FindBugs should analyse.
+     * @return An initialised FindBugs object.
+     * @throws DependencyResolutionRequiredException 
+     *              Exception that occurs when an artifact file is used, but has not been resolved.
+     * @throws IOException If filter file could not be read.
+     * @throws FilterException If filter file was invalid.
+     * @throws ArtifactNotFoundException If the coreplugin could not be found.
+     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
+     * @throws MavenReportException
+     * 
+     */
+    protected FindBugs initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
+        throws DependencyResolutionRequiredException, IOException, FilterException, ArtifactNotFoundException,
+        ArtifactResolutionException, MavenReportException
+    {
+        final Sink sink = this.getSink();
+        final ResourceBundle bundle = FindBugsMojo.getBundle( pLocale );
+        final Log log = this.getLog();
+        final EffortParameter effortParameter = this.getEffortParameter();
+
+        final Project findBugsProject = new Project();
+
+        this.bugReporter = this.initialiseReporter( sink, bundle, log, effortParameter );
+
+        if ( this.reportFormat.equalsIgnoreCase( "xml" ) )
+        {
+            this.getLog().info( "  Using the xdoc format" );
+            BugReporter htmlBugReporter = this.bugReporter;
+            this.bugReporter = new XDocsReporter( htmlBugReporter );
+
+            ( ( XDocsReporter ) this.bugReporter ).setOutputWriter( new FileWriter( new File( this.tempOutputDirectory
+                            + "/findbugs." + this.reportFormat ) ) );
+            ( ( XDocsReporter ) this.bugReporter ).setResourceBundle( bundle );
+            ( ( XDocsReporter ) this.bugReporter ).setLog( log );
+            ( ( XDocsReporter ) this.bugReporter ).setEffort( this.getEffortParameter() );
+            ( ( XDocsReporter ) this.bugReporter ).setThreshold( this.getThresholdParameter() );
+        }
+
+        this.addJavaSourcesToFindBugsProject( pSourceFiles, findBugsProject );
+        this.addClasspathEntriesToFindBugsProject( findBugsProject );
+
+        final FindBugs findBugs = new FindBugs( this.bugReporter, findBugsProject );
+
+        this.addPluginsToFindBugs( pLocale );
+
+        final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
+
+        this.addVisitorsToFindBugs( preferences );
+
+        findBugs.setUserPreferences( preferences );
+        findBugs.setAnalysisFeatureSettings( effortParameter.getValue() );
+        findBugs.setDetectorFactoryCollection( DetectorFactoryCollection.rawInstance() );
+
+        this.setFindBugsDebug( findBugs );
+        this.addFiltersToFindBugs( findBugs );
+
+        return findBugs;
+    }
+
+    /**
+     * Initialises a reporter.
+     * 
+     * @param pSink
+     *            The sink to write the report to.
+     * @param pBundle
+     *            The bundle to get messages from.
+     * @param pLog
+     *            The logger to write logs to.
+     * @param pEffortParameter
+     *            The effort to use.
+     * @return An initialised reporter.
+     * 
+     */
+    protected Reporter initialiseReporter( final Sink pSink, final ResourceBundle pBundle, final Log pLog,
+                                           final EffortParameter pEffortParameter )
+    {
+        ThresholdParameter thresholdParameter = this.getThresholdParameter();
+
+        final boolean isJXRPluginEnabled = this.isJXRPluginEnabled( pBundle );
+        final Reporter bugReporter =
+            new Reporter( pSink, pBundle, pLog, thresholdParameter, isJXRPluginEnabled, pEffortParameter );
+        bugReporter.setPriorityThreshold( thresholdParameter.getValue() );
+
+        return bugReporter;
     }
 
     /** 
@@ -940,7 +965,7 @@ public final class FindBugsMojo
         final Iterator iterator = reportPlugins.iterator();
         while ( iterator.hasNext() )
         {
-            final ReportPlugin currentPlugin = (ReportPlugin) iterator.next();
+            final ReportPlugin currentPlugin = ( ReportPlugin ) iterator.next();
             final String currentArtifactId = currentPlugin.getArtifactId();
             if ( artifactId.equals( currentArtifactId ) )
             {
@@ -949,6 +974,28 @@ public final class FindBugsMojo
         }
 
         return isEnabled;
+    }
+
+    /**
+     * Sets the Debug Level
+     *
+     * @param pFindBugs The find bugs to add debug level information.
+     * 
+     */
+    protected void setFindBugsDebug( final FindBugs pFindBugs )
+    {
+        System.setProperty( "findbugs.classpath.debug", this.debug.toString() );
+        System.setProperty( "findbugs.debug", this.debug.toString() );
+        System.setProperty( "findbugs.verbose", this.debug.toString() );
+
+        if ( this.debug.booleanValue() )
+        {
+            this.getLog().info( "  Debugging is On" );
+        }
+        else
+        {
+            this.getLog().info( "  Debugging is Off" );
+        }
     }
 
 }

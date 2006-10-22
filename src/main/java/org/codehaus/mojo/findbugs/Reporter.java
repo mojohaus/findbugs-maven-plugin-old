@@ -23,27 +23,27 @@ package org.codehaus.mojo.findbugs;
 
 import java.util.ResourceBundle;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.doxia.sink.Sink;
 
-import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.TextUIBugReporter;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * The reporter controls the generation of the FindBugs report. It contains call
- * back methods which gets called by FindBugs if a bug is found.
+ * The reporter controls the generation of the FindBugs report. It contains call back methods which gets called by
+ * FindBugs if a bug is found.
  * 
  * @author $Author: cyrill $
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
+ * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
-public final class Reporter
-    extends AbstractBugReporter
+public final class Reporter extends TextUIBugReporter
 {
 
     /**
@@ -112,13 +112,13 @@ public final class Reporter
      */
     private static final String THRESHOLD_KEY = "report.findbugs.threshold";
 
-    /** 
+    /**
      * The character to separate URL tokens.
      * 
      */
     private static final String URL_SEPARATOR = "/";
 
-    /** 
+    /**
      * The key to get the jxr-plugin path prefix.
      * 
      */
@@ -146,64 +146,49 @@ public final class Reporter
      * The sink to write the report to.
      * 
      */
-    private final transient Sink mSink;
+    private final Sink mSink;
 
     /**
      * The bundle to get the messages from.
      * 
      */
-    private final transient ResourceBundle mBundle;
+    private final ResourceBundle mBundle;
 
     /**
      * The logger to write logs to.
      * 
      */
-    private final transient Log mLog;
+    private final Log mLog;
 
     /**
      * The threshold of bugs severity.
      * 
      */
-    private final transient ThresholdParameter mThreshold;
+    private final ThresholdParameter mThreshold;
 
     /**
      * The used effort for searching bugs.
      * 
      */
-    private final transient EffortParameter mEffort;
+    private final EffortParameter mEffort;
 
     /**
      * The name of the current class which is analysed by FindBugs.
      * 
      */
-    private transient String mCurrentClassName;
+    private String mCurrentClassName;
 
     /**
      * Signals if the report for the current class is opened.
      * 
      */
-    private transient boolean mIsCurrentClassReportOpened = false;
+    private boolean mIsCurrentClassReportOpened = false;
 
-    /** 
+    /**
      * Signals if the jxr report plugin is enabled.
      * 
      */
-    private transient boolean mIsJXRReportEnabled = false;
-
-    /**
-     * Hide default constructor.
-     * 
-     */
-    private Reporter()
-    {
-        super();
-
-        this.mSink = null;
-        this.mBundle = null;
-        this.mLog = null;
-        this.mThreshold = null;
-        this.mEffort = null;
-    }
+    private boolean mIsJXRReportEnabled = false;
 
     /**
      * Default constructor.
@@ -214,9 +199,12 @@ public final class Reporter
      *            The resource bundle to get the messages from.
      * @param pLog
      *            The logger.
-     * @param pThreshold The threshold for the report.
-     * @param pIsJXRReportEnabled Is the jxr report plugin enabled.
-     * @param pEffort The used effort.
+     * @param pThreshold
+     *            The threshold for the report.
+     * @param pIsJXRReportEnabled
+     *            Is the jxr report plugin enabled.
+     * @param pEffort
+     *            The used effort.
      */
     public Reporter( final Sink pSink, final ResourceBundle pBundle, final Log pLog,
                      final ThresholdParameter pThreshold, final boolean pIsJXRReportEnabled,
@@ -260,6 +248,98 @@ public final class Reporter
     }
 
     /**
+     * Hide default constructor.
+     * 
+     */
+    private Reporter()
+    {
+        super();
+
+        this.mSink = null;
+        this.mBundle = null;
+        this.mLog = null;
+        this.mThreshold = null;
+        this.mEffort = null;
+    }
+
+    /**
+     * @see edu.umd.cs.findbugs.BugReporter#finish()
+     */
+    public void finish()
+    {
+        this.mLog.debug( "Finished searching for bugs!" );
+
+        // close the last class report section
+        if ( this.mIsCurrentClassReportOpened )
+        {
+            this.closeClassReportSection();
+        }
+
+        // close the report, write it
+        this.mSink.section1_();
+        this.mSink.body_();
+        this.mSink.flush();
+        this.mSink.close();
+    }
+
+    /**
+     * Get the real bug reporter at the end of a chain of delegating bug reporters. All non-delegating bug reporters
+     * should simply "return this".
+     * 
+     * @return the real bug reporter at the end of the chain, or this object if there is no delegation
+     * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
+     */
+    public BugReporter getRealBugReporter()
+    {
+        return this;
+    }
+
+    /**
+     * Observe a class.
+     * 
+     * @param clazz
+     *            the class
+     * @see edu.umd.cs.findbugs.classfile.IClassObserver #observeClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+     */
+    public void observeClass( final ClassDescriptor clazz )
+    {
+        this.mLog.debug( "Observe class: " + clazz.getClassName() );
+
+        this.mCurrentClassName = clazz.getClassName();
+
+        if ( this.mIsCurrentClassReportOpened )
+        {
+            this.closeClassReportSection();
+        }
+
+        this.mIsCurrentClassReportOpened = false;
+    }
+
+    /**
+     * Report a queued error.
+     * 
+     * @param pAnalysisError
+     *            the queued error
+     * @see edu.umd.cs.findbugs.AbstractBugReporter #reportAnalysisError(edu.umd.cs.findbugs.AnalysisError)
+     */
+    public void reportAnalysisError( final AnalysisError pAnalysisError )
+    {
+        this.mLog.debug( "  Found an analysisError: " + pAnalysisError.getMessage() );
+    }
+
+    /**
+     * Report a missing class.
+     * 
+     * @param pMissingClass
+     *            the name of the class
+     * @see edu.umd.cs.findbugs.AbstractBugReporter #reportMissingClass(java.lang.String)
+     */
+    public void reportMissingClass( final String pMissingClass )
+    {
+        this.mLog.debug( "  Found a missing class: " + pMissingClass );
+    }
+
+    /**
      * Initialises the report.
      */
     private void initialiseReport()
@@ -287,9 +367,9 @@ public final class Reporter
         this.mSink.paragraph_();
 
         this.mSink.paragraph();
-        this.mSink.text( getVersionTitle() + " " );
+        this.mSink.text( this.getVersionTitle() + " " );
         this.mSink.italic();
-        this.mSink.text( getFindBugsVersion() );
+        this.mSink.text( this.getFindBugsVersion() );
         this.mSink.italic_();
         this.mSink.paragraph_();
 
@@ -315,235 +395,8 @@ public final class Reporter
     }
 
     /**
-     * @param pBugInstance the bug to report
-     * @see edu.umd.cs.findbugs.AbstractBugReporter
-     *      #doReportBug(edu.umd.cs.findbugs.BugInstance)
-     */
-    protected void doReportBug( final BugInstance pBugInstance )
-    {
-        this.mLog.debug( "  Found a bug: " + pBugInstance.getMessage() );
-
-        this.addBugReport( pBugInstance );
-    }
-
-    /**
-     * Report a queued error.
-     * @param pAnalysisError the queued error
-     * @see edu.umd.cs.findbugs.AbstractBugReporter
-     *      #reportAnalysisError(edu.umd.cs.findbugs.AnalysisError)
-     */
-    public void reportAnalysisError( final AnalysisError pAnalysisError )
-    {
-        this.mLog.debug( "  Found an analysisError: " + pAnalysisError.getMessage() );
-    }
-
-    /**
-     * Report a missing class.
-     * @param pMissingClass the name of the class
-     * @see edu.umd.cs.findbugs.AbstractBugReporter
-     *      #reportMissingClass(java.lang.String)
-     */
-    public void reportMissingClass( final String pMissingClass )
-    {
-        this.mLog.debug( "  Found a missing class: " + pMissingClass );
-    }
-
-    /**
-     * @see edu.umd.cs.findbugs.BugReporter#finish()
-     */
-    public void finish()
-    {
-        this.mLog.debug( "Finished searching for bugs!" );
-
-        // close the last class report section
-        if ( this.mIsCurrentClassReportOpened )
-        {
-            this.closeClassReportSection();
-        }
-
-        // close the report, write it
-        this.mSink.section1_();
-        this.mSink.body_();
-        this.mSink.flush();
-        this.mSink.close();
-    }
-
-    /**
-     * Get the real bug reporter at the end of a chain of delegating bug reporters.
-     * All non-delegating bug reporters should simply "return this".
-     * 
-     * @return the real bug reporter at the end of the chain, or
-     *          this object if there is no delegation
-     * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
-     */
-    public BugReporter getRealBugReporter()
-    {
-        return this;
-    }
-
-    /**
-     * Observe a class.
-     *
-     * @param clazz the class
-     * @see edu.umd.cs.findbugs.ba.ClassObserver
-     *      #observeClass(org.apache.bcel.classfile.JavaClass)
-     */
-    public void observeClass( final JavaClass clazz )
-    {
-        this.mLog.debug( "Observe class: " + clazz.getClassName() );
-
-        this.mCurrentClassName = clazz.getClassName();
-
-        if ( this.mIsCurrentClassReportOpened )
-        {
-            this.closeClassReportSection();
-        }
-
-        this.mIsCurrentClassReportOpened = false;
-    }
-
-    /**
-     * Closes the class report section.
-     */
-    protected void closeClassReportSection()
-    {
-        this.mSink.table_();
-        this.mSink.section2_();
-    }
-
-    /**
-     * Gets the Findbugs Version title of the report.
-     * 
-     * @return The Findbugs Version used on the report.
-     * 
-     */
-    protected String getVersionTitle()
-    {
-        final String versionTitle = this.mBundle.getString( VERSIONTITLE_KEY );
-
-        return versionTitle;
-    }
-
-    /**
-     * Gets the Findbugs Version of the report.
-     * 
-     * @return The Findbugs Version used on the report.
-     * 
-     */
-    protected String getFindBugsVersion()
-    {
-        return edu.umd.cs.findbugs.Version.RELEASE;
-    }
-
-    /**
-     * Gets the report title.
-     * 
-     * @return The report title.
-     * 
-     */
-    protected String getReportTitle()
-    {
-        final String reportTitle = this.mBundle.getString( Reporter.REPORT_TITLE_KEY );
-
-        return reportTitle;
-    }
-
-    /**
-     * Gets the name of the link to FindBugs.
-     * 
-     * @return The report link title.
-     * 
-     */
-    protected String getReportLinkTitle()
-    {
-        final String reportLink = this.mBundle.getString( Reporter.LINKTITLE_KEY );
-
-        return reportLink;
-    }
-
-    /**
-     * Gets the link to FindBugs.
-     * 
-     * @return The report link.
-     * 
-     */
-    protected String getFindBugsLink()
-    {
-        final String link = this.mBundle.getString( Reporter.LINK_KEY );
-
-        return link;
-    }
-
-    /**
-     * Gets the name of FindBugs.
-     * 
-     * @return The name of FindBugs.
-     * 
-     */
-    protected String getFindBugsName()
-    {
-        final String name = this.mBundle.getString( Reporter.NAME_KEY );
-
-        return name;
-    }
-
-    /**
-     * Gets the title for the files title.
-     * 
-     * @return The name of FindBugs.
-     * 
-     */
-    protected String getFilesTitle()
-    {
-        final String fileTitle = this.mBundle.getString( Reporter.FILES_KEY );
-
-        return fileTitle;
-    }
-
-    /**
-     * Gets the threshold title of the report.
-     * 
-     * @return The threshold title of the report.
-     * 
-     */
-    protected String getThresholdTitle()
-    {
-        final String threshholdTitle = this.mBundle.getString( Reporter.THRESHOLD_KEY );
-
-        return threshholdTitle;
-    }
-
-    /**
-     * Gets the effort title of the report.
-     * 
-     * @return The effort title of the report.
-     * 
-     */
-    protected String getEffortTitle()
-    {
-        final String effortTitle = this.mBundle.getString( Reporter.EFFORT_KEY );
-
-        return effortTitle;
-    }
-
-    /**
-     * Gets the link to details description on findbugs site.
-     * 
-     * @param pType the bug type
-     * @return The report link.
-     * 
-     */
-    protected String getDetailsLink( final String pType )
-    {
-        final String link = this.mBundle.getString( Reporter.DETAILSLINK_KEY )
-          + "#" + pType;
-
-        return link;
-    }
-
-    /**
-     * Adds a bug to the report. A call to <code>initialiseClassReport</code>
-     * is needed prior to call <code>addBugReport</code>.
+     * Adds a bug to the report. A call to <code>initialiseClassReport</code> is needed prior to call
+     * <code>addBugReport</code>.
      * 
      * @param pBugInstance
      *            The bug to add.
@@ -598,52 +451,12 @@ public final class Reporter
     }
 
     /**
-     * Return the value to display. If FindBugs does not provide a line number,
-     * a default message is returned. The line number otherwise.
+     * Assembles the hyperlink to point to the source code.
      * 
      * @param pLine
-     *            The line to get the value from.
-     * @return The line number the bug appears or a statement that there is no
-     *         source line available.
-     * 
-     */
-    protected String valueForLine( final SourceLineAnnotation pLine )
-    {
-        String value = null;
-
-        if ( pLine == null )
-        {
-            value = this.mBundle.getString( Reporter.NOLINE_KEY );
-        }
-        else
-        {
-            final int startLine = pLine.getStartLine();
-            final int endLine = pLine.getEndLine();
-
-            if ( startLine == endLine )
-            {
-                if ( startLine == -1 )
-                {
-                    value = this.mBundle.getString( Reporter.NOLINE_KEY );
-                }
-                else
-                {
-                    value = String.valueOf( startLine );
-                }
-            }
-            else
-            {
-                value = String.valueOf( startLine ) + "-" + String.valueOf( endLine );
-            }
-        }
-
-        return value;
-    }
-
-    /** Assembles the hyperlink to point to the source code.
-     *
-     * @param pLine The line number object with the bug.
-     * @param pLineNumber The line number to show in the hyperlink.
+     *            The line number object with the bug.
+     * @param pLineNumber
+     *            The line number to show in the hyperlink.
      * @return The hyperlink which points to the code.
      * 
      */
@@ -663,6 +476,159 @@ public final class Reporter
         }
 
         return hyperlink;
+    }
+
+    /**
+     * Closes the class report section.
+     */
+    protected void closeClassReportSection()
+    {
+        this.mSink.table_();
+        this.mSink.section2_();
+    }
+
+    /**
+     * @param pBugInstance
+     *            the bug to report
+     * @see edu.umd.cs.findbugs.AbstractBugReporter #doReportBug(edu.umd.cs.findbugs.BugInstance)
+     */
+    protected void doReportBug( final BugInstance pBugInstance )
+    {
+        this.mLog.debug( "  Found a bug: " + pBugInstance.getMessage() );
+
+        this.addBugReport( pBugInstance );
+        this.notifyObservers( pBugInstance );
+
+    }
+
+    /**
+     * Gets the link to details description on findbugs site.
+     * 
+     * @param pType
+     *            the bug type
+     * @return The report link.
+     * 
+     */
+    protected String getDetailsLink( final String pType )
+    {
+        final String link = this.mBundle.getString( Reporter.DETAILSLINK_KEY ) + "#" + pType;
+
+        return link;
+    }
+
+    /**
+     * Gets the effort title of the report.
+     * 
+     * @return The effort title of the report.
+     * 
+     */
+    protected String getEffortTitle()
+    {
+        final String effortTitle = this.mBundle.getString( Reporter.EFFORT_KEY );
+
+        return effortTitle;
+    }
+
+    /**
+     * Gets the title for the files title.
+     * 
+     * @return The name of FindBugs.
+     * 
+     */
+    protected String getFilesTitle()
+    {
+        final String fileTitle = this.mBundle.getString( Reporter.FILES_KEY );
+
+        return fileTitle;
+    }
+
+    /**
+     * Gets the link to FindBugs.
+     * 
+     * @return The report link.
+     * 
+     */
+    protected String getFindBugsLink()
+    {
+        final String link = this.mBundle.getString( Reporter.LINK_KEY );
+
+        return link;
+    }
+
+    /**
+     * Gets the name of FindBugs.
+     * 
+     * @return The name of FindBugs.
+     * 
+     */
+    protected String getFindBugsName()
+    {
+        final String name = this.mBundle.getString( Reporter.NAME_KEY );
+
+        return name;
+    }
+
+    /**
+     * Gets the Findbugs Version of the report.
+     * 
+     * @return The Findbugs Version used on the report.
+     * 
+     */
+    protected String getFindBugsVersion()
+    {
+        return edu.umd.cs.findbugs.Version.RELEASE;
+    }
+
+    /**
+     * Gets the name of the link to FindBugs.
+     * 
+     * @return The report link title.
+     * 
+     */
+    protected String getReportLinkTitle()
+    {
+        final String reportLink = this.mBundle.getString( Reporter.LINKTITLE_KEY );
+
+        return reportLink;
+    }
+
+    /**
+     * Gets the report title.
+     * 
+     * @return The report title.
+     * 
+     */
+    protected String getReportTitle()
+    {
+        final String reportTitle = this.mBundle.getString( Reporter.REPORT_TITLE_KEY );
+
+        return reportTitle;
+    }
+
+    /**
+     * Gets the threshold title of the report.
+     * 
+     * @return The threshold title of the report.
+     * 
+     */
+    protected String getThresholdTitle()
+    {
+        final String threshholdTitle = this.mBundle.getString( Reporter.THRESHOLD_KEY );
+
+        return threshholdTitle;
+    }
+
+    /**
+     * Gets the Findbugs Version title of the report.
+     * 
+     * @return The Findbugs Version used on the report.
+     * 
+     */
+    protected String getVersionTitle()
+    {
+        final String versionTitle = this.mBundle.getString( VERSIONTITLE_KEY );
+
+        return versionTitle;
     }
 
     /**
@@ -703,5 +669,47 @@ public final class Reporter
         this.mSink.tableHeaderCell_();
 
         this.mSink.tableRow_();
+    }
+
+    /**
+     * Return the value to display. If FindBugs does not provide a line number, a default message is returned. The line
+     * number otherwise.
+     * 
+     * @param pLine
+     *            The line to get the value from.
+     * @return The line number the bug appears or a statement that there is no source line available.
+     * 
+     */
+    protected String valueForLine( final SourceLineAnnotation pLine )
+    {
+        String value = null;
+
+        if ( pLine == null )
+        {
+            value = this.mBundle.getString( Reporter.NOLINE_KEY );
+        }
+        else
+        {
+            final int startLine = pLine.getStartLine();
+            final int endLine = pLine.getEndLine();
+
+            if ( startLine == endLine )
+            {
+                if ( startLine == -1 )
+                {
+                    value = this.mBundle.getString( Reporter.NOLINE_KEY );
+                }
+                else
+                {
+                    value = String.valueOf( startLine );
+                }
+            }
+            else
+            {
+                value = String.valueOf( startLine ) + "-" + String.valueOf( endLine );
+            }
+        }
+
+        return value;
     }
 }

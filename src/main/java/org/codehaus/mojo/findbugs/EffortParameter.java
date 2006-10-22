@@ -56,13 +56,13 @@ public final class EffortParameter
      * The effort value.
      * 
      */
-    private final transient AnalysisFeatureSetting[] mValue;
+    private final AnalysisFeatureSetting[] mValue;
 
     /**
      * The effort name.
      * 
      */
-    private final transient String mName;
+    private final String mName;
 
     /**
      * Hide default constructor.

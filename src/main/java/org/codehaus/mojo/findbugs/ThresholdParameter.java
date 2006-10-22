@@ -73,13 +73,13 @@ public final class ThresholdParameter
      * The threshold value.
      * 
      */
-    private final transient int mValue;
+    private final int mValue;
 
     /**
      * The threshold name.
      * 
      */
-    private final transient String mName;
+    private final String mName;
 
     /**
      * Hide default constructor.

@@ -30,8 +30,9 @@ Maven 2 FindBugs Plugin - How to Use
     <artifactId>findbugs-maven-plugin</artifactId>
     <version>1.0-beta-1</version>
     <configuration>
+      <reportFormat>html|xml</reportFormat>
       <threshold>High|Normal|Low|Exp|Ignore</threshold>
-      <effort>Min|Default|Max</threshold>
+      <effort>Min|Default|Max</effort>
       <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
       <includeFilterFile>findbugs-include.xml</includeFilterFile>
       <visitors>FindDeadLocalStores,UnreadFields</visitors>
