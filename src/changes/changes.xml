@@ -6,6 +6,12 @@
   <body>
     <release version="1.0-SNAPSHOT" date="in SVN" description="Findbugs plugin">
       <action dev="gl" type="update">
+        Added summary to HTML report for Classes scanned, errors, bugs and missing classes
+      </action>
+      <action dev="gl" type="update">
+        Added file bug subtotal to the File Section of the HTML report
+      </action>
+      <action dev="gl" type="update">
         Added support for Findbugs v1.1.1
       </action>
       <action dev="gl" type="update" issue="JIRA-MOJO-511">

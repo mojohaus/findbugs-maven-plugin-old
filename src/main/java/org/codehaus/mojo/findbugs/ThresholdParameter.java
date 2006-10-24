@@ -73,13 +73,13 @@ public final class ThresholdParameter
      * The threshold value.
      * 
      */
-    private final int mValue;
+    private final int value;
 
     /**
      * The threshold name.
      * 
      */
-    private final String mName;
+    private final String name;
 
     /**
      * Hide default constructor.
@@ -89,8 +89,8 @@ public final class ThresholdParameter
     {
         super();
 
-        this.mValue = -1;
-        this.mName = null;
+        this.value = -1;
+        this.name = null;
     }
 
     /**
@@ -108,8 +108,8 @@ public final class ThresholdParameter
         {
             throw new IllegalArgumentException( "Argument pName not allowed to be null or empty" );
         }
-        this.mValue = pValue;
-        this.mName = pName;
+        this.value = pValue;
+        this.name = pName;
     }
 
     /**
@@ -117,7 +117,7 @@ public final class ThresholdParameter
      */
     public int getValue()
     {
-        return this.mValue;
+        return this.value;
     }
 
     /**
@@ -125,6 +125,6 @@ public final class ThresholdParameter
      */
     public String getName()
     {
-        return this.mName;
+        return this.name;
     }
 }

@@ -355,12 +355,12 @@ public final class FindBugsMojo extends AbstractMavenReport
     /**
      * Adds the dependend libraries of the project to the findbugs aux classpath.
      *
-     * @param pFindBugsProject The find bugs project to add the aux classpath entries.
+     * @param findBugsProject The find bugs project to add the aux classpath entries.
      * @throws DependencyResolutionRequiredException 
      *      Exception that occurs when an artifact file is used, but has not been resolved.
      * 
      */
-    protected void addClasspathEntriesToFindBugsProject( final Project pFindBugsProject )
+    protected void addClasspathEntriesToFindBugsProject( final Project findBugsProject )
         throws DependencyResolutionRequiredException
     {
         final List entries = this.getProject().getCompileClasspathElements();
@@ -369,30 +369,30 @@ public final class FindBugsMojo extends AbstractMavenReport
         {
             final String currentEntry = ( String ) iterator.next();
             this.getLog().debug( "  Adding " + currentEntry + " to auxilary classpath" );
-            pFindBugsProject.addAuxClasspathEntry( currentEntry );
+            findBugsProject.addAuxClasspathEntry( currentEntry );
         }
     }
 
     /**
      * Adds the specified filters of the project to the findbugs.
      *
-     * @param pFindBugs The find bugs to add the filters.
+     * @param findBugs The find bugs to add the filters.
      * @throws IOException If filter file could not be read.
      * @throws FilterException If filter file was invalid.
      * 
      */
-    protected void addFiltersToFindBugs( final FindBugs pFindBugs ) throws IOException, FilterException
+    protected void addFiltersToFindBugs( final FindBugs findBugs ) throws IOException, FilterException
     {
         if ( this.includeFilterFile != null )
         {
             if ( new File( this.includeFilterFile ).exists() )
             {
-                pFindBugs.addFilter( this.includeFilterFile, true );
-                this.getLog().info( "  Using bug include filter " + this.includeFilterFile );
+                findBugs.addFilter( this.includeFilterFile, true );
+                this.getLog().debug( "  Using bug include filter " + this.includeFilterFile );
             }
             else
             {
-                this.getLog().info( "  No bug include filter " + this.includeFilterFile + " found" );
+                this.getLog().debug( "  No bug include filter " + this.includeFilterFile + " found" );
             }
         }
         else
@@ -403,17 +403,17 @@ public final class FindBugsMojo extends AbstractMavenReport
         {
             if ( new File( this.excludeFilterFile ).exists() )
             {
-                pFindBugs.addFilter( this.excludeFilterFile, false );
-                this.getLog().info( "  Using bug exclude filter " + this.excludeFilterFile );
+                findBugs.addFilter( this.excludeFilterFile, false );
+                this.getLog().debug( "  Using bug exclude filter " + this.excludeFilterFile );
             }
             else
             {
-                this.getLog().info( "  No bug exclude filter " + this.excludeFilterFile + " found" );
+                this.getLog().debug( "  No bug exclude filter " + this.excludeFilterFile + " found" );
             }
         }
         else
         {
-            this.getLog().info( "  No bug exclude filter." );
+            this.getLog().debug( "  No bug exclude filter." );
         }
     }
 
@@ -425,18 +425,18 @@ public final class FindBugsMojo extends AbstractMavenReport
      * @param pSourceFiles
      *            The java sources (Type <code>java.io.File</code>) to add to
      *            the project.
-     * @param pFindBugsProject
+     * @param findBugsProject
      *            The find bugs project to add the java source to.
      * 
      */
-    protected void addJavaSourcesToFindBugsProject( final List pSourceFiles, final Project pFindBugsProject )
+    protected void addJavaSourcesToFindBugsProject( final List pSourceFiles, final Project findBugsProject )
     {
         final Iterator iterator = pSourceFiles.iterator();
         while ( iterator.hasNext() )
         {
             final File currentSourceFile = ( File ) iterator.next();
             final String filePath = currentSourceFile.getAbsolutePath();
-            pFindBugsProject.addFile( filePath );
+            findBugsProject.addFile( filePath );
         }
     }
 
@@ -449,7 +449,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      *            Used here to get the nameof the coreplugin from the properties.
      * @throws ArtifactNotFoundException If the coreplugin could not be found.
      * @throws ArtifactResolutionException If the coreplugin could not be resolved.
-     * @throws MavenReportException
+     * @throws MavenReportException If the findBugs plugins URL could not be resolved.
      * 
      */
     protected void addPluginsToFindBugs( final Locale pLocale )
@@ -467,13 +467,13 @@ public final class FindBugsMojo extends AbstractMavenReport
             throw new MavenReportException( "The core plugin has an invalid URL", pException );
         }
 
-        this.getLog().info( "  coreplugin Jar is located at " + corepluginpath.toString() );
+        this.getLog().debug( "  coreplugin Jar is located at " + corepluginpath.toString() );
 
         URL[] plugins;
 
         if ( this.pluginList != null )
         {
-            this.getLog().info( "  Adding Plugins " );
+            this.getLog().debug( "  Adding Plugins " );
             final String[] pluginJars = this.pluginList.split( "," );
 
             plugins = new URL[pluginJars.length + 1];
@@ -495,7 +495,7 @@ public final class FindBugsMojo extends AbstractMavenReport
                 {
                     throw new MavenReportException( "The addin plugin has an invalid URL", pException );
                 }
-                this.getLog().info( "  Adding Plugin: " + plugins[i + 1].toString() );
+                this.getLog().debug( "  Adding Plugin: " + plugins[i + 1].toString() );
 
             }
         }
@@ -508,7 +508,7 @@ public final class FindBugsMojo extends AbstractMavenReport
 
         DetectorFactoryCollection.rawInstance().setPluginList( plugins );
 
-        this.getLog().info( "  Done Adding Plugins" );
+        this.getLog().debug( "  Done Adding Plugins" );
 
     }
 
@@ -534,13 +534,13 @@ public final class FindBugsMojo extends AbstractMavenReport
             {
                 enableVisitor = false;
                 visitorList = this.omitVisitors.split( "," );
-                this.getLog().info( "  Omitting visitors : " + this.omitVisitors );
+                this.getLog().debug( "  Omitting visitors : " + this.omitVisitors );
 
             }
             else
             {
                 visitorList = this.visitors.split( "," );
-                this.getLog().info( "  Including visitors : " + this.visitors );
+                this.getLog().debug( "  Including visitors : " + this.visitors );
                 preferences.enableAllDetectors( false );
             }
 
@@ -870,7 +870,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      * @throws FilterException If filter file was invalid.
      * @throws ArtifactNotFoundException If the coreplugin could not be found.
      * @throws ArtifactResolutionException If the coreplugin could not be resolved.
-     * @throws MavenReportException
+     * @throws MavenReportException If the findBugs plugins cannot be initialized
      * 
      */
     protected FindBugs initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
@@ -979,14 +979,13 @@ public final class FindBugsMojo extends AbstractMavenReport
     /**
      * Sets the Debug Level
      *
-     * @param pFindBugs The find bugs to add debug level information.
+     * @param findBugs The find bugs to add debug level information.
      * 
      */
-    protected void setFindBugsDebug( final FindBugs pFindBugs )
+    protected void setFindBugsDebug( final FindBugs findBugs )
     {
         System.setProperty( "findbugs.classpath.debug", this.debug.toString() );
         System.setProperty( "findbugs.debug", this.debug.toString() );
-        System.setProperty( "findbugs.verbose", this.debug.toString() );
 
         if ( this.debug.booleanValue() )
         {

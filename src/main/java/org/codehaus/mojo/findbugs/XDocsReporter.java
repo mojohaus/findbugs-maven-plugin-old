@@ -96,8 +96,16 @@ public final class XDocsReporter extends DelegatingBugReporter
      */
     private  boolean isCurrentClassReportOpened = false;
 
+    /**
+     * The Collection of Bugs and Error collected during analysis.
+     * 
+     */
     private SortedBugCollection bugCollection = new SortedBugCollection();
 
+    /**
+     * The output Writer stream.
+     * 
+     */
     private Writer outputWriter;
 
     /**

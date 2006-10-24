@@ -56,13 +56,13 @@ public final class EffortParameter
      * The effort value.
      * 
      */
-    private final AnalysisFeatureSetting[] mValue;
+    private final AnalysisFeatureSetting[] value;
 
     /**
      * The effort name.
      * 
      */
-    private final String mName;
+    private final String name;
 
     /**
      * Hide default constructor.
@@ -72,8 +72,8 @@ public final class EffortParameter
     {
         super();
 
-        this.mValue = null;
-        this.mName = null;
+        this.value = null;
+        this.name = null;
     }
 
     /**
@@ -93,8 +93,8 @@ public final class EffortParameter
             throw new IllegalArgumentException( "Argument pName not allowed to be null" );
         }
 
-        this.mValue = pValue;
-        this.mName = pName;
+        this.value = pValue;
+        this.name = pName;
     }
 
     /**
@@ -102,7 +102,7 @@ public final class EffortParameter
      */
     public AnalysisFeatureSetting[] getValue()
     {
-        return this.mValue;
+        return this.value;
     }
 
     /**
@@ -110,6 +110,6 @@ public final class EffortParameter
      */
     public String getName()
     {
-        return this.mName;
+        return this.name;
     }
 }
