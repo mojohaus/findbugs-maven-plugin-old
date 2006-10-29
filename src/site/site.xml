@@ -14,10 +14,13 @@
          <item name="Mojo" href="http://mojo.codehaus.org"/>
          <item name="Maven" href="http://maven.apache.org/maven2"/>
       </links>
+    <menu name="Mojo">
+         <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
       <menu name="Overview">
-         <item name="mojo" href="http://mojo.codehaus.org"/>
-         <item name="Introduction" href="introduction.html"/>
-         <item name="How to Use" href="howto.html"/>
+      <item name="Plugin Goals" href="index.html"/>
+      <item name="Introduction" href="introduction.html"/>
+      <item name="How to Use" href="howto.html"/>
+      <item name="Javadoc" href="apidocs/index.html"/>
       </menu>
       ${reports}
    </body>
