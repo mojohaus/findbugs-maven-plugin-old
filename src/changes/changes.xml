@@ -6,6 +6,9 @@
   <body>
     <release version="1.0-SNAPSHOT" date="in SVN" description="Findbugs plugin">
       <action dev="gl" type="update">
+        Fix documentation to pass docck:check test
+      </action>
+      <action dev="gl" type="update">
         Added summary to HTML report for Classes scanned, errors, bugs and missing classes
       </action>
       <action dev="gl" type="update">
@@ -24,7 +27,7 @@
         changed JXR dependencies to maven-jxr-plugin from jxr-maven-plugin.
       </action>
     </release>
-    <release version="1.0-beta-1" date="2005-08-28" description="First beta release">
+    <release version="1.0-beta-1" date="2006-08-28" description="First beta release">
       <action dev="gl" type="update">
         Added support for using third-party plugins
       </action>

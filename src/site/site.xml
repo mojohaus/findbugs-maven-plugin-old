@@ -12,16 +12,17 @@
    <body>
       <links>
          <item name="Mojo" href="http://mojo.codehaus.org"/>
-         <item name="Maven" href="http://maven.apache.org/maven2"/>
+         <item name="Maven" href="http://maven.apache.org/"/>
       </links>
-    <menu name="Mojo">
-         <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
-      <menu name="Overview">
-      <item name="Plugin Goals" href="index.html"/>
-      <item name="Introduction" href="introduction.html"/>
-      <item name="How to Use" href="howto.html"/>
-      <item name="Javadoc" href="apidocs/index.html"/>
-      </menu>
-      ${reports}
-   </body>
+    <menu name="Overview">
+      <item name="Introduction" href="index.html"/>
+      <item name="Goals" href="plugin-info.html"/>
+      <item name="Usage" href="usage.html"/>
+      <item name="FAQ" href="faq.html"/>
+    </menu>
+    <menu name="Examples">
+      <item name="Sample Report" href="examples/findbugs.html"/>
+    </menu>
+    ${reports}
+  </body>
 </project>

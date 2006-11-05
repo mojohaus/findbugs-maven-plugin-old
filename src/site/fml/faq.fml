@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<faqs id="FAQ" title="Frequently Asked Questions">
+ <part id="General">
+   <faq id="Aggregate Reporting">
+     <question>Is there an easy way to generate the aggregate report ?</question>
+     <answer>
+       <p>
+       Unfortunately Maven's internal support for report aggregation
+  is rather poor so it does have a number of limitations.
+    </p>
+      <p>
+<code>
+  mvn clean site:site (generate the site for every module recursively)
+</code>  
+       </p>
+     </answer>
+   </faq>
+ </part>
+</faqs>
