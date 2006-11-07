@@ -56,6 +56,16 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.markup( "<BugCollection>" + EOL );
     }
 
+    public void body(String version, String threshold, String effort)
+    {
+        this.markup( "<BugCollection");
+        this.markup( " version=" + '"' + version + '"' );
+        this.markup( " threshold=" + '"' + threshold + '"' );
+        this.markup( " effort=" + '"' + effort + '"' );
+        
+        this.markup( " >" + EOL );
+    }
+
     public void body_()
     {
         this.markup( "</BugCollection>" + EOL );
@@ -90,13 +100,6 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.out.close();
     }
 
-    public void effort( String effort )
-    {
-        this.markup( "<effort>" );
-        this.markup( effort );
-        this.markup( "</effort>" + EOL );
-    }
-
     public void errorTag()
     {
         this.markup( "<Errors>" + EOL );
@@ -123,21 +126,6 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.markup( className );
         this.markup( " </MissingClass>" + EOL );
     }
-
-    public void threshold( String threshold )
-    {
-        this.markup( "<threshold>" );
-        this.markup( threshold );
-        this.markup( "</threshold>" + EOL );
-    }
-
-    public void version( String version )
-    {
-        this.markup( "<version>" );
-        this.markup( version );
-        this.markup( "</version>" + EOL );
-    }
-
 
     protected void markup( String text )
     {

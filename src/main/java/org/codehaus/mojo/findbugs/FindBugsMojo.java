@@ -38,13 +38,14 @@ import org.apache.maven.artifact.repository.DefaultArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.doxia.sink.Sink;
+import org.apache.maven.doxia.siterenderer.Renderer;
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.AbstractMavenReport;
 import org.apache.maven.reporting.MavenReportException;
-import org.codehaus.doxia.sink.Sink;
-import org.codehaus.doxia.site.renderer.SiteRenderer;
+
 import org.codehaus.plexus.util.FileUtils;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -160,11 +161,11 @@ public final class FindBugsMojo extends AbstractMavenReport
     /**
      * Doxia Site Renderer.
      * 
-     * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
+     * @parameter expression="${component.org.apache.maven.doxia.siterenderer.Renderer}"
      * @required
      * @readonly
      */
-    private SiteRenderer siteRenderer;
+    private Renderer siteRenderer;
 
     /**
      * Directory containing the class files for FindBugs to analyze.
@@ -799,7 +800,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      * @return the doxia Renderer
      * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
      */
-    protected SiteRenderer getSiteRenderer()
+    protected Renderer getSiteRenderer()
     {
         return this.siteRenderer;
     }

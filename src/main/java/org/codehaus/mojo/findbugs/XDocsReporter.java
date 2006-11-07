@@ -310,11 +310,7 @@ public final class XDocsReporter extends DelegatingBugReporter
         this.getSink().head();
         this.getSink().head_();
 
-        this.getSink().version( this.getFindBugsVersion() );
-        this.getSink().threshold( this.threshold.getName() );
-        this.getSink().effort( this.effort.getName() );
-
-        this.getSink().body();
+        this.getSink().body( this.getFindBugsVersion(), this.threshold.getName(), this.effort.getName() );
     }
 
     protected void addBugReport( final BugInstance bugInstance )

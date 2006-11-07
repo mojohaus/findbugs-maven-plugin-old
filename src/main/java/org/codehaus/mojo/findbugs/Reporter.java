@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.doxia.sink.Sink;
 
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;

@@ -6,6 +6,12 @@
   <body>
     <release version="1.0-SNAPSHOT" date="in SVN" description="Findbugs plugin">
       <action dev="gl" type="update">
+        Update maven-artifact dependency to version 2.0.4
+      </action>
+      <action dev="gl" type="update">
+        Update maven-reporting dependency to version 2.0.4
+      </action>
+      <action dev="gl" type="update">
         Fix documentation to pass docck:check test
       </action>
       <action dev="gl" type="update">
