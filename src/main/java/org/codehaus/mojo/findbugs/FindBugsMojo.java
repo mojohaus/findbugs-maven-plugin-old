@@ -296,6 +296,14 @@ public final class FindBugsMojo extends AbstractMavenReport
     private BugReporter bugReporter;
 
     /**
+     * The Flag letting us know if classes have been loaded already.
+     *
+     * @parameter
+     * @readonly
+     */
+    private static boolean pluginLoaded = false;
+
+    /**
      * Checks whether prerequisites for generating this report are given.
      * 
      * @return true if report can be generated, otherwise false
@@ -906,7 +914,11 @@ public final class FindBugsMojo extends AbstractMavenReport
 
         final FindBugs findBugs = new FindBugs( this.bugReporter, findBugsProject );
 
-        this.addPluginsToFindBugs( pLocale );
+        if ( !pluginLoaded )
+        {
+            this.addPluginsToFindBugs( pLocale );
+            pluginLoaded = true;
+        }
 
         final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
 
