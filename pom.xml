@@ -44,7 +44,7 @@
 				<role>Documentation</role>
 				<role>Java Developer</role>
 			</roles>
-			<timezone>+5</timezone>
+			<timezone>-5</timezone>
 		</developer>
 	</developers>
 	<contributors>
