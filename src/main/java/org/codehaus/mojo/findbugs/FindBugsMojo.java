@@ -127,36 +127,28 @@ public final class FindBugsMojo extends AbstractMavenReport
     private static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin";
 
     /**
-     * Returns the resource bundle for a specific locale.
-     * 
-     * @param pLocale
-     *            The locale to get the bundle for.
-     * @return A resource Bundle.
-     * 
-     */
-    protected static ResourceBundle getBundle( final Locale pLocale )
-    {
-        final ClassLoader loader = FindBugsMojo.class.getClassLoader();
-        final ResourceBundle bundle = ResourceBundle.getBundle( FindBugsMojo.BUNDLE_NAME, pLocale, loader );
-
-        return bundle;
-    }
-
-    /**
      * Location where generated html will be created.
      * 
-     * @parameter expression="${project.reporting.outputDirectory}"
+     * @parameter default-value="${project.reporting.outputDirectory}"
+     * @required
      */
 
     private String outputDirectory;
 
     /**
-     * Specifies the directory where the temporary files generated.
+     * Turn on and off xml output of the Findbugs report.
+     *
+     * @parameter default-value="false"
+     */
+    private boolean xmlOutput;
+
+    /**
+     * Specifies the directory where the xml output will be generated.
      * 
      * @parameter default-value="${project.build.directory}"
      * @required
      */
-    private File tempOutputDirectory;
+    private File xmlOutputDirectory;
 
     /**
      * Doxia Site Renderer.
@@ -279,13 +271,6 @@ public final class FindBugsMojo extends AbstractMavenReport
      * @parameter
      */
     private String pluginList;
-
-    /**
-     * The output format of the report.
-     *
-     * @parameter default-value="html"
-     */
-    private String reportFormat;
 
     /**
      * The Base FindBugs reporter Class for reports.
@@ -788,6 +773,8 @@ public final class FindBugsMojo extends AbstractMavenReport
      */
     protected String getOutputDirectory()
     {
+        new File( this.outputDirectory ).mkdirs();
+
         return this.outputDirectory;
     }
 
@@ -895,14 +882,24 @@ public final class FindBugsMojo extends AbstractMavenReport
 
         this.bugReporter = this.initialiseReporter( sink, bundle, log, effortParameter );
 
-        if ( this.reportFormat.equalsIgnoreCase( "xml" ) )
+        if ( this.xmlOutput )
         {
             this.getLog().info( "  Using the xdoc format" );
+            
+            if ( !this.xmlOutputDirectory.exists() )
+            {
+                if ( !this.xmlOutputDirectory.mkdirs() )
+                {
+                    throw new MavenReportException( "Cannot create xml output directory" );
+                }
+                
+            }
+            
             BugReporter htmlBugReporter = this.bugReporter;
             this.bugReporter = new XDocsReporter( htmlBugReporter );
 
-            ( ( XDocsReporter ) this.bugReporter ).setOutputWriter( new FileWriter( new File( this.tempOutputDirectory
-                            + "/findbugs." + this.reportFormat ) ) );
+            ( ( XDocsReporter ) this.bugReporter ).setOutputWriter( new FileWriter( new File( this.xmlOutputDirectory
+                            + "/findbugs.xml" ) ) );
             ( ( XDocsReporter ) this.bugReporter ).setResourceBundle( bundle );
             ( ( XDocsReporter ) this.bugReporter ).setLog( log );
             ( ( XDocsReporter ) this.bugReporter ).setEffort( this.getEffortParameter() );
@@ -1009,5 +1006,22 @@ public final class FindBugsMojo extends AbstractMavenReport
             this.getLog().info( "  Debugging is Off" );
         }
     }
+
+    /**
+     * Returns the resource bundle for a specific locale.
+     * 
+     * @param pLocale
+     *            The locale to get the bundle for.
+     * @return A resource Bundle.
+     * 
+     */
+    protected static ResourceBundle getBundle( final Locale pLocale )
+    {
+        final ClassLoader loader = FindBugsMojo.class.getClassLoader();
+        final ResourceBundle bundle = ResourceBundle.getBundle( FindBugsMojo.BUNDLE_NAME, pLocale, loader );
+
+        return bundle;
+    }
+
 
 }

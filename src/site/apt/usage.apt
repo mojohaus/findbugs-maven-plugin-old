@@ -30,7 +30,8 @@ Maven 2 FindBugs Plugin - How to Use
     <artifactId>findbugs-maven-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <configuration>
-      <reportFormat>html|xml</reportFormat>
+      <xmlOutput>true|false</xmlOutput>
+      <xmlOutputDirectory>directory location of xml findbugs report</xmlOutputDirectory>
       <threshold>High|Normal|Low|Exp|Ignore</threshold>
       <effort>Min|Default|Max</effort>
       <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
