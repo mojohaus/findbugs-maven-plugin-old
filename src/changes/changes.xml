@@ -5,6 +5,9 @@
   </properties>
   <body>
     <release version="1.0-SNAPSHOT" date="in SVN" description="Findbugs plugin">
+      <action dev="gl" type="fix" issue="MOJO-563">
+        Fixed escape characters output for message attribute in xml format.
+      </action>
       <action dev="gl" type="fix" issue="MOJO-562">
         Added the ability to select an output directory for the xml report output.
       </action>

@@ -23,6 +23,7 @@ package org.codehaus.mojo.findbugs;
 
 import java.io.Writer;
 
+import org.apache.maven.doxia.module.HtmlTools;
 import org.apache.maven.doxia.sink.SinkAdapter;
 import org.apache.maven.doxia.util.LineBreaker;
 
@@ -78,7 +79,7 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.markup( " type=" + '"' + type + '"' );
         this.markup( " priority=" + '"' + priority + '"' );
         this.markup( " category=" + '"' + category + '"' );
-        this.markup( " message=" + '"' + message + '"' );
+        this.markup( " message=" + '"' + HtmlTools.escapeHTML( message ) + '"' );
         this.markup( " lineNumber=" + '"' + lineNumber + '"' );
         this.markup( " />" + EOL );
     }
