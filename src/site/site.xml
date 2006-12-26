@@ -13,6 +13,7 @@
       <links>
          <item name="Mojo" href="http://mojo.codehaus.org"/>
          <item name="Maven" href="http://maven.apache.org/"/>
+         <item name="Findbugs" href="http://findbugs.sourceforge.net/"/>
       </links>
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
