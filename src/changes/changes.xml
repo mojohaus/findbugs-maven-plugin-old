@@ -5,6 +5,8 @@
   </properties>
   <body>
     <release version="1.0-SNAPSHOT" date="in SVN" description="Findbugs plugin">
+    </release>
+    <release version="1.0.0" date="2006-12-26" description="Initial Findbugs plugin release">
       <action dev="gl" type="fix" issue="MOJO-563">
         Fixed escape characters output for message attribute in xml format.
       </action>
