@@ -6,7 +6,7 @@
 		<version>12</version>
 	</parent>
 	<artifactId>findbugs-maven-plugin</artifactId>
-	<version>1.0.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Maven FindBugs PlugIn</name>
 	<inceptionYear>2005</inceptionYear>
@@ -110,10 +110,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
-  <scm>
-    <connection>scm:svn:https://svn.codehaus.org/mojo/tags/findbugs-maven-plugin-1.0.0</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/tags/findbugs-maven-plugin-1.0.0</developerConnection>
-    <url>https://svn.codehaus.org/mojo/tags/findbugs-maven-plugin-1.0.0</url>
-  </scm>
 </project>
