@@ -96,8 +96,7 @@ public final class FindBugsMojo extends AbstractMavenReport
     private static final String DESCRIPTION_KEY = "report.findbugs.description";
 
     /**
-     * The key to get the source directory message of the Plug-In from the
-     * bundle.
+     * The key to get the source directory message of the Plug-In from the bundle.
      * 
      */
     private static final String SOURCE_ROOT_KEY = "report.findbugs.sourceRoot";
@@ -127,6 +126,15 @@ public final class FindBugsMojo extends AbstractMavenReport
     private static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin";
 
     /**
+     * Project classpath.
+     * 
+     * @parameter expression="${project.compileClasspathElements}"
+     * @required
+     * @readonly
+     */
+    private List classpathElements;
+
+    /**
      * Location where generated html will be created.
      * 
      * @parameter default-value="${project.reporting.outputDirectory}"
@@ -137,7 +145,7 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * Turn on and off xml output of the Findbugs report.
-     *
+     * 
      * @parameter default-value="false"
      */
     private boolean xmlOutput;
@@ -161,14 +169,15 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * Directory containing the class files for FindBugs to analyze.
+     * 
      * @parameter default-value="${project.build.outputDirectory}"
      * @required
      */
     private File classFilesDirectory;
 
     /**
-     * List of artifacts this plugin depends on.
-     * Used for resolving the Findbugs coreplugin.
+     * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
+     * 
      * @parameter expression="${plugin.artifacts}"
      * @required
      * @readonly
@@ -177,6 +186,7 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * The local repository, needed to download the coreplugin jar.
+     * 
      * @parameter expression="${localRepository}"
      * @required
      * @readonly
@@ -185,7 +195,7 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * Remote repositories which will be searched for the coreplugin jar.
-     *
+     * 
      * @parameter expression="${project.remoteArtifactRepositories}"
      * @required
      * @readonly
@@ -202,16 +212,15 @@ public final class FindBugsMojo extends AbstractMavenReport
     private MavenProject project;
 
     /**
-     * Threshold of minimum bug severity to report. 
-     * Valid values are High, Medium, Low and Exp (for experimental).
-     *
+     * Threshold of minimum bug severity to report. Valid values are High, Medium, Low and Exp (for experimental).
+     * 
      * @parameter
      */
     private String threshold;
 
     /**
      * Artifact resolver, needed to download the coreplugin jar.
-     *
+     * 
      * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
      * @required
      * @readonly
@@ -233,8 +242,7 @@ public final class FindBugsMojo extends AbstractMavenReport
     private String excludeFilterFile;
 
     /**
-     * Effort of the bug finders.
-     * Valid values are Min, Default and Max.
+     * Effort of the bug finders. Valid values are Min, Default and Max.
      * 
      * @parameter
      */
@@ -242,39 +250,35 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * turn on Findbugs debugging
-     *
-     * @parameter default-value="false"
-     * DP: not used yet
+     * 
+     * @parameter default-value="false" DP: not used yet
      */
     private Boolean debug;
 
     /**
-     * The visitor list to run.
-     * This is a comma-delimited list.
-     *
+     * The visitor list to run. This is a comma-delimited list.
+     * 
      * @parameter
      */
     private String visitors;
 
     /**
-     * The visitor list to omit.
-     * This is a comma-delimited list.
-     *
+     * The visitor list to omit. This is a comma-delimited list.
+     * 
      * @parameter
      */
     private String omitVisitors;
 
     /**
-     * The plugin list to include in the report.
-     * This is a comma-delimited list.
-     *
+     * The plugin list to include in the report. This is a comma-delimited list.
+     * 
      * @parameter
      */
     private String pluginList;
 
     /**
      * The Base FindBugs reporter Class for reports.
-     *
+     * 
      * @parameter
      * @readonly
      */
@@ -282,7 +286,7 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * The Flag letting us know if classes have been loaded already.
-     *
+     * 
      * @parameter
      * @readonly
      */
@@ -348,31 +352,44 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * Adds the dependend libraries of the project to the findbugs aux classpath.
-     *
-     * @param findBugsProject The find bugs project to add the aux classpath entries.
-     * @throws DependencyResolutionRequiredException 
-     *      Exception that occurs when an artifact file is used, but has not been resolved.
+     * 
+     * @param findBugsProject
+     *            The find bugs project to add the aux classpath entries.
+     * @throws DependencyResolutionRequiredException
+     *             Exception that occurs when an artifact file is used, but has not been resolved.
      * 
      */
     protected void addClasspathEntriesToFindBugsProject( final Project findBugsProject )
         throws DependencyResolutionRequiredException
     {
-        final List entries = this.getProject().getCompileClasspathElements();
-        final Iterator iterator = entries.iterator();
-        while ( iterator.hasNext() )
+        final Iterator iterator = this.getProject().getCompileArtifacts().iterator();
+
+        if ( iterator.hasNext() )
         {
-            final String currentEntry = ( String ) iterator.next();
-            this.getLog().debug( "  Adding " + currentEntry + " to auxilary classpath" );
-            findBugsProject.addAuxClasspathEntry( currentEntry );
+            while ( iterator.hasNext() )
+            {
+                Artifact artifact = (Artifact) iterator.next();
+                // String fileName = (String) iterator.next();
+                final String fileName = artifact.getFile().getAbsolutePath();
+                this.getLog().info( "  Adding to AuxClasspath " + fileName );
+                findBugsProject.addAuxClasspathEntry( fileName );
+            }
+        }
+        else
+        {
+            this.getLog().info( "  Nothing to add to AuxClasspath " );
         }
     }
 
     /**
      * Adds the specified filters of the project to the findbugs.
-     *
-     * @param findBugs The find bugs to add the filters.
-     * @throws IOException If filter file could not be read.
-     * @throws FilterException If filter file was invalid.
+     * 
+     * @param findBugs
+     *            The find bugs to add the filters.
+     * @throws IOException
+     *             If filter file could not be read.
+     * @throws FilterException
+     *             If filter file was invalid.
      * 
      */
     protected void addFiltersToFindBugs( final FindBugs findBugs ) throws IOException, FilterException
@@ -412,13 +429,11 @@ public final class FindBugsMojo extends AbstractMavenReport
     }
 
     /**
-     * Adds the source files to the find bugs project. The return value of the
-     * method call <code>addFile</code> is omited, because we are not
-     * interested if the java source is already added.
+     * Adds the source files to the find bugs project. The return value of the method call <code>addFile</code> is
+     * omited, because we are not interested if the java source is already added.
      * 
      * @param pSourceFiles
-     *            The java sources (Type <code>java.io.File</code>) to add to
-     *            the project.
+     *            The java sources (Type <code>java.io.File</code>) to add to the project.
      * @param findBugsProject
      *            The find bugs project to add the java source to.
      * 
@@ -428,22 +443,23 @@ public final class FindBugsMojo extends AbstractMavenReport
         final Iterator iterator = pSourceFiles.iterator();
         while ( iterator.hasNext() )
         {
-            final File currentSourceFile = ( File ) iterator.next();
+            final File currentSourceFile = (File) iterator.next();
             final String filePath = currentSourceFile.getAbsolutePath();
             findBugsProject.addFile( filePath );
         }
     }
 
     /**
-     * Adds the specified plugins to findbugs.
-     * The coreplugin is always added first.
+     * Adds the specified plugins to findbugs. The coreplugin is always added first.
      * 
      * @param pLocale
-     *            The locale to print out the messages. 
-     *            Used here to get the nameof the coreplugin from the properties.
-     * @throws ArtifactNotFoundException If the coreplugin could not be found.
-     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
-     * @throws MavenReportException If the findBugs plugins URL could not be resolved.
+     *            The locale to print out the messages. Used here to get the nameof the coreplugin from the properties.
+     * @throws ArtifactNotFoundException
+     *             If the coreplugin could not be found.
+     * @throws ArtifactResolutionException
+     *             If the coreplugin could not be resolved.
+     * @throws MavenReportException
+     *             If the findBugs plugins URL could not be resolved.
      * 
      */
     protected void addPluginsToFindBugs( final Locale pLocale )
@@ -508,16 +524,16 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * Adds the specified visitors to findbugs.
-     *
-     * @param preferences The find bugs UserPreferences.
+     * 
+     * @param preferences
+     *            The find bugs UserPreferences.
      * 
      */
     protected void addVisitorsToFindBugs( final UserPreferences preferences )
     {
         /*
-         * This is done in this order to make sure only one of vistors
-         *  or omitVisitors options is run. 
-         * This is consistent with the way the Findbugs commandline and Ant Tasks run.
+         * This is done in this order to make sure only one of vistors or omitVisitors options is run. This is
+         * consistent with the way the Findbugs commandline and Ant Tasks run.
          */
         if ( this.visitors != null || this.omitVisitors != null )
         {
@@ -553,11 +569,12 @@ public final class FindBugsMojo extends AbstractMavenReport
     }
 
     /**
-     * Lists absolute paths of java source files for denugging purposes. 
+     * Lists absolute paths of java source files for denugging purposes.
+     * 
      * @param pLocale
      *            The locale to print out the messages.
      * @param pSourceFiles
-     *              List of source files.
+     *            List of source files.
      */
     protected void debugJavaSources( final Locale pLocale, final List pSourceFiles )
     {
@@ -568,7 +585,7 @@ public final class FindBugsMojo extends AbstractMavenReport
         final Iterator iterator = pSourceFiles.iterator();
         while ( iterator.hasNext() )
         {
-            final File currentFile = ( File ) iterator.next();
+            final File currentFile = (File) iterator.next();
             this.getLog().debug( "    " + currentFile.getAbsolutePath() );
         }
     }
@@ -593,15 +610,13 @@ public final class FindBugsMojo extends AbstractMavenReport
     /**
      * Executes the generation of the report.
      * 
-     * Callback from Maven Site Plugin or from AbstractMavenReport.execute() =>
-     * generate().
+     * Callback from Maven Site Plugin or from AbstractMavenReport.execute() => generate().
      * 
      * @param pLocale
      *            the locale the report should be generated for
      * @throws MavenReportException
      *             if anything goes wrong
-     * @see org.apache.maven.reporting.AbstractMavenReport
-     *      #executeReport(java.util.Locale)
+     * @see org.apache.maven.reporting.AbstractMavenReport #executeReport(java.util.Locale)
      */
     protected void executeReport( final Locale pLocale ) throws MavenReportException
     {
@@ -657,8 +672,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      * 
      * @param pLocale
      *            The locale to print out the messages.
-     * @return corePluginName
-     *            The coreplugin module name.
+     * @return corePluginName The coreplugin module name.
      * 
      */
     protected String getCorePlugin( final Locale pLocale )
@@ -670,14 +684,16 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     }
 
-    /** 
+    /**
      * Get the File reference for the Findbugs core plugin.
-     *
+     * 
      * @param pLocale
      *            The locale of the messages.
      * @return The File reference to the coreplugin JAR
-     * @throws ArtifactNotFoundException If the coreplugin could not be found.
-     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
+     * @throws ArtifactNotFoundException
+     *             If the coreplugin could not be found.
+     * @throws ArtifactResolutionException
+     *             If the coreplugin could not be resolved.
      * 
      */
     protected File getCorePluginPath( final Locale pLocale )
@@ -685,7 +701,7 @@ public final class FindBugsMojo extends AbstractMavenReport
     {
         for ( Iterator it = this.pluginArtifacts.iterator(); it.hasNext(); )
         {
-            final Artifact artifact = ( Artifact ) it.next();
+            final Artifact artifact = (Artifact) it.next();
             if ( artifact.getArtifactId().equals( this.getCorePlugin( pLocale ) ) )
             {
                 this.artifactResolver.resolve( artifact, this.remoteArtifactRepositories, this.localRepository );
@@ -741,8 +757,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      *            The source directory to search for java sources.
      * @param pLocale
      *            The locale to print out the messages.
-     * @return A list containing the java sources or an empty list if no java
-     *         sources are found.
+     * @return A list containing the java sources or an empty list if no java sources are found.
      * @throws IOException
      *             If there are problems searching for java sources.
      * 
@@ -767,8 +782,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      * 
      * Called by AbstractMavenReport.execute() for creating the sink.
      * 
-     * @return full path to the directory where the files in the site get copied
-     *         to
+     * @return full path to the directory where the files in the site get copied to
      * @see org.apache.maven.reporting.AbstractMavenReport#getOutputDirectory()
      */
     protected String getOutputDirectory()
@@ -860,13 +874,18 @@ public final class FindBugsMojo extends AbstractMavenReport
      * @param pSourceFiles
      *            The source files FindBugs should analyse.
      * @return An initialised FindBugs object.
-     * @throws DependencyResolutionRequiredException 
-     *              Exception that occurs when an artifact file is used, but has not been resolved.
-     * @throws IOException If filter file could not be read.
-     * @throws FilterException If filter file was invalid.
-     * @throws ArtifactNotFoundException If the coreplugin could not be found.
-     * @throws ArtifactResolutionException If the coreplugin could not be resolved.
-     * @throws MavenReportException If the findBugs plugins cannot be initialized
+     * @throws DependencyResolutionRequiredException
+     *             Exception that occurs when an artifact file is used, but has not been resolved.
+     * @throws IOException
+     *             If filter file could not be read.
+     * @throws FilterException
+     *             If filter file was invalid.
+     * @throws ArtifactNotFoundException
+     *             If the coreplugin could not be found.
+     * @throws ArtifactResolutionException
+     *             If the coreplugin could not be resolved.
+     * @throws MavenReportException
+     *             If the findBugs plugins cannot be initialized
      * 
      */
     protected FindBugs initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
@@ -885,25 +904,25 @@ public final class FindBugsMojo extends AbstractMavenReport
         if ( this.xmlOutput )
         {
             this.getLog().info( "  Using the xdoc format" );
-            
+
             if ( !this.xmlOutputDirectory.exists() )
             {
                 if ( !this.xmlOutputDirectory.mkdirs() )
                 {
                     throw new MavenReportException( "Cannot create xml output directory" );
                 }
-                
+
             }
-            
+
             BugReporter htmlBugReporter = this.bugReporter;
             this.bugReporter = new XDocsReporter( htmlBugReporter );
 
-            ( ( XDocsReporter ) this.bugReporter ).setOutputWriter( new FileWriter( new File( this.xmlOutputDirectory
+            ( (XDocsReporter) this.bugReporter ).setOutputWriter( new FileWriter( new File( this.xmlOutputDirectory
                             + "/findbugs.xml" ) ) );
-            ( ( XDocsReporter ) this.bugReporter ).setResourceBundle( bundle );
-            ( ( XDocsReporter ) this.bugReporter ).setLog( log );
-            ( ( XDocsReporter ) this.bugReporter ).setEffort( this.getEffortParameter() );
-            ( ( XDocsReporter ) this.bugReporter ).setThreshold( this.getThresholdParameter() );
+            ( (XDocsReporter) this.bugReporter ).setResourceBundle( bundle );
+            ( (XDocsReporter) this.bugReporter ).setLog( log );
+            ( (XDocsReporter) this.bugReporter ).setEffort( this.getEffortParameter() );
+            ( (XDocsReporter) this.bugReporter ).setThreshold( this.getThresholdParameter() );
         }
 
         this.addJavaSourcesToFindBugsProject( pSourceFiles, findBugsProject );
@@ -958,10 +977,11 @@ public final class FindBugsMojo extends AbstractMavenReport
         return bugReporter;
     }
 
-    /** 
+    /**
      * Determines if the JXR-Plugin is included in the report section of the POM.
-     *
-     * @param pBundle The bundle to load the artifactIf of the jxr plugin.
+     * 
+     * @param pBundle
+     *            The bundle to load the artifactIf of the jxr plugin.
      * @return True if the JXR-Plugin is included in the POM, false otherwise.
      * 
      */
@@ -975,7 +995,7 @@ public final class FindBugsMojo extends AbstractMavenReport
         final Iterator iterator = reportPlugins.iterator();
         while ( iterator.hasNext() )
         {
-            final ReportPlugin currentPlugin = ( ReportPlugin ) iterator.next();
+            final ReportPlugin currentPlugin = (ReportPlugin) iterator.next();
             final String currentArtifactId = currentPlugin.getArtifactId();
             if ( artifactId.equals( currentArtifactId ) )
             {
@@ -988,8 +1008,9 @@ public final class FindBugsMojo extends AbstractMavenReport
 
     /**
      * Sets the Debug Level
-     *
-     * @param findBugs The find bugs to add debug level information.
+     * 
+     * @param findBugs
+     *            The find bugs to add debug level information.
      * 
      */
     protected void setFindBugsDebug( final FindBugs findBugs )
@@ -1022,6 +1043,5 @@ public final class FindBugsMojo extends AbstractMavenReport
 
         return bundle;
     }
-
 
 }
