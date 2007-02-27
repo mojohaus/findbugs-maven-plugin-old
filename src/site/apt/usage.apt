@@ -20,11 +20,13 @@ Maven 2 FindBugs Plugin - How to Use
 
  The pluginList option specifies a comma-separated list of optional BugDetector Jar files to add.
 
+ The onlyAnalyze option restricts analysis to find bugs to given comma-separated list of classes and packages.
+ 
  Please look up the {{{http://findbugs.sourceforge.net/manual/index.html}FindBugs documentation}} about more information.
 
 -------------------
 <reporting>
-  ...
+  [...]
   <plugin>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>findbugs-maven-plugin</artifactId>
@@ -38,10 +40,13 @@ Maven 2 FindBugs Plugin - How to Use
       <includeFilterFile>findbugs-include.xml</includeFilterFile>
       <visitors>FindDeadLocalStores,UnreadFields</visitors>
       <omitVisitors>FindDeadLocalStores,UnreadFields</omitVisitors>
+      <onlyAnalyze>org.codehaus.mojo.findbugs.*</onlyAnalyze>
       <pluginList>/libs/fb-contrib/fb-contrib-2.8.0.jar</pluginList>
+      <debug>true|false</debug>
+      <relaxed>true|false</relaxed>
     </configuration>
   </plugin>
-  ...
+  [...]
 </reporting>
 -------------------
 

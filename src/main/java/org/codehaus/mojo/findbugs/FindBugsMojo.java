@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -49,6 +50,7 @@ import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.util.FileUtils;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassScreener;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -62,6 +64,8 @@ import edu.umd.cs.findbugs.filter.FilterException;
  * @goal findbugs
  * @description Generates a FindBugs Report.
  * @execute phase="compile"
+ * @requiresDependencyResolution
+ * @requiresProject
  * 
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
  * @author <a href="mailto:d.pleiss@comundus.com">Detlef Pleiss</a>
@@ -124,15 +128,6 @@ public final class FindBugsMojo extends AbstractMavenReport
      * 
      */
     private static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin";
-
-    /**
-     * Project classpath.
-     * 
-     * @parameter expression="${project.compileClasspathElements}"
-     * @required
-     * @readonly
-     */
-    private List classpathElements;
 
     /**
      * Location where generated html will be created.
@@ -251,9 +246,17 @@ public final class FindBugsMojo extends AbstractMavenReport
     /**
      * turn on Findbugs debugging
      * 
-     * @parameter default-value="false" DP: not used yet
+     * @parameter default-value="false"
      */
     private Boolean debug;
+
+    /**
+     * Relaxed reporting mode. For many detectors, this option suppresses the heuristics used to avoid reporting false
+     * positives.
+     * 
+     * @parameter default-value="false"
+     */
+    private Boolean relaxed;
 
     /**
      * The visitor list to run. This is a comma-delimited list.
@@ -283,6 +286,21 @@ public final class FindBugsMojo extends AbstractMavenReport
      * @readonly
      */
     private BugReporter bugReporter;
+
+    /**
+     * Restrict analysis to find bugs to given comma-separated list of classes and packages.
+     * 
+     * @parameter
+     */
+    private String onlyAnalyze;
+
+    /**
+     * The Base FindBugs reporter Class for reports.
+     * 
+     * @parameter
+     * @readonly
+     */
+    private ClassScreener classScreener = new ClassScreener();
 
     /**
      * The Flag letting us know if classes have been loaded already.
@@ -362,17 +380,32 @@ public final class FindBugsMojo extends AbstractMavenReport
     protected void addClasspathEntriesToFindBugsProject( final Project findBugsProject )
         throws DependencyResolutionRequiredException
     {
-        final Iterator iterator = this.getProject().getCompileArtifacts().iterator();
+        // final Iterator iterator = this.getProject().getCompileArtifacts().iterator();
+        final Iterator iterator = this.getProject().getCompileClasspathElements().iterator();
 
         if ( iterator.hasNext() )
         {
             while ( iterator.hasNext() )
             {
-                Artifact artifact = (Artifact) iterator.next();
-                // String fileName = (String) iterator.next();
-                final String fileName = artifact.getFile().getAbsolutePath();
-                this.getLog().info( "  Adding to AuxClasspath " + fileName );
-                findBugsProject.addAuxClasspathEntry( fileName );
+                // Artifact artifact = (Artifact) iterator.next();
+                String fileName = (String) iterator.next();
+                // final String fileName = artifact.getFile().getAbsolutePath();
+
+                if ( findBugsProject.addAuxClasspathEntry( fileName ) )
+                {
+                    this.getLog().debug( "  Successfully Adding to AuxClasspath " + fileName );
+                }
+                else
+                {
+                    this.getLog().debug( "  Unable to Add to AuxClasspath " + fileName );
+                }
+            }
+
+            this.getLog().debug( "  AuxClasspath contains " + findBugsProject.getNumAuxClasspathEntries() + " entries" );
+            for ( Iterator auxClasspathIterator = findBugsProject.getAuxClasspathEntryList().iterator(); auxClasspathIterator.hasNext(); )
+            {
+                String fileName = (String) auxClasspathIterator.next();
+                this.getLog().debug( "  AuxClasspath contains " + fileName );
             }
         }
         else
@@ -449,6 +482,57 @@ public final class FindBugsMojo extends AbstractMavenReport
         }
     }
 
+    /**
+     * Adds the specified plugins to findbugs. The coreplugin is always added first.
+     * 
+     * @param pLocale
+     *            The locale to print out the messages. Used here to get the nameof the coreplugin from the properties.
+     * @throws ArtifactNotFoundException
+     *             If the coreplugin could not be found.
+     * @throws ArtifactResolutionException
+     *             If the coreplugin could not be resolved.
+     * @throws MavenReportException
+     *             If the findBugs plugins URL could not be resolved.
+     * 
+     */
+    protected void addClassScreenerToFindBugs( final FindBugs findBugs )
+    {
+
+        if ( this.onlyAnalyze != null )
+        {
+            this.getLog().debug( "  Adding ClassScreener " );
+            // The argument is a comma-separated list of classes and packages
+            // to select to analyze. (If a list item ends with ".*",
+            // it specifies a package, otherwise it's a class.)
+            StringTokenizer stringToken = new StringTokenizer(this.onlyAnalyze, ",");
+            while (stringToken.hasMoreTokens()) {
+                String stringTokenItem = stringToken.nextToken();
+                if (stringTokenItem.endsWith(".-"))
+                {
+                    classScreener.addAllowedPrefix(stringTokenItem.substring(0, stringTokenItem.length() - 1));
+                    this.getLog().info( " classScreener.addAllowedPrefix " + (stringTokenItem.substring(0, stringTokenItem.length() - 1)) );
+                }
+                else if (stringTokenItem.endsWith(".*"))
+                {
+                    classScreener.addAllowedPackage(stringTokenItem.substring(0, stringTokenItem.length() - 1));
+                    this.getLog().info( " classScreener.addAllowedPackage " + (stringTokenItem.substring(0, stringTokenItem.length() - 1)) );
+                }
+                else
+                {
+                    classScreener.addAllowedClass(stringTokenItem);
+                    this.getLog().info( " classScreener.addAllowedClass " + stringTokenItem );
+                }
+            }
+            
+            findBugs.setClassScreener( classScreener );
+
+
+        }
+
+        this.getLog().debug( "  Done Adding Class Screeners" );
+
+    }
+    
     /**
      * Adds the specified plugins to findbugs. The coreplugin is always added first.
      * 
@@ -940,13 +1024,15 @@ public final class FindBugsMojo extends AbstractMavenReport
 
         this.addVisitorsToFindBugs( preferences );
 
+        findBugs.setRelaxedReportingMode( this.relaxed.booleanValue() );
         findBugs.setUserPreferences( preferences );
         findBugs.setAnalysisFeatureSettings( effortParameter.getValue() );
         findBugs.setDetectorFactoryCollection( DetectorFactoryCollection.rawInstance() );
 
         this.setFindBugsDebug( findBugs );
         this.addFiltersToFindBugs( findBugs );
-
+        this.addClassScreenerToFindBugs( findBugs );
+        
         return findBugs;
     }
 
