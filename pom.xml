@@ -15,7 +15,7 @@
 		<url>http://www.codehaus.org</url>
 	</organization>
 	<prerequisites>
-		<maven>2.0</maven>
+		<maven>2.0.5</maven>
 	</prerequisites>
 	<description>
 		This Plug-In generates reports based on the FindBugs Library
@@ -89,6 +89,8 @@
 			<groupId>net.sourceforge.findbugs</groupId>
 			<artifactId>findbugs</artifactId>
 			<version>1.1.1</version>
+<!-- 			<version>1.1.1</version>  -->
+<!-- 			<version>1.2.0-rc3</version>  -->
 		</dependency>
 	</dependencies>
 	<reporting>

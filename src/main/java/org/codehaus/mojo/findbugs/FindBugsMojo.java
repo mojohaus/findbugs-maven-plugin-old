@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassScreener;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -64,7 +64,7 @@ import edu.umd.cs.findbugs.filter.FilterException;
  * @goal findbugs
  * @description Generates a FindBugs Report.
  * @execute phase="compile"
- * @requiresDependencyResolution
+ * @requiresDependencyResolution compile
  * @requiresProject
  * 
  * @author <a href="mailto:ruettimac@mac.com">Cyrill Ruettimann</a>
@@ -380,38 +380,28 @@ public final class FindBugsMojo extends AbstractMavenReport
     protected void addClasspathEntriesToFindBugsProject( final Project findBugsProject )
         throws DependencyResolutionRequiredException
     {
-        // final Iterator iterator = this.getProject().getCompileArtifacts().iterator();
-        final Iterator iterator = this.getProject().getCompileClasspathElements().iterator();
+        List auxClasspathElements = this.getProject().getCompileClasspathElements();
 
-        if ( iterator.hasNext() )
+        for ( int i = 0; i < auxClasspathElements.size(); ++i )
         {
-            while ( iterator.hasNext() )
+            if ( this.getLog().isDebugEnabled() )
             {
-                // Artifact artifact = (Artifact) iterator.next();
-                String fileName = (String) iterator.next();
-                // final String fileName = artifact.getFile().getAbsolutePath();
-
-                if ( findBugsProject.addAuxClasspathEntry( fileName ) )
-                {
-                    this.getLog().debug( "  Successfully Adding to AuxClasspath " + fileName );
-                }
-                else
-                {
-                    this.getLog().debug( "  Unable to Add to AuxClasspath " + fileName );
-                }
+                this.getLog().debug( "  Trying to Add to AuxClasspath ->" + auxClasspathElements.get( i ).toString() );
             }
 
-            this.getLog().debug( "  AuxClasspath contains " + findBugsProject.getNumAuxClasspathEntries() + " entries" );
-            for ( Iterator auxClasspathIterator = findBugsProject.getAuxClasspathEntryList().iterator(); auxClasspathIterator.hasNext(); )
+            findBugsProject.addAuxClasspathEntry( (String) auxClasspathElements.get( i ).toString() );
+        }
+
+        if ( this.getLog().isDebugEnabled() )
+        {
+            List findbugsAuxClasspath = findBugsProject.getAuxClasspathEntryList();
+
+            for ( int j = 0; j < findbugsAuxClasspath.size(); ++j )
             {
-                String fileName = (String) auxClasspathIterator.next();
-                this.getLog().debug( "  AuxClasspath contains " + fileName );
+                this.getLog().debug( "  Added to AuxClasspath ->" + findbugsAuxClasspath.get( j ).toString() );
             }
         }
-        else
-        {
-            this.getLog().info( "  Nothing to add to AuxClasspath " );
-        }
+
     }
 
     /**
@@ -425,7 +415,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      *             If filter file was invalid.
      * 
      */
-    protected void addFiltersToFindBugs( final FindBugs findBugs ) throws IOException, FilterException
+    protected void addFiltersToFindBugs( final FindBugs2 findBugs ) throws IOException, FilterException
     {
         if ( this.includeFilterFile != null )
         {
@@ -495,7 +485,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      *             If the findBugs plugins URL could not be resolved.
      * 
      */
-    protected void addClassScreenerToFindBugs( final FindBugs findBugs )
+    protected void addClassScreenerToFindBugs( final FindBugs2 findBugs )
     {
 
         if ( this.onlyAnalyze != null )
@@ -504,35 +494,39 @@ public final class FindBugsMojo extends AbstractMavenReport
             // The argument is a comma-separated list of classes and packages
             // to select to analyze. (If a list item ends with ".*",
             // it specifies a package, otherwise it's a class.)
-            StringTokenizer stringToken = new StringTokenizer(this.onlyAnalyze, ",");
-            while (stringToken.hasMoreTokens()) {
+            StringTokenizer stringToken = new StringTokenizer( this.onlyAnalyze, "," );
+            while ( stringToken.hasMoreTokens() )
+            {
                 String stringTokenItem = stringToken.nextToken();
-                if (stringTokenItem.endsWith(".-"))
+                if ( stringTokenItem.endsWith( ".-" ) )
                 {
-                    classScreener.addAllowedPrefix(stringTokenItem.substring(0, stringTokenItem.length() - 1));
-                    this.getLog().info( " classScreener.addAllowedPrefix " + (stringTokenItem.substring(0, stringTokenItem.length() - 1)) );
+                    classScreener.addAllowedPrefix( stringTokenItem.substring( 0, stringTokenItem.length() - 1 ) );
+                    this.getLog().info(
+                                        " classScreener.addAllowedPrefix "
+                                                        + ( stringTokenItem.substring( 0, stringTokenItem.length() - 1 ) ) );
                 }
-                else if (stringTokenItem.endsWith(".*"))
+                else if ( stringTokenItem.endsWith( ".*" ) )
                 {
-                    classScreener.addAllowedPackage(stringTokenItem.substring(0, stringTokenItem.length() - 1));
-                    this.getLog().info( " classScreener.addAllowedPackage " + (stringTokenItem.substring(0, stringTokenItem.length() - 1)) );
+                    classScreener.addAllowedPackage( stringTokenItem.substring( 0, stringTokenItem.length() - 1 ) );
+                    this.getLog().info(
+                                        " classScreener.addAllowedPackage "
+                                                        + ( stringTokenItem.substring( 0, stringTokenItem.length() - 1 ) ) );
                 }
                 else
                 {
-                    classScreener.addAllowedClass(stringTokenItem);
+                    classScreener.addAllowedClass( stringTokenItem );
                     this.getLog().info( " classScreener.addAllowedClass " + stringTokenItem );
                 }
             }
-            
-            findBugs.setClassScreener( classScreener );
 
+            findBugs.setClassScreener( classScreener );
 
         }
 
         this.getLog().debug( "  Done Adding Class Screeners" );
 
     }
-    
+
     /**
      * Adds the specified plugins to findbugs. The coreplugin is always added first.
      * 
@@ -704,8 +698,15 @@ public final class FindBugsMojo extends AbstractMavenReport
      */
     protected void executeReport( final Locale pLocale ) throws MavenReportException
     {
-        FindBugs findBugs = null;
+        FindBugs2 findBugs = null;
         this.debugSourceDirectory( pLocale, this.classFilesDirectory );
+
+        if ( !canGenerateReport() )
+        {
+            getLog().info( "Output class directory doesn't exist. Skipping findbugs." );
+            return;
+        }
+
         try
         {
             findBugs = this.initialiseFindBugs( pLocale, this.getJavaSources( pLocale, this.classFilesDirectory ) );
@@ -972,7 +973,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      *             If the findBugs plugins cannot be initialized
      * 
      */
-    protected FindBugs initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
+    protected FindBugs2 initialiseFindBugs( final Locale pLocale, final List pSourceFiles )
         throws DependencyResolutionRequiredException, IOException, FilterException, ArtifactNotFoundException,
         ArtifactResolutionException, MavenReportException
     {
@@ -982,6 +983,8 @@ public final class FindBugsMojo extends AbstractMavenReport
         final EffortParameter effortParameter = this.getEffortParameter();
 
         final Project findBugsProject = new Project();
+
+        this.getLog().info( "  Using FindBugs Version: " + edu.umd.cs.findbugs.Version.RELEASE );
 
         this.bugReporter = this.initialiseReporter( sink, bundle, log, effortParameter );
 
@@ -1012,7 +1015,9 @@ public final class FindBugsMojo extends AbstractMavenReport
         this.addJavaSourcesToFindBugsProject( pSourceFiles, findBugsProject );
         this.addClasspathEntriesToFindBugsProject( findBugsProject );
 
-        final FindBugs findBugs = new FindBugs( this.bugReporter, findBugsProject );
+        final FindBugs2 findBugs = new FindBugs2();
+        findBugs.setBugReporter( this.bugReporter );
+        findBugs.setProject( findBugsProject );
 
         if ( !pluginLoaded )
         {
@@ -1032,7 +1037,7 @@ public final class FindBugsMojo extends AbstractMavenReport
         this.setFindBugsDebug( findBugs );
         this.addFiltersToFindBugs( findBugs );
         this.addClassScreenerToFindBugs( findBugs );
-        
+
         return findBugs;
     }
 
@@ -1099,7 +1104,7 @@ public final class FindBugsMojo extends AbstractMavenReport
      *            The find bugs to add debug level information.
      * 
      */
-    protected void setFindBugsDebug( final FindBugs findBugs )
+    protected void setFindBugsDebug( final FindBugs2 findBugs )
     {
         System.setProperty( "findbugs.classpath.debug", this.debug.toString() );
         System.setProperty( "findbugs.debug", this.debug.toString() );
