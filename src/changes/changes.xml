@@ -6,6 +6,9 @@
   <body>
     <release version="1.1-SNAPSHOT" date="in SVN" description="Findbugs plugin">
     </release>
+      <action dev="gl" type="update">
+        Added support for Findbugs v1.2.0
+      </action>
       <action dev="gl" type="fix" issue="MOJO-707">
         Changed from Findbug object to Findbug2 object to resolve missing classes message. Suggestion from Henri Tremblay
       </action>
