@@ -311,6 +311,13 @@ public final class FindBugsMojo extends AbstractMavenReport
     private static boolean pluginLoaded = false;
 
     /**
+     * Skip entire check.
+     * 
+     * @parameter expression="${findbugs.skip}" default-value="false"
+     */
+    private boolean skip;
+
+    /**
      * Checks whether prerequisites for generating this report are given.
      * 
      * @return true if report can be generated, otherwise false
@@ -318,7 +325,14 @@ public final class FindBugsMojo extends AbstractMavenReport
      */
     public boolean canGenerateReport()
     {
-        return this.classFilesDirectory.exists();
+        if ( !skip )
+        {
+            return this.classFilesDirectory.exists();
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -698,57 +712,60 @@ public final class FindBugsMojo extends AbstractMavenReport
      */
     protected void executeReport( final Locale pLocale ) throws MavenReportException
     {
-        FindBugs2 findBugs = null;
-        this.debugSourceDirectory( pLocale, this.classFilesDirectory );
+        if ( !skip )
+        {
+            FindBugs2 findBugs = null;
+            this.debugSourceDirectory( pLocale, this.classFilesDirectory );
 
-        if ( !canGenerateReport() )
-        {
-            getLog().info( "Output class directory doesn't exist. Skipping findbugs." );
-            return;
-        }
+            if ( !canGenerateReport() )
+            {
+                getLog().info( "Output class directory doesn't exist. Skipping findbugs." );
+                return;
+            }
 
-        try
-        {
-            findBugs = this.initialiseFindBugs( pLocale, this.getJavaSources( pLocale, this.classFilesDirectory ) );
-        }
-        catch ( final IOException pException )
-        {
-            throw new MavenReportException( "A java source file could not be added", pException );
-        }
-        catch ( final DependencyResolutionRequiredException pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
-        }
-        catch ( final FilterException pException )
-        {
-            throw new MavenReportException( "Failed adding filters to FindBugs", pException );
-        }
-        catch ( final ArtifactNotFoundException pException )
-        {
-            throw new MavenReportException( "Did not find coreplugin", pException );
-        }
-        catch ( final ArtifactResolutionException pException )
-        {
-            throw new MavenReportException( "Failed to resolve coreplugin", pException );
-        }
+            try
+            {
+                findBugs = this.initialiseFindBugs( pLocale, this.getJavaSources( pLocale, this.classFilesDirectory ) );
+            }
+            catch ( final IOException pException )
+            {
+                throw new MavenReportException( "A java source file could not be added", pException );
+            }
+            catch ( final DependencyResolutionRequiredException pException )
+            {
+                throw new MavenReportException( "Failed executing FindBugs", pException );
+            }
+            catch ( final FilterException pException )
+            {
+                throw new MavenReportException( "Failed adding filters to FindBugs", pException );
+            }
+            catch ( final ArtifactNotFoundException pException )
+            {
+                throw new MavenReportException( "Did not find coreplugin", pException );
+            }
+            catch ( final ArtifactResolutionException pException )
+            {
+                throw new MavenReportException( "Failed to resolve coreplugin", pException );
+            }
 
-        try
-        {
+            try
+            {
 
-            findBugs.execute();
+                findBugs.execute();
 
-        }
-        catch ( final IOException pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
-        }
-        catch ( final InterruptedException pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
-        }
-        catch ( final Exception pException )
-        {
-            throw new MavenReportException( "Failed executing FindBugs", pException );
+            }
+            catch ( final IOException pException )
+            {
+                throw new MavenReportException( "Failed executing FindBugs", pException );
+            }
+            catch ( final InterruptedException pException )
+            {
+                throw new MavenReportException( "Failed executing FindBugs", pException );
+            }
+            catch ( final Exception pException )
+            {
+                throw new MavenReportException( "Failed executing FindBugs", pException );
+            }
         }
     }
 
