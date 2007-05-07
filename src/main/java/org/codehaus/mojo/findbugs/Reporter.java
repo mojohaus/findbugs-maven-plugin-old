@@ -620,7 +620,7 @@ public final class Reporter extends TextUIBugReporter
     {
         String hyperlink = null;
         final String prefix = this.bundle.getString( Reporter.JXR_PATHPREFIX_KEY );
-        final String path = prefix + Reporter.URL_SEPARATOR + this.currentClassName.replaceAll( "[.]", "/" );
+        final String path = prefix + Reporter.URL_SEPARATOR + this.currentClassName.replaceAll( "[.]", "/" ).replaceAll("[$].*","");
 
         if ( pLine == null )
         {
