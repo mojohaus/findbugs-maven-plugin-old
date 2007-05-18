@@ -6,13 +6,13 @@
      <answer>
        <p>
        Unfortunately Maven's internal support for report aggregation
-  is rather poor so it does have a number of limitations.
+  is rather poor and does have a number of limitations.
     </p>
-      <p>
-<code>
-  mvn clean site:site (generate the site for every module recursively)
-</code>  
-       </p>
+       <p>
+  This may be addressed in the future by a module like 
+  <a href="http://mojo.codehaus.org/dashboard-maven-plugin/">dashboard</a>
+   to get an aggregate report.
+    </p>
      </answer>
    </faq>
  </part>

@@ -6,6 +6,9 @@
   <body>
     <release version="1.1-SNAPSHOT" date="in SVN" description="Findbugs plugin">
     </release>
+      <action dev="gl" type="fix" issue="MOJO-799">
+        Fix FAQ dcoumentation to correct aggregate explanation.
+      </action>
       <action dev="gl" type="fix" issue="MOJO-498">
         Fix JXR link reference for inner classes.
       </action>
