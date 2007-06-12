@@ -58,43 +58,43 @@ public final class XDocsReporter extends DelegatingBugReporter
      * The sink to write the report to.
      * 
      */
-    private  FindbugsXdocSink sink;
+    private FindbugsXdocSink sink;
 
     /**
      * The bundle to get the messages from.
      * 
      */
-    private  ResourceBundle resourceBundle;
+    private ResourceBundle resourceBundle;
 
     /**
      * The logger to write logs to.
      * 
      */
-    private  Log log;
+    private Log log;
 
     /**
      * The threshold of bugs severity.
      * 
      */
-    private  ThresholdParameter threshold;
+    private ThresholdParameter threshold;
 
     /**
      * The used effort for searching bugs.
      * 
      */
-    private  EffortParameter effort;
+    private EffortParameter effort;
 
     /**
      * The name of the current class which is analysed by FindBugs.
      * 
      */
-    private  String currentClassName;
+    private String currentClassName;
 
     /**
      * Signals if the report for the current class is opened.
      * 
      */
-    private  boolean isCurrentClassReportOpened = false;
+    private boolean isCurrentClassReportOpened = false;
 
     /**
      * The Collection of Bugs and Error collected during analysis.
@@ -110,7 +110,9 @@ public final class XDocsReporter extends DelegatingBugReporter
 
     /**
      * Default constructor.
-     * @param realBugReporter the BugReporter to Delegate
+     * 
+     * @param realBugReporter
+     *            the BugReporter to Delegate
      */
     public XDocsReporter( BugReporter realBugReporter )
     {
@@ -140,6 +142,14 @@ public final class XDocsReporter extends DelegatingBugReporter
      */
     public void finish()
     {
+
+        // close file tag if needed
+        if ( this.isCurrentClassReportOpened )
+        {
+            this.closeClassReportSection();
+        }
+
+        this.isCurrentClassReportOpened = false;
 
         // close the report, write it
 
@@ -221,7 +231,8 @@ public final class XDocsReporter extends DelegatingBugReporter
     /**
      * Observe a class.
      * 
-     * @param classDescriptor The Class to Observe
+     * @param classDescriptor
+     *            The Class to Observe
      * @see edu.umd.cs.findbugs.classfile.IClassObserver #observeClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
      */
     public void observeClass( ClassDescriptor classDescriptor )
@@ -343,8 +354,9 @@ public final class XDocsReporter extends DelegatingBugReporter
 
     /**
      * Returns the threshold string value for the integer input.
-     *
-     * @param thresholdValue The ThresholdValue integer to evaluate.
+     * 
+     * @param thresholdValue
+     *            The ThresholdValue integer to evaluate.
      * @return The string valueof the Threshold object.
      * 
      */
@@ -402,14 +414,14 @@ public final class XDocsReporter extends DelegatingBugReporter
 
         for ( Iterator i = this.bugCollection.errorIterator(); i.hasNext(); )
         {
-            AnalysisError analysisError = ( AnalysisError ) i.next();
+            AnalysisError analysisError = (AnalysisError) i.next();
             this.getSink().analysisErrorTag( analysisError.getMessage() );
         }
 
         this.log.info( "Printing Missing classes" );
         for ( Iterator i = this.bugCollection.missingClassIterator(); i.hasNext(); )
         {
-            String missingClass = ( String ) i.next();
+            String missingClass = (String) i.next();
             this.getSink().missingClassTag( missingClass );
         }
 

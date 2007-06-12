@@ -39,7 +39,6 @@ public final class FindbugsXdocSink extends SinkAdapter
 
     private LineBreaker out;
 
-
     public FindbugsXdocSink( Writer out )
     {
         this.out = new LineBreaker( out );
@@ -57,13 +56,13 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.markup( "<BugCollection>" + EOL );
     }
 
-    public void body(String version, String threshold, String effort)
+    public void body( String version, String threshold, String effort )
     {
-        this.markup( "<BugCollection");
+        this.markup( "<BugCollection" );
         this.markup( " version=" + '"' + version + '"' );
         this.markup( " threshold=" + '"' + threshold + '"' );
         this.markup( " effort=" + '"' + effort + '"' );
-        
+
         this.markup( " >" + EOL );
     }
 
@@ -76,11 +75,11 @@ public final class FindbugsXdocSink extends SinkAdapter
     public void bugInstance( String type, String priority, String category, String message, String lineNumber )
     {
         this.markup( "<BugInstance" );
-        this.markup( " type=" + '"' + type + '"' );
-        this.markup( " priority=" + '"' + priority + '"' );
-        this.markup( " category=" + '"' + category + '"' );
+        this.markup( " type=" + '"' + HtmlTools.escapeHTML( type ) + '"' );
+        this.markup( " priority=" + '"' + HtmlTools.escapeHTML( priority ) + '"' );
+        this.markup( " category=" + '"' + HtmlTools.escapeHTML( category ) + '"' );
         this.markup( " message=" + '"' + HtmlTools.escapeHTML( message ) + '"' );
-        this.markup( " lineNumber=" + '"' + lineNumber + '"' );
+        this.markup( " lineNumber=" + '"' + HtmlTools.escapeHTML( lineNumber ) + '"' );
         this.markup( " />" + EOL );
     }
 
