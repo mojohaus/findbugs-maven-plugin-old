@@ -8,6 +8,12 @@
 	<body>
 		<release version="1.2-SNAPSHOT" date="in SVN"
 			description="Findbugs plugin">
+			<action dev="gl" type="fix" issue="MOJO-823">
+				Fixed Duplicate XML entries.
+			</action>
+			<action dev="gl" type="fix" issue="MOJO-807">
+				Changed XML encoding to ISO-8859-1.
+			</action>
 			<action dev="gl" type="fix" issue="MOJO-807">
 				Fix XML well-formed issues.
 			</action>

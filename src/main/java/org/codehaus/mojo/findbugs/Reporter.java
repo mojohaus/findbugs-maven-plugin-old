@@ -365,7 +365,7 @@ public final class Reporter extends TextUIBugReporter
 
         for ( Iterator i = this.bugCollection.iterator(); i.hasNext(); )
         {
-            BugInstance bugInstance = ( BugInstance ) i.next();
+            BugInstance bugInstance = (BugInstance) i.next();
 
             this.mavenLog.debug( "Annotation Class is " + bugInstance.getPrimarySourceLineAnnotation().getClassName() );
             this.mavenLog.debug( "Class is " + this.currentClassName );
@@ -487,7 +487,9 @@ public final class Reporter extends TextUIBugReporter
         super.reportMissingClass( ex );
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
      */
     public void reportMissingClass( ClassDescriptor classDescriptor )
@@ -548,8 +550,9 @@ public final class Reporter extends TextUIBugReporter
 
     /**
      * Print the bug collection to a line in the table
-     *  
-     * @param bugInstance the bug to print
+     * 
+     * @param bugInstance
+     *            the bug to print
      */
     protected void printBug( final BugInstance bugInstance )
     {
@@ -620,7 +623,8 @@ public final class Reporter extends TextUIBugReporter
     {
         String hyperlink = null;
         final String prefix = this.bundle.getString( Reporter.JXR_PATHPREFIX_KEY );
-        final String path = prefix + Reporter.URL_SEPARATOR + this.currentClassName.replaceAll( "[.]", "/" ).replaceAll("[$].*","");
+        final String path =
+            prefix + Reporter.URL_SEPARATOR + this.currentClassName.replaceAll( "[.]", "/" ).replaceAll( "[$].*", "" );
 
         if ( pLine == null )
         {
@@ -645,7 +649,8 @@ public final class Reporter extends TextUIBugReporter
     }
 
     /**
-     * @param bugInstance The bug to report
+     * @param bugInstance
+     *            The bug to report
      * @see edu.umd.cs.findbugs.AbstractBugReporter #doReportBug(edu.umd.cs.findbugs.BugInstance)
      */
     protected void doReportBug( final BugInstance bugInstance )
@@ -654,7 +659,6 @@ public final class Reporter extends TextUIBugReporter
         if ( this.bugCollection.add( bugInstance ) )
         {
             ++this.bugCount;
-            this.notifyObservers( bugInstance );
             this.notifyObservers( bugInstance );
         }
 
@@ -939,12 +943,12 @@ public final class Reporter extends TextUIBugReporter
 
         // Errors
         this.sink.tableCell();
-        this.sink.text( Integer.toString( this.errorCount  ));
+        this.sink.text( Integer.toString( this.errorCount ) );
         this.sink.tableCell_();
 
         // Missing Classes
         this.sink.tableCell();
-        this.sink.text( Integer.toString( this.missingClassCount ));
+        this.sink.text( Integer.toString( this.missingClassCount ) );
         this.sink.tableCell_();
 
         this.sink.tableRow_();
@@ -987,7 +991,7 @@ public final class Reporter extends TextUIBugReporter
 
         for ( Iterator i = this.bugCollection.iterator(); i.hasNext(); )
         {
-            BugInstance bugInstance = ( BugInstance ) i.next();
+            BugInstance bugInstance = (BugInstance) i.next();
 
             this.mavenLog.debug( "Annotation Class is " + bugInstance.getPrimarySourceLineAnnotation().getClassName() );
             this.mavenLog.debug( "Class is " + this.currentClassName );
@@ -1029,7 +1033,7 @@ public final class Reporter extends TextUIBugReporter
 
         // class bug total count
         this.sink.tableCell();
-        this.sink.text( Integer.toString( classBugs ));
+        this.sink.text( Integer.toString( classBugs ) );
         this.sink.tableCell_();
 
         this.sink.tableRow_();

@@ -117,7 +117,7 @@ public final class FindbugsXdocSink extends SinkAdapter
 
     public void head()
     {
-        this.markup( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + EOL );
+        this.markup( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + EOL );
     }
 
     public void missingClassTag( String className )

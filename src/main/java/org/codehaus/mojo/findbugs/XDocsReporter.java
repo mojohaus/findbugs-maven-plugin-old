@@ -341,6 +341,7 @@ public final class XDocsReporter extends DelegatingBugReporter
             this.isCurrentClassReportOpened = true;
         }
 
+        this.log.debug( "  Found a bug: " + bugInstance.getMessage() );
         this.getSink().bugInstance( type, priority, category, message, lineNumber );
     }
 
@@ -415,6 +416,7 @@ public final class XDocsReporter extends DelegatingBugReporter
         for ( Iterator i = this.bugCollection.errorIterator(); i.hasNext(); )
         {
             AnalysisError analysisError = (AnalysisError) i.next();
+
             this.getSink().analysisErrorTag( analysisError.getMessage() );
         }
 
