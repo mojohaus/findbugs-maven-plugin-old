@@ -30,7 +30,7 @@ Maven 2 FindBugs Plugin - How to Use
   <plugin>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>findbugs-maven-plugin</artifactId>
-    <version>1.1</version>
+    <version>1.1.1</version>
     <configuration>
       <xmlOutput>true|false</xmlOutput>
       <xmlOutputDirectory>directory location of xml findbugs report</xmlOutputDirectory>
