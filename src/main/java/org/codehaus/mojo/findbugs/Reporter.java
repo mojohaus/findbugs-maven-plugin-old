@@ -393,7 +393,6 @@ public final class Reporter extends TextUIBugReporter
         }
 
         // close the report, write it
-        this.sink.section1_();
         this.sink.body_();
         this.sink.flush();
         this.sink.close();
@@ -628,11 +627,11 @@ public final class Reporter extends TextUIBugReporter
 
         if ( pLine == null )
         {
-            hyperlink = "<a href=" + path + ".html>" + pLineNumber + "</a>";
+            hyperlink = "<a href=\"" + path + ".html\">" + pLineNumber + "</a>";
         }
         else
         {
-            hyperlink = "<a href=" + path + ".html#" + pLine.getStartLine() + ">" + pLineNumber + "</a>";
+            hyperlink = "<a href=\"" + path + ".html#" + pLine.getStartLine() + "\">" + pLineNumber + "</a>";
         }
 
         return hyperlink;
@@ -899,6 +898,8 @@ public final class Reporter extends TextUIBugReporter
      */
     protected void printSummary()
     {
+        this.sink.section1();
+        
         // the summary section
         this.sink.sectionTitle1();
         this.sink.text( this.getSummaryTitle() );
@@ -954,7 +955,6 @@ public final class Reporter extends TextUIBugReporter
         this.sink.tableRow_();
         this.sink.table_();
 
-        this.sink.paragraph_();
         this.sink.section1_();
     }
 
@@ -963,6 +963,8 @@ public final class Reporter extends TextUIBugReporter
      */
     protected void printFilesSummary()
     {
+        this.sink.section1();
+        
         // the Files section
         this.sink.sectionTitle1();
         this.sink.text( this.getFilesTitle() );
@@ -1017,6 +1019,8 @@ public final class Reporter extends TextUIBugReporter
         this.printFilesSummaryLine( classBugs );
 
         this.sink.table_();
+        
+        this.sink.section1_();
 
     }
 
