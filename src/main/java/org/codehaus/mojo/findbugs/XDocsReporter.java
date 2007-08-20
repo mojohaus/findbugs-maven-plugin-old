@@ -23,9 +23,11 @@ package org.codehaus.mojo.findbugs;
 
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisError;
@@ -52,72 +54,80 @@ public final class XDocsReporter extends DelegatingBugReporter
      * The key to get the value if the line number is not available.
      * 
      */
-    private static final String NOLINE_KEY = "report.findbugs.noline";
+    private static final String NOLINE_KEY                 = "report.findbugs.noline";
 
     /**
      * The sink to write the report to.
      * 
      */
-    private FindbugsXdocSink sink;
+    private FindbugsXdocSink    sink;
 
     /**
      * The bundle to get the messages from.
      * 
      */
-    private ResourceBundle resourceBundle;
+    private ResourceBundle      resourceBundle;
 
     /**
      * The logger to write logs to.
      * 
      */
-    private Log log;
+    private Log                 log;
 
     /**
      * The threshold of bugs severity.
      * 
      */
-    private ThresholdParameter threshold;
+    private ThresholdParameter  threshold;
 
     /**
      * The used effort for searching bugs.
      * 
      */
-    private EffortParameter effort;
+    private EffortParameter     effort;
 
     /**
      * The name of the current class which is analysed by FindBugs.
      * 
      */
-    private String currentClassName;
+    private String              currentClassName;
 
     /**
      * Signals if the report for the current class is opened.
      * 
      */
-    private boolean isCurrentClassReportOpened = false;
+    private boolean             isCurrentClassReportOpened = false;
 
     /**
      * The Collection of Bugs and Error collected during analysis.
      * 
      */
-    private SortedBugCollection bugCollection = new SortedBugCollection();
+    private SortedBugCollection bugCollection              = new SortedBugCollection( );
 
     /**
      * The output Writer stream.
      * 
      */
-    private Writer outputWriter;
+    private Writer              outputWriter;
 
+    /**
+     * The MavenProject Object
+     * 
+     */
+    private MavenProject mavenProject;
+
+    
     /**
      * Default constructor.
      * 
      * @param realBugReporter
      *            the BugReporter to Delegate
      */
-    public XDocsReporter( BugReporter realBugReporter )
+    public XDocsReporter( BugReporter realBugReporter, MavenProject mavenProject )
     {
         super( realBugReporter );
 
+        this.mavenProject = mavenProject;
         this.sink = null;
         this.resourceBundle = null;
         this.log = null;
@@ -127,13 +137,13 @@ public final class XDocsReporter extends DelegatingBugReporter
         // Add an observer to record when bugs make it through
         // all priority and filter criteria, so our bug count is
         // accurate.
-        realBugReporter.addObserver( new BugReporterObserver()
-        {
-            public void reportBug( BugInstance bugInstance )
+        realBugReporter.addObserver( new BugReporterObserver( )
             {
-                XDocsReporter.this.addBugReport( bugInstance );
-            }
-        } );
+                public void reportBug( BugInstance bugInstance )
+                {
+                    XDocsReporter.this.addBugReport( bugInstance );
+                }
+            } );
 
     }
 
@@ -146,19 +156,20 @@ public final class XDocsReporter extends DelegatingBugReporter
         // close file tag if needed
         if ( this.isCurrentClassReportOpened )
         {
-            this.closeClassReportSection();
+            this.closeClassReportSection( );
         }
 
         this.isCurrentClassReportOpened = false;
 
         // close the report, write it
 
-        this.printErrors();
-        this.getSink().body_();
-        this.getSink().flush();
-        this.getSink().close();
+        this.printErrors( );
+        this.printSource( );
+        this.getSink( ).body_( );
+        this.getSink( ).flush( );
+        this.getSink( ).close( );
 
-        super.finish();
+        super.finish( );
 
     }
 
@@ -201,8 +212,8 @@ public final class XDocsReporter extends DelegatingBugReporter
     {
         if ( this.sink == null )
         {
-            this.sink = new FindbugsXdocSink( this.getOutputWriter() );
-            this.initialiseReport();
+            this.sink = new FindbugsXdocSink( this.getOutputWriter( ) );
+            this.initialiseReport( );
 
         }
         return this.sink;
@@ -238,11 +249,11 @@ public final class XDocsReporter extends DelegatingBugReporter
     public void observeClass( ClassDescriptor classDescriptor )
     {
 
-        this.currentClassName = classDescriptor.toDottedClassName();
+        this.currentClassName = classDescriptor.toDottedClassName( );
 
         if ( this.isCurrentClassReportOpened )
         {
-            this.closeClassReportSection();
+            this.closeClassReportSection( );
         }
 
         this.isCurrentClassReportOpened = false;
@@ -257,7 +268,7 @@ public final class XDocsReporter extends DelegatingBugReporter
      */
     public void reportMissingClass( ClassDescriptor classDescriptor )
     {
-        this.bugCollection.addMissingClass( classDescriptor.toDottedClassName() );
+        this.bugCollection.addMissingClass( classDescriptor.toDottedClassName( ) );
         super.reportMissingClass( classDescriptor );
     }
 
@@ -318,31 +329,31 @@ public final class XDocsReporter extends DelegatingBugReporter
      */
     private void initialiseReport()
     {
-        this.getSink().head();
-        this.getSink().head_();
+        this.getSink( ).head( );
+        this.getSink( ).head_( );
 
-        this.getSink().body( this.getFindBugsVersion(), this.threshold.getName(), this.effort.getName() );
+        this.getSink( ).body( this.getFindBugsVersion( ), this.threshold.getName( ), this.effort.getName( ) );
     }
 
     protected void addBugReport( final BugInstance bugInstance )
     {
 
-        final SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation();
-        final BugPattern pattern = bugInstance.getBugPattern();
+        final SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation( );
+        final BugPattern pattern = bugInstance.getBugPattern( );
         final String lineNumber = this.valueForLine( line );
-        final String category = pattern.getCategory();
-        final String type = pattern.getType();
-        final String priority = this.evaluateThresholdParameter( bugInstance.getPriority() );
-        final String message = bugInstance.getMessage();
+        final String category = pattern.getCategory( );
+        final String type = pattern.getType( );
+        final String priority = this.evaluateThresholdParameter( bugInstance.getPriority( ) );
+        final String message = bugInstance.getMessage( );
 
         if ( !this.isCurrentClassReportOpened )
         {
-            this.getSink().classTag( this.currentClassName );
+            this.getSink( ).classTag( this.currentClassName );
             this.isCurrentClassReportOpened = true;
         }
 
-        this.log.debug( "  Found a bug: " + bugInstance.getMessage() );
-        this.getSink().bugInstance( type, priority, category, message, lineNumber );
+        this.log.debug( "  Found a bug: " + bugInstance.getMessage( ) );
+        this.getSink( ).bugInstance( type, priority, category, message, lineNumber );
     }
 
     /**
@@ -350,7 +361,7 @@ public final class XDocsReporter extends DelegatingBugReporter
      */
     protected void closeClassReportSection()
     {
-        this.getSink().classTag_();
+        this.getSink( ).classTag_( );
     }
 
     /**
@@ -368,19 +379,19 @@ public final class XDocsReporter extends DelegatingBugReporter
         switch ( thresholdValue )
         {
             case 1:
-                thresholdName = ThresholdParameter.HIGH.getName();
+                thresholdName = ThresholdParameter.HIGH.getName( );
                 break;
             case 2:
-                thresholdName = ThresholdParameter.NORMAL.getName();
+                thresholdName = ThresholdParameter.NORMAL.getName( );
                 break;
             case 3:
-                thresholdName = ThresholdParameter.LOW.getName();
+                thresholdName = ThresholdParameter.LOW.getName( );
                 break;
             case 4:
-                thresholdName = ThresholdParameter.EXP.getName();
+                thresholdName = ThresholdParameter.EXP.getName( );
                 break;
             case 5:
-                thresholdName = ThresholdParameter.IGNORE.getName();
+                thresholdName = ThresholdParameter.IGNORE.getName( );
                 break;
             default:
                 thresholdName = "Invalid Priority";
@@ -402,32 +413,58 @@ public final class XDocsReporter extends DelegatingBugReporter
     }
 
     /**
-     * Closes the class report section.
+     * Output Errors.
      */
     protected void printErrors()
     {
 
         this.log.info( "There are Errors" );
 
-        this.getSink().errorTag();
+        this.getSink( ).errorTag( );
 
         this.log.info( "Printing Errors" );
 
-        for ( Iterator i = this.bugCollection.errorIterator(); i.hasNext(); )
+        for ( Iterator i = this.bugCollection.errorIterator( ); i.hasNext( ); )
         {
-            AnalysisError analysisError = (AnalysisError) i.next();
+            AnalysisError analysisError = ( AnalysisError ) i.next( );
 
-            this.getSink().analysisErrorTag( analysisError.getMessage() );
+            this.getSink( ).analysisErrorTag( analysisError.getMessage( ) );
         }
 
         this.log.info( "Printing Missing classes" );
-        for ( Iterator i = this.bugCollection.missingClassIterator(); i.hasNext(); )
+        for ( Iterator i = this.bugCollection.missingClassIterator( ); i.hasNext( ); )
         {
-            String missingClass = (String) i.next();
-            this.getSink().missingClassTag( missingClass );
+            String missingClass = ( String ) i.next( );
+            this.getSink( ).missingClassTag( missingClass );
         }
 
-        this.getSink().errorTag_();
+        this.getSink( ).errorTag_( );
+
+    }
+
+    /**
+     * Output Source Directories.
+     */
+    protected void printSource()
+    {
+
+        this.log.info( "There are Errors" );
+
+        this.getSink( ).ProjectTag( );
+
+        this.log.info( "Printing Errors" );
+        
+
+        final List srcDirs = mavenProject.getCompileSourceRoots( );
+        if ( !srcDirs.isEmpty( ) )
+        {
+            for ( Iterator i = srcDirs.iterator( ); i.hasNext( ); )
+            {
+                this.getSink( ).srcDirTag( ( String ) i.next( ) );
+            }
+        }
+
+        this.getSink( ).ProjectTag_( );
 
     }
 
@@ -450,8 +487,8 @@ public final class XDocsReporter extends DelegatingBugReporter
         }
         else
         {
-            final int startLine = pLine.getStartLine();
-            final int endLine = pLine.getEndLine();
+            final int startLine = pLine.getStartLine( );
+            final int endLine = pLine.getEndLine( );
 
             if ( startLine == endLine )
             {
@@ -466,7 +503,8 @@ public final class XDocsReporter extends DelegatingBugReporter
             }
             else
             {
-                value = String.valueOf( startLine ) + "-" + String.valueOf( endLine );
+                value = String.valueOf( startLine ) + "-"
+                        + String.valueOf( endLine );
             }
         }
 

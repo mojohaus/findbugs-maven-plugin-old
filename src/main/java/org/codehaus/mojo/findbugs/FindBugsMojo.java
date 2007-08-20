@@ -1019,7 +1019,7 @@ public final class FindBugsMojo extends AbstractMavenReport
             }
 
             BugReporter htmlBugReporter = this.bugReporter;
-            this.bugReporter = new XDocsReporter( htmlBugReporter );
+            this.bugReporter = new XDocsReporter( htmlBugReporter, this.getProject() );
 
             ( (XDocsReporter) this.bugReporter ).setOutputWriter( new FileWriter( new File( this.xmlOutputDirectory
                             + "/findbugs.xml" ) ) );

@@ -132,4 +132,20 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.out.write( text, true );
     }
 
+    public void ProjectTag()
+    {
+        this.markup( "<Project>" + EOL );
+    }
+
+    public void ProjectTag_()
+    {
+        this.markup( "</Project>" + EOL );
+    }
+
+    public void srcDirTag( String className )
+    {
+        this.markup( "<SrcDir>" );
+        this.markup( className );
+        this.markup( "</SrcDir>" + EOL );
+    }
 }
