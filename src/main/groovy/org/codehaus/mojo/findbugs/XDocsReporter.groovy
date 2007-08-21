@@ -1,0 +1,517 @@
+package org.codehaus.mojo.findbugs
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License") you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+
+import org.apache.maven.plugin.logging.Log
+import org.apache.maven.project.MavenProject
+
+import edu.umd.cs.findbugs.AbstractBugReporter
+import edu.umd.cs.findbugs.AnalysisError
+import edu.umd.cs.findbugs.BugInstance
+import edu.umd.cs.findbugs.BugPattern
+import edu.umd.cs.findbugs.BugReporter
+import edu.umd.cs.findbugs.BugReporterObserver
+import edu.umd.cs.findbugs.DelegatingBugReporter
+import edu.umd.cs.findbugs.SortedBugCollection
+import edu.umd.cs.findbugs.SourceLineAnnotation
+import edu.umd.cs.findbugs.classfile.ClassDescriptor
+
+/**
+ * The reporter controls the generation of the FindBugs report. It contains call back methods which gets called by
+ * FindBugs if a bug is found.
+ * 
+ * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
+ * @version $Id: XDocsReporter.groovy 2561 2006-10-24 21:06:39Z gleclaire $
+ */
+class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
+{
+
+    /**
+     * The key to get the value if the line number is not available.
+     * 
+     */
+    static final String NOLINE_KEY = "report.findbugs.noline"
+
+    /**
+     * The sink to write the report to.
+     * 
+     */
+    FindbugsXdocSink sink
+
+    /**
+     * The bundle to get the messages from.
+     * 
+     */
+    ResourceBundle resourceBundle
+
+    /**
+     * The logger to write logs to.
+     * 
+     */
+    Log log
+
+    /**
+     * The threshold of bugs severity.
+     * 
+     */
+    ThresholdParameter threshold
+
+    /**
+     * The used effort for searching bugs.
+     * 
+     */
+    EffortParameter effort
+
+    /**
+     * The name of the current class which is analysed by FindBugs.
+     * 
+     */
+    String currentClassName
+
+    /**
+     * Signals if the report for the current class is opened.
+     * 
+     */
+    boolean isCurrentClassReportOpened = false
+
+    /**
+     * The Collection of Bugs and Error collected during analysis.
+     * 
+     */
+    SortedBugCollection bugCollection = new SortedBugCollection()
+
+    /**
+     * The output Writer stream.
+     * 
+     */
+    Writer outputWriter
+
+    /**
+     * The MavenProject Object
+     * 
+     */
+    MavenProject mavenProject
+
+    
+    /**
+     * Default constructor.
+     * 
+     * @param realBugReporter
+     *            the BugReporter to Delegate
+     */
+    XDocsReporter( BugReporter realBugReporter, MavenProject mavenProject )
+    {
+        super( realBugReporter )
+
+        this.mavenProject = mavenProject;
+        this.sink = null
+        this.resourceBundle = null
+        this.log = null
+        this.threshold = null
+        this.effort = null
+    }
+
+    /**
+     * @see edu.umd.cs.findbugs.BugReporter#finish()
+     */
+    void finish()
+    {
+
+        // close file tag if needed
+        if ( this.isCurrentClassReportOpened )
+        {
+            this.closeClassReportSection()
+        }
+
+        this.isCurrentClassReportOpened = false
+
+        // close the report, write it
+
+        this.printErrors()
+        this.printSource()
+        this.getSink().body_()
+        this.getSink().flush()
+        this.getSink().close()
+
+        super.finish()
+
+    }
+
+    /**
+     * @return the effort
+     */
+    EffortParameter getEffort()
+    {
+        return this.effort
+    }
+
+    /**
+     * @return the log
+     */
+    Log getLog()
+    {
+        return this.log
+    }
+
+    /**
+     * @return the outputWriter
+     */
+    Writer getOutputWriter()
+    {
+        return this.outputWriter
+    }
+
+    /**
+     * @return the resourceBundle
+     */
+    ResourceBundle getResourceBundle()
+    {
+        return this.resourceBundle
+    }
+
+    /**
+     * @return the sink
+     */
+    FindbugsXdocSink getSink()
+    {
+        if ( !this.sink )
+        {
+            this.sink = new FindbugsXdocSink( this.getOutputWriter() )
+            this.initialiseReport()
+
+        }
+        return this.sink
+    }
+
+    /**
+     * @return the threshold
+     */
+    ThresholdParameter getThreshold()
+    {
+        return this.threshold
+    }
+
+    void logError( String message )
+    {
+        this.bugCollection.addError( message )
+        super.logError( message )
+    }
+
+    void logError( String message, Throwable e )
+    {
+        this.bugCollection.addError( message )
+        super.logError( message, e )
+    }
+
+    /**
+     * Observe a class.
+     * 
+     * @param classDescriptor
+     *            The Class to Observe
+     * @see edu.umd.cs.findbugs.classfile.IClassObserver #observeClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+     */
+    void observeClass( ClassDescriptor classDescriptor )
+    {
+
+        this.currentClassName = classDescriptor.toDottedClassName()
+
+        if ( this.isCurrentClassReportOpened )
+        {
+            this.closeClassReportSection()
+        }
+
+        this.isCurrentClassReportOpened = false
+
+        super.observeClass( classDescriptor )
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+     */
+    void reportMissingClass( ClassDescriptor classDescriptor )
+    {
+        this.bugCollection.addMissingClass( classDescriptor.toDottedClassName() )
+        super.reportMissingClass( classDescriptor )
+    }
+
+    void reportMissingClass( ClassNotFoundException ex )
+    {
+        String missingClassName = AbstractBugReporter.getMissingClassName( ex )
+        this.bugCollection.addMissingClass( missingClassName )
+        super.reportMissingClass( ex )
+    }
+
+    /**
+     * @param effort
+     *            the effort to set
+     */
+    void setEffort( EffortParameter effort )
+    {
+        this.effort = effort
+    }
+
+    /**
+     * @param log
+     *            the log to set
+     */
+    void setLog( Log log )
+    {
+        this.log = log
+    }
+
+    /**
+     * @param outputWriter
+     *            the outputWriter to set
+     */
+    void setOutputWriter( Writer outputWriter )
+    {
+        this.outputWriter = outputWriter
+    }
+
+    /**
+     * @param resourceBundle
+     *            the resourceBundle to set
+     */
+    void setResourceBundle( ResourceBundle resourceBundle )
+    {
+        this.resourceBundle = resourceBundle
+    }
+
+    /**
+     * @param threshold
+     *            the threshold to set
+     */
+    void setThreshold( ThresholdParameter threshold )
+    {
+        this.threshold = threshold
+    }
+
+    /**
+     * Initialises the report.
+     */
+    private void initialiseReport()
+    {
+        this.getSink().head()
+        this.getSink().head_()
+
+        this.getSink().body( this.getFindBugsVersion(), this.threshold.getName(), this.effort.getName() )
+    }
+
+    protected void addBugReport( BugInstance bugInstance )
+    {
+
+        SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation()
+        BugPattern pattern = bugInstance.getBugPattern()
+        String lineNumber = this.valueForLine( line )
+        String category = pattern.getCategory()
+        String type = pattern.getType()
+        String priority = this.evaluateThresholdParameter( bugInstance.getPriority() )
+        String message = bugInstance.getMessage()
+
+        if ( !this.isCurrentClassReportOpened )
+        {
+            this.getSink().classTag( this.currentClassName )
+            this.isCurrentClassReportOpened = true
+        }
+
+        this.log.debug( "  Found a bug: " + bugInstance.getMessage() )
+        this.getSink().bugInstance( type, priority, category, message, lineNumber )
+    }
+
+    /**
+     * Closes the class report section.
+     */
+    protected void closeClassReportSection()
+    {
+        this.getSink().classTag_()
+    }
+
+    /**
+     * Returns the threshold string value for the integer input.
+     * 
+     * @param thresholdValue
+     *            The ThresholdValue integer to evaluate.
+     * @return The string valueof the Threshold object.
+     * 
+     */
+    protected String evaluateThresholdParameter( int thresholdValue )
+    {
+        String thresholdName
+
+        switch ( thresholdValue )
+        {
+            case 1:
+                thresholdName = ThresholdParameter.HIGH.getName()
+                break
+            case 2:
+                thresholdName = ThresholdParameter.NORMAL.getName()
+                break
+            case 3:
+                thresholdName = ThresholdParameter.LOW.getName()
+                break
+            case 4:
+                thresholdName = ThresholdParameter.EXP.getName()
+                break
+            case 5:
+                thresholdName = ThresholdParameter.IGNORE.getName()
+                break
+            default:
+                thresholdName = "Invalid Priority"
+        }
+
+        return thresholdName
+
+    }
+
+    /**
+     * Gets the Findbugs Version of the report.
+     * 
+     * @return The Findbugs Version used on the report.
+     * 
+     */
+    protected String getFindBugsVersion()
+    {
+        return edu.umd.cs.findbugs.Version.RELEASE
+    }
+
+    /**
+     * Closes the class report section.
+     */
+    protected void printErrors()
+    {
+
+        this.log.info( "There are Errors" )
+
+        this.getSink().errorTag()
+
+        this.log.info( "Printing Errors" )
+
+
+/*        
+        for ( Iterator i = this.bugCollection.errorIterator() i.hasNext() )
+        {
+            AnalysisError analysisError = (AnalysisError) i.next()
+
+            this.getSink().analysisErrorTag( analysisError.getMessage() )
+        }
+*/     
+
+        this.bugCollection.errorIterator().each() {  analysisError ->
+            this.getSink().analysisErrorTag( analysisError.getMessage() )
+        }
+
+        this.log.info( "Printing Missing classes" )
+/*        
+        for ( Iterator i = this.bugCollection.missingClassIterator() i.hasNext() )
+        {
+            String missingClass = (String) i.next()
+            this.getSink().missingClassTag( missingClass )
+        }
+        */     
+
+        this.bugCollection.missingClassIterator().each() { missingClass ->
+            this.getSink().missingClassTag( missingClass )
+        }
+        this.getSink().errorTag_()
+
+    }
+
+    /**
+     * Output Source Directories.
+     */
+    protected void printSource()
+    {
+
+        this.log.info( "There are Errors" )
+
+        this.getSink( ).ProjectTag( )
+
+        this.log.info( "Printing Errors" )
+        
+
+        List srcDirs = mavenProject.getCompileSourceRoots( )
+        if ( !srcDirs.isEmpty( ) )
+        {
+            srcDirs.each() { srcDir ->
+                this.getSink( ).srcDirTag( srcDir ) 
+            }
+        }
+
+        this.getSink( ).ProjectTag_( )
+
+    }
+
+    
+    /**
+     * Return the value to display. If FindBugs does not provide a line number, a default message is returned. The line
+     * number otherwise.
+     * 
+     * @param line
+     *            The line to get the value from.
+     * @return The line number the bug appears or a statement that there is no source line available.
+     * 
+     */
+    protected String valueForLine( SourceLineAnnotation line )
+    {
+        String value = null
+
+        if ( !line )
+        {
+            value = this.resourceBundle.getString( XDocsReporter.NOLINE_KEY )
+        }
+        else
+        {
+            int startLine = line.getStartLine()
+            int endLine = line.getEndLine()
+
+            if ( startLine == endLine )
+            {
+                if ( startLine == -1 )
+                {
+                    value = this.resourceBundle.getString( XDocsReporter.NOLINE_KEY )
+                }
+                else
+                {
+                    value = String.valueOf( startLine )
+                }
+            }
+            else
+            {
+                value = String.valueOf( startLine ) + "-" + String.valueOf( endLine )
+            }
+        }
+
+        return value
+    }
+
+
+    void reportBug( BugInstance bugInstance )
+    {
+        this.addBugReport( bugInstance )
+        super.reportBug( bugInstance )
+    }
+
+}
+
+     
+     

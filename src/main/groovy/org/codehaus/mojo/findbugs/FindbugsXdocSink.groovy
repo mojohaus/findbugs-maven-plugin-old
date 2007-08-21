@@ -1,24 +1,22 @@
 package org.codehaus.mojo.findbugs;
 
-/* Copyright (c) 2004, The Codehaus
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is furnished to do
- * so, subject to the following conditions:
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import java.io.Writer;
@@ -31,32 +29,32 @@ import org.apache.maven.doxia.util.LineBreaker;
  * A doxia Sink which produces an FindBugs model.
  * 
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: FindbugsXdocSink.java 2561 2006-10-24 21:06:39Z gleclaire $
+ * @version $Id: FindbugsXdocSink.groovy 2561 2006-10-24 21:06:39Z gleclaire $
  */
-public final class FindbugsXdocSink extends SinkAdapter
+class FindbugsXdocSink extends SinkAdapter
 {
-    private static final String EOL = System.getProperty( "line.separator" );
+    static final String EOL = System.getProperty( "line.separator" );
 
-    private LineBreaker out;
+    LineBreaker out;
 
-    public FindbugsXdocSink( Writer out )
+    FindbugsXdocSink( Writer out )
     {
         this.out = new LineBreaker( out );
     }
 
-    public void analysisErrorTag( String className )
+    void analysisErrorTag( String className )
     {
         this.markup( "<AnalysisError>" );
         this.markup( className );
         this.markup( " </AnalysisError>" + EOL );
     }
 
-    public void body()
+    void body()
     {
         this.markup( "<BugCollection>" + EOL );
     }
 
-    public void body( String version, String threshold, String effort )
+    void body( String version, String threshold, String effort )
     {
         this.markup( "<BugCollection" );
         this.markup( " version=" + '"' + version + '"' );
@@ -66,13 +64,13 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.markup( " >" + EOL );
     }
 
-    public void body_()
+    void body_()
     {
         this.markup( "</BugCollection>" + EOL );
         this.out.flush();
     }
 
-    public void bugInstance( String type, String priority, String category, String message, String lineNumber )
+    void bugInstance( String type, String priority, String category, String message, String lineNumber )
     {
         this.markup( "<BugInstance" );
         this.markup( " type=" + '"' + HtmlTools.escapeHTML( type ) + '"' );
@@ -83,44 +81,44 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.markup( " />" + EOL );
     }
 
-    public void classTag( String className )
+    void classTag( String className )
     {
         this.markup( "<file" );
         this.markup( " classname=" + '"' + className + '"' );
         this.markup( " >" + EOL );
     }
 
-    public void classTag_()
+    void classTag_()
     {
         this.markup( "</file>" + EOL );
     }
 
-    public void close()
+    void close()
     {
         this.out.close();
     }
 
-    public void errorTag()
+    void errorTag()
     {
         this.markup( "<Errors>" + EOL );
     }
 
-    public void errorTag_()
+    void errorTag_()
     {
         this.markup( "</Errors>" + EOL );
     }
 
-    public void flush()
+    void flush()
     {
         this.out.flush();
     }
 
-    public void head()
+    void head()
     {
         this.markup( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + EOL );
     }
 
-    public void missingClassTag( String className )
+    void missingClassTag( String className )
     {
         this.markup( "<MissingClass>" );
         this.markup( className );
@@ -132,20 +130,21 @@ public final class FindbugsXdocSink extends SinkAdapter
         this.out.write( text, true );
     }
 
-    public void ProjectTag()
+    void ProjectTag()
     {
-        this.markup( "<Project>" + EOL );
+        this.markup( "<Project>" + EOL )
     }
 
-    public void ProjectTag_()
+    void ProjectTag_()
     {
-        this.markup( "</Project>" + EOL );
+        this.markup( "</Project>" + EOL )
     }
 
-    public void srcDirTag( String className )
+    void srcDirTag( String className )
     {
-        this.markup( "<SrcDir>" );
-        this.markup( className );
-        this.markup( "</SrcDir>" + EOL );
+        this.markup( "<SrcDir>" )
+        this.markup( className )
+        this.markup( "</SrcDir>" + EOL )
     }
+
 }
