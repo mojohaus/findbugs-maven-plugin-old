@@ -31,9 +31,10 @@ import org.apache.maven.doxia.siterenderer.Renderer
 import org.apache.maven.model.ReportPlugin
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
-import org.apache.maven.reporting.AbstractMavenReport
+//import org.apache.maven.reporting.AbstractMavenReport
 import org.apache.maven.reporting.MavenReportException
 
+import org.codehaus.mojo.groovy.GroovyAbstractMavenReport
 import org.codehaus.plexus.util.FileUtils
 
 import edu.umd.cs.findbugs.BugReporter
@@ -57,7 +58,7 @@ import edu.umd.cs.findbugs.filter.FilterException
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id: FindBugsMojo.groovy 4041 2007-05-07 02:55:00Z gleclaire $
  */
-class FindBugsMojo extends AbstractMavenReport
+class FindBugsMojo extends GroovyAbstractMavenReport
 {
 
     /**
@@ -376,7 +377,6 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      */
     protected void addClasspathEntriesToFindBugsProject( Project findBugsProject )
-        throws DependencyResolutionRequiredException
     {
         def auxClasspathElements = getProject().getCompileClasspathElements()
 
@@ -412,7 +412,7 @@ class FindBugsMojo extends AbstractMavenReport
      *             If filter file was invalid.
      * 
      */
-    protected void addFiltersToFindBugs( FindBugs2 findBugs ) throws IOException, FilterException
+    protected void addFiltersToFindBugs( FindBugs2 findBugs )
     {
         if ( includeFilterFile != null )
         {
@@ -535,7 +535,6 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      */
     protected void addPluginsToFindBugs( Locale locale )
-        throws ArtifactNotFoundException, ArtifactResolutionException, MavenReportException
     {
 
         def corepluginpath
@@ -544,9 +543,9 @@ class FindBugsMojo extends AbstractMavenReport
         {
             corepluginpath = getCorePluginPath( locale ).toURL()
         }
-        catch ( MalformedURLException pException )
+        catch ( MalformedURLException exception )
         {
-            throw new MavenReportException( "The core plugin has an invalid URL", pException )
+            fail( "The core plugin has an invalid URL", exception )
         }
 
         log.debug( "  coreplugin Jar is located at " + corepluginpath.toString() )
@@ -570,9 +569,9 @@ class FindBugsMojo extends AbstractMavenReport
                 {
                     plugins += new File( pluginFile ).toURL()
                 }
-                catch ( MalformedURLException pException )
+                catch ( MalformedURLException exception )
                 {
-                    throw new MavenReportException( "The addin plugin has an invalid URL", pException )
+                    fail( "The addin plugin has an invalid URL", exception )
                 }
                 log.info( "  Adding Plugin: " + pluginFile.toString() )
 
@@ -678,7 +677,7 @@ class FindBugsMojo extends AbstractMavenReport
      *             if anything goes wrong
      * @see org.apache.maven.reporting.AbstractMavenReport #executeReport(java.util.Locale)
      */
-    protected void executeReport( Locale locale ) throws MavenReportException
+    protected void executeReport( Locale locale )
     {
         if ( !skip )
         {
@@ -695,25 +694,25 @@ class FindBugsMojo extends AbstractMavenReport
             {
                 findBugs = initialiseFindBugs( locale, getJavaSources( locale, classFilesDirectory ) )
             }
-            catch ( IOException pException )
+            catch ( IOException exception )
             {
-                throw new MavenReportException( "A java source file could not be added", pException )
+                fail( "A java source file could not be added", exception )
             }
-            catch ( DependencyResolutionRequiredException pException )
+            catch ( DependencyResolutionRequiredException exception )
             {
-                throw new MavenReportException( "Failed executing FindBugs", pException )
+                fail( "Failed executing FindBugs", exception )
             }
-            catch ( FilterException pException )
+            catch ( FilterException exception )
             {
-                throw new MavenReportException( "Failed adding filters to FindBugs", pException )
+                fail( "Failed adding filters to FindBugs", exception )
             }
-            catch ( ArtifactNotFoundException pException )
+            catch ( ArtifactNotFoundException exception )
             {
-                throw new MavenReportException( "Did not find coreplugin", pException )
+                fail( "Did not find coreplugin", exception )
             }
-            catch ( ArtifactResolutionException pException )
+            catch ( ArtifactResolutionException exception )
             {
-                throw new MavenReportException( "Failed to resolve coreplugin", pException )
+                fail( "Failed to resolve coreplugin", exception )
             }
 
             try
@@ -722,17 +721,17 @@ class FindBugsMojo extends AbstractMavenReport
                 findBugs.execute()
 
             }
-            catch ( IOException pException )
+            catch ( IOException exception )
             {
-                throw new MavenReportException( "Failed executing FindBugs", pException )
+                fail( "Failed executing FindBugs", exception )
             }
-            catch ( InterruptedException pException )
+            catch ( InterruptedException exception )
             {
-                throw new MavenReportException( "Failed executing FindBugs", pException )
+                fail( "Failed executing FindBugs", exception )
             }
-            catch ( Exception pException )
+            catch ( Exception exception )
             {
-                throw new MavenReportException( "Failed executing FindBugs", pException )
+                fail( "Failed executing FindBugs", exception )
             }
         }
     }
@@ -767,7 +766,6 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      */
     protected File getCorePluginPath( Locale locale )
-        throws ArtifactNotFoundException, ArtifactResolutionException
     {
          def corePluginPath = pluginArtifacts.find(){artifact ->
          	artifact.getArtifactId() == getCorePlugin( locale )
@@ -828,7 +826,7 @@ class FindBugsMojo extends AbstractMavenReport
      *             If there are problems searching for java sources.
      * 
      */
-    protected List getJavaSources( Locale locale, File pSourceDirectory ) throws IOException
+    protected List getJavaSources( Locale locale, File pSourceDirectory )
     {
         List sourceFiles = new ArrayList()
 
@@ -955,8 +953,6 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      */
     protected FindBugs2 initialiseFindBugs( Locale locale, List sourceFiles )
-        throws DependencyResolutionRequiredException, IOException, FilterException, ArtifactNotFoundException,
-        ArtifactResolutionException, MavenReportException
     {
         Sink sink = getSink()
         ResourceBundle bundle = FindBugsMojo.getBundle( locale )
@@ -977,7 +973,7 @@ class FindBugsMojo extends AbstractMavenReport
             {
                 if ( !xmlOutputDirectory.mkdirs() )
                 {
-                    throw new MavenReportException( "Cannot create xml output directory" )
+                    fail( "Cannot create xml output directory" )
                 }
 
             }
@@ -1024,25 +1020,25 @@ class FindBugsMojo extends AbstractMavenReport
     /**
      * Initialises a reporter.
      * 
-     * @param pSink
+     * @param sink
      *            The sink to write the report to.
      * @param bundle
      *            The bundle to get messages from.
-     * @param pLog
+     * @param log
      *            The logger to write logs to.
-     * @param pEffortParameter
+     * @param effortParameter
      *            The effort to use.
      * @return An initialised reporter.
      * 
      */
-    protected Reporter initialiseReporter( Sink pSink, ResourceBundle bundle, Log pLog,
-                                           EffortParameter pEffortParameter )
+    protected Reporter initialiseReporter( Sink sink, ResourceBundle bundle, Log log,
+                                           EffortParameter effortParameter )
     {
         ThresholdParameter thresholdParameter = getThresholdParameter()
 
         boolean isJXRPluginEnabled = isJXRPluginEnabled( bundle )
         Reporter bugReporter =
-            new Reporter( pSink, bundle, pLog, thresholdParameter, isJXRPluginEnabled, pEffortParameter )
+            new Reporter( sink, bundle, log, thresholdParameter, isJXRPluginEnabled, effortParameter )
         bugReporter.setPriorityThreshold( thresholdParameter.getValue() )
 
         return bugReporter
