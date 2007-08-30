@@ -7,6 +7,9 @@
 	</properties>
 	<body>
 		<release version="1.2-SNAPSHOT" date="in SVN">
+			<action dev="gl" type="fix" issue="MOJO-894">
+				Allow the use or URIs for includeFilter and excludeFilter.
+			</action>
 			<action dev="gl" type="fix" issue="MOJO-882">
 				Added Source Directory output to xml output.
 			</action>

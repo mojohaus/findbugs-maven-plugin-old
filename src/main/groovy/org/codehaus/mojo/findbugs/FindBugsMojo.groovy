@@ -31,10 +31,9 @@ import org.apache.maven.doxia.siterenderer.Renderer
 import org.apache.maven.model.ReportPlugin
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
-//import org.apache.maven.reporting.AbstractMavenReport
+import org.apache.maven.reporting.AbstractMavenReport
 import org.apache.maven.reporting.MavenReportException
 
-import org.codehaus.mojo.groovy.GroovyAbstractMavenReport
 import org.codehaus.plexus.util.FileUtils
 
 import edu.umd.cs.findbugs.BugReporter
@@ -58,7 +57,7 @@ import edu.umd.cs.findbugs.filter.FilterException
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id: FindBugsMojo.groovy 4041 2007-05-07 02:55:00Z gleclaire $
  */
-class FindBugsMojo extends GroovyAbstractMavenReport
+class FindBugsMojo extends AbstractMavenReport
 {
 
     /**
@@ -414,37 +413,60 @@ class FindBugsMojo extends GroovyAbstractMavenReport
      */
     protected void addFiltersToFindBugs( FindBugs2 findBugs )
     {
-        if ( includeFilterFile != null )
+
+        def dir = "${project.build.directory}"
+        File destFile
+        String fileName           
+            
+            
+     
+        if ( includeFilterFile )
         {
-            if ( new File( includeFilterFile ).exists() )
+            try 
             {
-                findBugs.addFilter( includeFilterFile, true )
-                log.debug( "  Using bug include filter " + includeFilterFile )
+                URL url = new URL( includeFilterFile )
+                fileName = includeFilterFile.tokenize("/")[-1]
+                destFile = new File( dir, fileName )
+                FileUtils.copyURLToFile( url,  destFile)
+    
             }
-            else
+            catch (MalformedURLException me)
             {
-                log.debug( "  No bug include filter " + includeFilterFile + " found" )
+                destFile = new File( includeFilterFile ) 
             }
+
+           
+            log.info( "  Using bug include filter " + includeFilterFile)
+            findBugs.addFilter( destFile.toString() , true )
         }
         else
         {
             log.info( "  No bug include filter." )
         }
-        if ( excludeFilterFile != null )
+
+        
+        if ( excludeFilterFile )
         {
-            if ( new File( excludeFilterFile ).exists() )
+
+            try 
             {
-                findBugs.addFilter( excludeFilterFile, false )
-                log.debug( "  Using bug exclude filter " + excludeFilterFile )
+                URL url = new URL( excludeFilterFile )
+                fileName = excludeFilterFile.tokenize("/")[-1]
+                destFile = new File( dir, fileName )
+                FileUtils.copyURLToFile( url,  destFile)
+    
             }
-            else
+            catch (MalformedURLException me)
             {
-                log.debug( "  No bug exclude filter " + excludeFilterFile + " found" )
+                destFile = new File( excludeFilterFile ) 
             }
+
+           log.info( "  Using bug exclude filter " + excludeFilterFile)
+           findBugs.addFilter( destFile.toString() , false )
         }
         else
         {
-            log.debug( "  No bug exclude filter." )
+            log.info( "  No bug exclude filter." )
         }
     }
 
