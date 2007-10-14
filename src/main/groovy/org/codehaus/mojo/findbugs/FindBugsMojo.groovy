@@ -1,4 +1,5 @@
-package org.codehaus.mojo.findbugs;
+
+package org.codehaus.mojo.findbugs
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,6 +30,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolver
 import org.apache.maven.doxia.sink.Sink
 import org.apache.maven.doxia.siterenderer.Renderer
 import org.apache.maven.model.ReportPlugin
+import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
@@ -40,8 +42,11 @@ import edu.umd.cs.findbugs.BugReporter
 import edu.umd.cs.findbugs.ClassScreener
 import edu.umd.cs.findbugs.DetectorFactory
 import edu.umd.cs.findbugs.DetectorFactoryCollection
-import edu.umd.cs.findbugs.FindBugs2
+// import edu.umd.cs.findbugs.FindBugs2
 import edu.umd.cs.findbugs.Project
+import edu.umd.cs.findbugs.TextUIBugReporter
+import edu.umd.cs.findbugs.XDocsBugReporter
+import edu.umd.cs.findbugs.XMLBugReporter
 import edu.umd.cs.findbugs.config.UserPreferences
 import edu.umd.cs.findbugs.filter.FilterException
 
@@ -137,6 +142,29 @@ class FindBugsMojo extends AbstractMavenReport
      * @required
      */
     File xmlOutputDirectory
+
+    /**
+     * Turn on and off findbugs native xml output of the Findbugs report.
+     *
+     * @parameter default-value="false"
+     */
+    boolean findbugsXmlOutput
+
+    /**
+     * Specifies the directory where the findbugs native xml output will be generated.
+     *
+     * @parameter default-value="${project.build.directory}"
+     * @required
+     */
+    File findbugsXmlOutputDirectory
+
+
+    /**
+     * Turn on and off xml output of the Findbugs report.
+     *
+     * @parameter default-value="false"
+     */
+    boolean findbugsXmlWithMessages
 
     /**
      * Doxia Site Renderer.
@@ -411,7 +439,7 @@ class FindBugsMojo extends AbstractMavenReport
      *             If filter file was invalid.
      * 
      */
-    protected void addFiltersToFindBugs( FindBugs2 findBugs )
+    protected void addFiltersToFindBugs( FindBugs2Proxy findBugs )
     {
 
         def dir = "${project.build.directory}"
@@ -501,7 +529,7 @@ class FindBugsMojo extends AbstractMavenReport
      *             If the findBugs plugins URL could not be resolved.
      * 
      */
-    protected void addClassScreenerToFindBugs( FindBugs2 findBugs )
+    protected void addClassScreenerToFindBugs( FindBugs2Proxy findBugs )
     {
 
         if ( onlyAnalyze != null )
@@ -703,7 +731,7 @@ class FindBugsMojo extends AbstractMavenReport
     {
         if ( !skip )
         {
-            FindBugs2 findBugs = null
+            FindBugs2Proxy findBugs = null
             debugSourceDirectory( locale, classFilesDirectory )
 
             if ( !canGenerateReport() )
@@ -741,7 +769,7 @@ class FindBugsMojo extends AbstractMavenReport
             {
 
                 findBugs.execute()
-
+                
             }
             catch ( IOException exception )
             {
@@ -770,7 +798,6 @@ class FindBugsMojo extends AbstractMavenReport
     {
         ResourceBundle bundle = getBundle( locale )
         String corePluginName = bundle.getString( FINDBUGS_COREPLUGIN )
-
         return corePluginName
 
     }
@@ -974,19 +1001,66 @@ class FindBugsMojo extends AbstractMavenReport
      *             If the findBugs plugins cannot be initialized
      * 
      */
-    protected FindBugs2 initialiseFindBugs( Locale locale, List sourceFiles )
+    protected FindBugs2Proxy initialiseFindBugs( Locale locale, List sourceFiles )
     {
         Sink sink = getSink()
         ResourceBundle bundle = FindBugsMojo.getBundle( locale )
         Log log = getLog()
         EffortParameter effortParameter = getEffortParameter()
 
+        TextUIBugReporter textUiBugReporter
+
         Project findBugsProject = new Project()
+        findBugsProject.projectName = "${project.name}"
+
+
+        addJavaSourcesToFindBugsProject( sourceFiles, findBugsProject )
+        addClasspathEntriesToFindBugsProject( findBugsProject )
+
+        FindBugs2Proxy findBugs = new FindBugs2Proxy()
+
+        println "setting Project"
+        findBugs.setProject( findBugsProject )
+
+        findBugs.initializeProxyReporter( this.getThresholdParameter().getValue() )
+
 
         log.info( "  Using FindBugs Version: " + edu.umd.cs.findbugs.Version.RELEASE )
 
         bugReporter = initialiseReporter( sink, bundle, log, effortParameter )
+        bugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
+        findBugs.setBugReporter( bugReporter )
 
+        if ( findbugsXmlOutput )
+        {
+            println "Doing XMLBugReporter"
+            XMLBugReporter xmlBugReporter = new XMLBugReporter( findBugsProject )
+            xmlBugReporter.setAddMessages( findbugsXmlWithMessages )
+            textUiBugReporter = xmlBugReporter
+            textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugsXml.xml" ) ) )
+            textUiBugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
+
+            bugReporter = textUiBugReporter
+            findBugs.setBugReporter( bugReporter )
+        }
+
+
+        /*
+
+        if ( findbugsXdocOutput )
+        {
+            // legacy xdoc format
+            println "Doing XDocsBugReporter"
+            textUiBugReporter = new XDocsBugReporter( findBugsProject )
+            textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugs.xdoc" ) ) )
+            textUiBugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
+
+            bugReporter = textUiBugReporter
+            findBugs.setBugReporter( bugReporter )
+
+        }
+
+        */
         if ( xmlOutput )
         {
             log.info( "  Using the xdoc format" )
@@ -1000,22 +1074,22 @@ class FindBugsMojo extends AbstractMavenReport
 
             }
 
-            BugReporter htmlBugReporter = bugReporter
-            bugReporter = new XDocsReporter( htmlBugReporter, this.getProject() )
+            println "setting xdoc BugReporter"
+//            BugReporter htmlBugReporter = bugReporter
+            XDocsReporter xDocsReporter = new XDocsReporter( this.getProject() )
             
-            ( (XDocsReporter) bugReporter ).setOutputWriter( new FileWriter( new File( "${xmlOutputDirectory}/findbugs.xml" ) ) )
-            ( (XDocsReporter) bugReporter ).setResourceBundle( bundle )
-            ( (XDocsReporter) bugReporter ).setLog( log )
-            ( (XDocsReporter) bugReporter ).setEffort( getEffortParameter() )
-            ( (XDocsReporter) bugReporter ).setThreshold( getThresholdParameter() )
+            xDocsReporter.setOutputWriter( new FileWriter( new File( "${xmlOutputDirectory}/findbugs.xml" ) ) )
+            xDocsReporter.setResourceBundle( bundle )
+            xDocsReporter.setLog( log )
+            xDocsReporter.setEffort( getEffortParameter() )
+//            xDocsReporter.threshold( getThresholdParameter() )
+            xDocsReporter.threshold = getThresholdParameter()
+            xDocsReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )   //TODO: combine the two in XDocsReporter
+
+//            bugReporter = textUiBugReporter
+            findBugs.setBugReporter( xDocsReporter )
         }
 
-        addJavaSourcesToFindBugsProject( sourceFiles, findBugsProject )
-        addClasspathEntriesToFindBugsProject( findBugsProject )
-
-        FindBugs2 findBugs = new FindBugs2()
-        findBugs.setBugReporter( bugReporter )
-        findBugs.setProject( findBugsProject )
 
         if ( !pluginLoaded )
         {
@@ -1100,11 +1174,13 @@ class FindBugsMojo extends AbstractMavenReport
      *            The find bugs to add debug level information.
      * 
      */
-    protected void setFindBugsDebug( FindBugs2 findBugs )
+    protected void setFindBugsDebug( FindBugs2Proxy findBugs )
     {
         System.setProperty( "findbugs.classpath.debug", debug.toString() )
         System.setProperty( "findbugs.debug", debug.toString() )
-
+        System.setProperty( "findbugs.verbose", debug.toString() )
+        System.setProperty( "findbugs.debug.missingclasses", debug.toString() )
+       
         if ( debug.booleanValue() )
         {
             log.info( "  Debugging is On" )
@@ -1131,4 +1207,21 @@ class FindBugsMojo extends AbstractMavenReport
         return bundle
     }
 
+    protected def fail(msg)
+    {
+        assert msg
+
+        if (msg instanceof Throwable) {
+            fail(msg.message, msg)
+        }
+        throw new MojoExecutionException("$msg")
+    }
+
+    protected def fail(msg, Throwable cause)
+    {
+        assert msg
+        assert cause
+
+        throw new MojoExecutionException("$msg", cause)
+    }
 }

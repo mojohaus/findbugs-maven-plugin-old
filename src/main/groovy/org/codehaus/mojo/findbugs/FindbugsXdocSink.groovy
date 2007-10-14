@@ -38,6 +38,7 @@ class FindbugsXdocSink extends SinkAdapter
     LineBreaker out;
 
     FindbugsXdocSink( Writer out )
+    
     {
         this.out = new LineBreaker( out );
     }

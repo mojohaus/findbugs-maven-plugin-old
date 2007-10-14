@@ -67,7 +67,10 @@
 		</license>
 	</licenses>
 	<properties>
-		<groovy.plugin.version>1.0-beta-2</groovy.plugin.version>
+        <groovy.plugin.version>1.0-beta-2</groovy.plugin.version>
+<!--
+        <groovy.plugin.version>1.0-beta-3-SNAPSHOT</groovy.plugin.version>
+-->
 	</properties>
 	<dependencies>
 		<dependency>

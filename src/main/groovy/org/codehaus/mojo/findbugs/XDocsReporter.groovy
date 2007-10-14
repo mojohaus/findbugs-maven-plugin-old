@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.BugReporterObserver
 import edu.umd.cs.findbugs.DelegatingBugReporter
 import edu.umd.cs.findbugs.SortedBugCollection
 import edu.umd.cs.findbugs.SourceLineAnnotation
+import edu.umd.cs.findbugs.TextUIBugReporter
 import edu.umd.cs.findbugs.classfile.ClassDescriptor
 
 /**
@@ -41,7 +42,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id: XDocsReporter.groovy 2561 2006-10-24 21:06:39Z gleclaire $
  */
-class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
+//class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
+class XDocsReporter extends TextUIBugReporter
 {
 
     /**
@@ -59,7 +61,7 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
     /**
      * The bundle to get the messages from.
      * 
-     */
+     */                                              
     ResourceBundle resourceBundle
 
     /**
@@ -93,6 +95,24 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
     boolean isCurrentClassReportOpened = false
 
     /**
+      * The running total of bugs reported.
+      *
+      */
+     int bugCount
+
+     /**
+      * The running total of missing classes reported.
+      *
+      */
+     int missingClassCount
+
+     /**
+      * The running total of files analyzed.
+      *
+      */
+     int fileCount
+
+    /**
      * The Collection of Bugs and Error collected during analysis.
      * 
      */
@@ -117,9 +137,9 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
      * @param realBugReporter
      *            the BugReporter to Delegate
      */
-    XDocsReporter( BugReporter realBugReporter, MavenProject mavenProject )
+    XDocsReporter( MavenProject mavenProject )
     {
-        super( realBugReporter )
+        super( )
 
         this.mavenProject = mavenProject;
         this.sink = null
@@ -150,8 +170,6 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
         this.getSink().body_()
         this.getSink().flush()
         this.getSink().close()
-
-        super.finish()
 
     }
 
@@ -231,6 +249,8 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
     void observeClass( ClassDescriptor classDescriptor )
     {
 
+        ++this.fileCount
+
         this.currentClassName = classDescriptor.toDottedClassName()
 
         if ( this.isCurrentClassReportOpened )
@@ -240,7 +260,7 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
 
         this.isCurrentClassReportOpened = false
 
-        super.observeClass( classDescriptor )
+//        super.observeClass( classDescriptor )
     }
 
     /*
@@ -250,12 +270,16 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
      */
     void reportMissingClass( ClassDescriptor classDescriptor )
     {
+        ++this.missingClassCount
+
         this.bugCollection.addMissingClass( classDescriptor.toDottedClassName() )
         super.reportMissingClass( classDescriptor )
     }
 
     void reportMissingClass( ClassNotFoundException ex )
     {
+        ++this.missingClassCount
+
         String missingClassName = AbstractBugReporter.getMissingClassName( ex )
         this.bugCollection.addMissingClass( missingClassName )
         super.reportMissingClass( ex )
@@ -504,12 +528,33 @@ class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
         return value
     }
 
-
+/*
     void reportBug( BugInstance bugInstance )
     {
         this.addBugReport( bugInstance )
         super.reportBug( bugInstance )
     }
+*/
+    
+    /**
+     * @param bugInstance
+     *            The bug to report
+     * @see edu.umd.cs.findbugs.AbstractBugReporter #doReportBug(edu.umd.cs.findbugs.BugInstance)
+     */
+    protected void doReportBug( BugInstance bugInstance )
+    {
+        this.log.info( "  Found a bug: " + bugInstance.getMessage() )
+
+        this.addBugReport( bugInstance )
+
+        if ( this.bugCollection.add( bugInstance ) )
+        {
+            ++this.bugCount
+            this.notifyObservers( bugInstance )
+        }
+
+    }
+
 
 }
 

@@ -348,7 +348,7 @@ class Reporter extends TextUIBugReporter
      */
     void finish()
     {
-        this.mavenLog.debug( "Finished searching for bugs!" )
+        this.mavenLog.info( "Finished searching for bugs!" )
 
         this.printSummary()
 
@@ -414,9 +414,10 @@ class Reporter extends TextUIBugReporter
      */
     void observeClass( ClassDescriptor clazz )
     {
-        this.mavenLog.debug( "Observe class: " + clazz.getClassName() )
+        this.mavenLog.info( "Observe class: " + clazz.getClassName() )
 
         ++this.fileCount
+//        super.observeClass( clazz )
     }
 
     /**
