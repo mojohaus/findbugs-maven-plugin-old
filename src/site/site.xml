@@ -22,7 +22,9 @@
       <item name="FAQ" href="faq.html"/>
     </menu>
     <menu name="Examples">
-      <item name="Sample Report" href="examples/findbugs.html"/>
+        <item name="Sample Report" href="examples/findbugs.html"/>
+        <item name="Sample XML xdoc Report" href="examples/findbugs.xml"/>
+        <item name="Sample Legacy XML Report" href="examples/findbugsXml.xml"/>
     </menu>
     ${reports}
   </body>

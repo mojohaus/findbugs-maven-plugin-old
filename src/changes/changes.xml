@@ -7,6 +7,12 @@
 	</properties>
 	<body>
 		<release version="1.2-SNAPSHOT" date="in SVN">
+            <action dev="gl" type="update">
+                Added the ability to run the FindBugs native xml reporter
+            </action>
+            <action dev="gl" type="fix" issue="MOJO-885">
+                Fix findbugs xdoc format associates some bug instances with the last file processed.
+            </action>
 			<action dev="gl" type="fix" issue="MOJO-894">
 				Allow the use or URIs for includeFilter and excludeFilter.
 			</action>
