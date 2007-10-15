@@ -19,11 +19,11 @@ package org.codehaus.mojo.findbugs;
  * under the License.
  */
 
-import java.io.Writer;
+import java.io.Writer
 
-import org.apache.maven.doxia.module.HtmlTools;
-import org.apache.maven.doxia.sink.SinkAdapter;
-import org.apache.maven.doxia.util.LineBreaker;
+import org.apache.maven.doxia.module.HtmlTools
+import org.apache.maven.doxia.sink.SinkAdapter
+import org.apache.maven.doxia.util.LineBreaker
 
 /**
  * A doxia Sink which produces an FindBugs model.
@@ -33,102 +33,101 @@ import org.apache.maven.doxia.util.LineBreaker;
  */
 class FindbugsXdocSink extends SinkAdapter
 {
-    static final String EOL = System.getProperty( "line.separator" );
+    static final String EOL = System.getProperty( "line.separator" )
 
-    LineBreaker out;
+    LineBreaker out
 
     FindbugsXdocSink( Writer out )
-    
     {
-        this.out = new LineBreaker( out );
+        this.out = new LineBreaker( out )
     }
 
     void analysisErrorTag( String className )
     {
-        this.markup( "<AnalysisError>" );
+        this.markup( "<AnalysisError>" )
         this.markup( className );
-        this.markup( " </AnalysisError>" + EOL );
+        this.markup( " </AnalysisError>" + EOL )
     }
 
     void body()
     {
-        this.markup( "<BugCollection>" + EOL );
+        this.markup( "<BugCollection>" + EOL )
     }
 
     void body( String version, String threshold, String effort )
     {
         this.markup( "<BugCollection" );
         this.markup( " version=" + '"' + version + '"' );
-        this.markup( " threshold=" + '"' + threshold + '"' );
-        this.markup( " effort=" + '"' + effort + '"' );
+        this.markup( " threshold=" + '"' + threshold + '"' )
+        this.markup( " effort=" + '"' + effort + '"' )
 
         this.markup( " >" + EOL );
     }
 
     void body_()
     {
-        this.markup( "</BugCollection>" + EOL );
+        this.markup( "</BugCollection>" + EOL )
         this.out.flush();
     }
 
     void bugInstance( String type, String priority, String category, String message, String lineNumber )
     {
         this.markup( "<BugInstance" );
-        this.markup( " type=" + '"' + HtmlTools.escapeHTML( type ) + '"' );
-        this.markup( " priority=" + '"' + HtmlTools.escapeHTML( priority ) + '"' );
-        this.markup( " category=" + '"' + HtmlTools.escapeHTML( category ) + '"' );
-        this.markup( " message=" + '"' + HtmlTools.escapeHTML( message ) + '"' );
-        this.markup( " lineNumber=" + '"' + HtmlTools.escapeHTML( lineNumber ) + '"' );
-        this.markup( " />" + EOL );
+        this.markup( " type=" + '"' + HtmlTools.escapeHTML( type ) + '"' )
+        this.markup( " priority=" + '"' + HtmlTools.escapeHTML( priority ) + '"' )
+        this.markup( " category=" + '"' + HtmlTools.escapeHTML( category ) + '"' )
+        this.markup( " message=" + '"' + HtmlTools.escapeHTML( message ) + '"' )
+        this.markup( " lineNumber=" + '"' + HtmlTools.escapeHTML( lineNumber ) + '"' )
+        this.markup( " />" + EOL )
     }
 
     void classTag( String className )
     {
         this.markup( "<file" );
-        this.markup( " classname=" + '"' + className + '"' );
-        this.markup( " >" + EOL );
+        this.markup( " classname=" + '"' + className + '"' )
+        this.markup( " >" + EOL )
     }
 
     void classTag_()
     {
-        this.markup( "</file>" + EOL );
+        this.markup( "</file>" + EOL )
     }
 
     void close()
     {
-        this.out.close();
+        this.out.close()
     }
 
     void errorTag()
     {
-        this.markup( "<Errors>" + EOL );
+        this.markup( "<Errors>" + EOL )
     }
 
     void errorTag_()
     {
-        this.markup( "</Errors>" + EOL );
+        this.markup( "</Errors>" + EOL )
     }
 
     void flush()
     {
-        this.out.flush();
+        this.out.flush()
     }
 
     void head()
     {
-        this.markup( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + EOL );
+        this.markup( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + EOL )
     }
 
     void missingClassTag( String className )
     {
-        this.markup( "<MissingClass>" );
-        this.markup( className );
-        this.markup( " </MissingClass>" + EOL );
+        this.markup( "<MissingClass>" )
+        this.markup( className )
+        this.markup( " </MissingClass>" + EOL )
     }
 
     protected void markup( String text )
     {
-        this.out.write( text, true );
+        this.out.write( text, true )
     }
 
     void ProjectTag()
@@ -147,5 +146,4 @@ class FindbugsXdocSink extends SinkAdapter
         this.markup( className )
         this.markup( "</SrcDir>" + EOL )
     }
-
 }

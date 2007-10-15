@@ -20,8 +20,6 @@ package org.codehaus.mojo.findbugs
  * under the License.
  */
 
-
-import org.apache.maven.artifact.Artifact
 import org.apache.maven.artifact.DependencyResolutionRequiredException
 import org.apache.maven.artifact.repository.DefaultArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException
@@ -29,12 +27,10 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionException
 import org.apache.maven.artifact.resolver.ArtifactResolver
 import org.apache.maven.doxia.sink.Sink
 import org.apache.maven.doxia.siterenderer.Renderer
-import org.apache.maven.model.ReportPlugin
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
-import org.apache.maven.reporting.MavenReportException
 
 import org.codehaus.plexus.util.FileUtils
 
@@ -42,11 +38,10 @@ import edu.umd.cs.findbugs.BugReporter
 import edu.umd.cs.findbugs.ClassScreener
 import edu.umd.cs.findbugs.DetectorFactory
 import edu.umd.cs.findbugs.DetectorFactoryCollection
-// import edu.umd.cs.findbugs.FindBugs2
 import edu.umd.cs.findbugs.Project
 import edu.umd.cs.findbugs.TextUIBugReporter
-import edu.umd.cs.findbugs.XDocsBugReporter
 import edu.umd.cs.findbugs.XMLBugReporter
+
 import edu.umd.cs.findbugs.config.UserPreferences
 import edu.umd.cs.findbugs.filter.FilterException
 
@@ -408,12 +403,10 @@ class FindBugsMojo extends AbstractMavenReport
         def auxClasspathElements = getProject().getCompileClasspathElements()
 
         auxClasspathElements.each() { auxClasspathElement ->
-            
             if ( log.isDebugEnabled() )
             {
                 log.debug( "  Trying to Add to AuxClasspath ->" + auxClasspathElements.toString() )
             }
-
             findBugsProject.addAuxClasspathEntry( (String) auxClasspathElement.toString() )
         }
 
@@ -446,8 +439,6 @@ class FindBugsMojo extends AbstractMavenReport
         File destFile
         String fileName           
             
-            
-     
         if ( includeFilterFile )
         {
             try 
@@ -463,7 +454,6 @@ class FindBugsMojo extends AbstractMavenReport
                 destFile = new File( includeFilterFile ) 
             }
 
-           
             log.info( "  Using bug include filter " + includeFilterFile)
             findBugs.addFilter( destFile.toString() , true )
         }
@@ -472,17 +462,14 @@ class FindBugsMojo extends AbstractMavenReport
             log.info( "  No bug include filter." )
         }
 
-        
         if ( excludeFilterFile )
         {
-
-            try 
+            try
             {
                 URL url = new URL( excludeFilterFile )
                 fileName = excludeFilterFile.tokenize("/")[-1]
                 destFile = new File( dir, fileName )
                 FileUtils.copyURLToFile( url,  destFile)
-    
             }
             catch (MalformedURLException me)
             {
@@ -531,7 +518,6 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void addClassScreenerToFindBugs( FindBugs2Proxy findBugs )
     {
-
         if ( onlyAnalyze != null )
         {
             log.debug( "  Adding ClassScreener " )
@@ -562,13 +548,9 @@ class FindBugsMojo extends AbstractMavenReport
                     log.info( " classScreener.addAllowedClass " + stringTokenItem )
                 }
             }
-
             findBugs.setClassScreener( classScreener )
-
         }
-
         log.debug( "  Done Adding Class Screeners" )
-
     }
 
     /**
@@ -586,7 +568,6 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void addPluginsToFindBugs( Locale locale )
     {
-
         def corepluginpath
 
         try
@@ -624,15 +605,12 @@ class FindBugsMojo extends AbstractMavenReport
                     fail( "The addin plugin has an invalid URL", exception )
                 }
                 log.info( "  Adding Plugin: " + pluginFile.toString() )
-
             }
         }
  
-
         DetectorFactoryCollection.rawInstance().setPluginList( plugins )
 
         log.debug( "  Done Adding Plugins" )
-
     }
 
     /**
@@ -658,7 +636,6 @@ class FindBugsMojo extends AbstractMavenReport
                 enableVisitor = false
                 visitorList = omitVisitors.split( "," )
                 log.debug( "  Omitting visitors : " + omitVisitors )
-
             }
             else
             {
@@ -674,7 +651,6 @@ class FindBugsMojo extends AbstractMavenReport
                 {
                     throw new IllegalArgumentException( "Unknown detector: " + visitorName )
                 }
-
                 preferences.enableDetector( factory, enableVisitor )
             }
         }
@@ -767,9 +743,7 @@ class FindBugsMojo extends AbstractMavenReport
 
             try
             {
-
                 findBugs.execute()
-                
             }
             catch ( IOException exception )
             {
@@ -799,7 +773,6 @@ class FindBugsMojo extends AbstractMavenReport
         ResourceBundle bundle = getBundle( locale )
         String corePluginName = bundle.getString( FINDBUGS_COREPLUGIN )
         return corePluginName
-
     }
 
     /**
@@ -819,9 +792,7 @@ class FindBugsMojo extends AbstractMavenReport
          def corePluginPath = pluginArtifacts.find(){artifact ->
          	artifact.getArtifactId() == getCorePlugin( locale )
          }
-
          return corePluginPath.file
-
     }
 
     /**
@@ -884,7 +855,6 @@ class FindBugsMojo extends AbstractMavenReport
             List files = FileUtils.getFiles( pSourceDirectory, FindBugsMojo.JAVA_REGEX_PATTERN, null )
             sourceFiles.addAll( files )
         }
-
         debugJavaSources( locale, sourceFiles )
 
         return sourceFiles
@@ -1019,7 +989,6 @@ class FindBugsMojo extends AbstractMavenReport
 
         FindBugs2Proxy findBugs = new FindBugs2Proxy()
 
-        println "setting Project"
         findBugs.setProject( findBugsProject )
 
         findBugs.initializeProxyReporter( this.getThresholdParameter().getValue() )
@@ -1033,7 +1002,6 @@ class FindBugsMojo extends AbstractMavenReport
 
         if ( findbugsXmlOutput )
         {
-            println "Doing XMLBugReporter"
             XMLBugReporter xmlBugReporter = new XMLBugReporter( findBugsProject )
             xmlBugReporter.setAddMessages( findbugsXmlWithMessages )
             textUiBugReporter = xmlBugReporter
@@ -1044,13 +1012,11 @@ class FindBugsMojo extends AbstractMavenReport
             findBugs.setBugReporter( bugReporter )
         }
 
-
         /*
 
         if ( findbugsXdocOutput )
         {
             // legacy xdoc format
-            println "Doing XDocsBugReporter"
             textUiBugReporter = new XDocsBugReporter( findBugsProject )
             textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugs.xdoc" ) ) )
             textUiBugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
@@ -1059,8 +1025,8 @@ class FindBugsMojo extends AbstractMavenReport
             findBugs.setBugReporter( bugReporter )
 
         }
-
         */
+
         if ( xmlOutput )
         {
             log.info( "  Using the xdoc format" )
@@ -1071,25 +1037,17 @@ class FindBugsMojo extends AbstractMavenReport
                 {
                     fail( "Cannot create xml output directory" )
                 }
-
             }
 
-            println "setting xdoc BugReporter"
-//            BugReporter htmlBugReporter = bugReporter
             XDocsReporter xDocsReporter = new XDocsReporter( this.getProject() )
-            
             xDocsReporter.setOutputWriter( new FileWriter( new File( "${xmlOutputDirectory}/findbugs.xml" ) ) )
             xDocsReporter.setResourceBundle( bundle )
             xDocsReporter.setLog( log )
             xDocsReporter.setEffort( getEffortParameter() )
-//            xDocsReporter.threshold( getThresholdParameter() )
             xDocsReporter.threshold = getThresholdParameter()
             xDocsReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )   //TODO: combine the two in XDocsReporter
-
-//            bugReporter = textUiBugReporter
             findBugs.setBugReporter( xDocsReporter )
         }
-
 
         if ( !pluginLoaded )
         {

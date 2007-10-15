@@ -287,30 +287,11 @@ class Reporter extends TextUIBugReporter
     {
         super()
 
-        if ( sink == null )
-        {
-            throw new IllegalArgumentException( "sink not allowed to be null" )
-        }
-
-        if ( bundle == null )
-        {
-            throw new IllegalArgumentException( "bundle not allowed to be null" )
-        }
-
-        if ( log == null )
-        {
-            throw new IllegalArgumentException( "log not allowed to be null" )
-        }
-
-        if ( threshold == null )
-        {
-            throw new IllegalArgumentException( "threshold not allowed to be null" )
-        }
-
-        if ( effort == null )
-        {
-            throw new IllegalArgumentException( "effort not allowed to be null" )
-        }
+        assert sink
+        assert bundle
+        assert log
+        assert threshold
+        assert effort
 
         this.sink = sink
         this.bundle = bundle
@@ -414,10 +395,9 @@ class Reporter extends TextUIBugReporter
      */
     void observeClass( ClassDescriptor clazz )
     {
-        this.mavenLog.info( "Observe class: " + clazz.getClassName() )
+        this.mavenLog.debug( "Observe class: " + clazz.getClassName() )
 
         ++this.fileCount
-//        super.observeClass( clazz )
     }
 
     /**
@@ -679,7 +659,6 @@ class Reporter extends TextUIBugReporter
     protected String getEffortTitle()
     {
         String effortTitle = this.bundle.getString( Reporter.EFFORT_KEY )
-
         return effortTitle
     }
 
@@ -692,7 +671,6 @@ class Reporter extends TextUIBugReporter
     protected String getFilesTitle()
     {
         String fileTitle = this.bundle.getString( Reporter.FILES_KEY )
-
         return fileTitle
     }
 
@@ -705,7 +683,6 @@ class Reporter extends TextUIBugReporter
     protected String getSummaryTitle()
     {
         String summaryTitle = this.bundle.getString( Reporter.SUMMARY_KEY )
-
         return summaryTitle
     }
 
@@ -718,7 +695,6 @@ class Reporter extends TextUIBugReporter
     protected String getFindBugsLink()
     {
         String link = this.bundle.getString( Reporter.LINK_KEY )
-
         return link
     }
 
@@ -731,7 +707,6 @@ class Reporter extends TextUIBugReporter
     protected String getFindBugsName()
     {
         String name = this.bundle.getString( Reporter.NAME_KEY )
-
         return name
     }
 
@@ -755,7 +730,6 @@ class Reporter extends TextUIBugReporter
     protected String getReportLinkTitle()
     {
         String reportLink = this.bundle.getString( Reporter.LINKTITLE_KEY )
-
         return reportLink
     }
 
@@ -768,7 +742,6 @@ class Reporter extends TextUIBugReporter
     protected String getReportTitle()
     {
         String reportTitle = this.bundle.getString( Reporter.REPORT_TITLE_KEY )
-
         return reportTitle
     }
 
@@ -781,7 +754,6 @@ class Reporter extends TextUIBugReporter
     protected String getThresholdTitle()
     {
         String threshholdTitle = this.bundle.getString( Reporter.THRESHOLD_KEY )
-
         return threshholdTitle
     }
 
@@ -794,7 +766,6 @@ class Reporter extends TextUIBugReporter
     protected String getVersionTitle()
     {
         String versionTitle = this.bundle.getString( VERSIONTITLE_KEY )
-
         return versionTitle
     }
 
@@ -1002,7 +973,6 @@ class Reporter extends TextUIBugReporter
 
                 classBugs = 1
                 this.currentClassName = bugInstance.getPrimarySourceLineAnnotation().getClassName()
-
             }
         }
 
@@ -1030,6 +1000,5 @@ class Reporter extends TextUIBugReporter
         this.sink.tableCell_()
 
         this.sink.tableRow_()
-
     }
 }

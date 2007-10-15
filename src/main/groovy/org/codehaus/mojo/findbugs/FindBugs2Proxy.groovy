@@ -47,7 +47,6 @@ class FindBugs2Proxy extends FindBugs2
         super.setBugReporter( new ErrorCountingBugReporter( delegateBugReporter ) )
     }
 
-
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
      */
@@ -61,15 +60,8 @@ class FindBugs2Proxy extends FindBugs2
      */
     void setBugReporter( BugReporter bugReporter )
     {
-        println "Setting bugReporter"
-        println "bugReporter is $bugReporter"
         ErrorCountingBugReporter errorCountingBugReporter = new ErrorCountingBugReporter( bugReporter )
-
         this.addClassObserver( errorCountingBugReporter )
-
         this.bugReporter.addClassObserver( errorCountingBugReporter )
     }
-
-
-
 }

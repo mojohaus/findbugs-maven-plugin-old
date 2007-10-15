@@ -21,12 +21,9 @@ package org.codehaus.mojo.findbugs
 
 import edu.umd.cs.findbugs.BugInstance
 import edu.umd.cs.findbugs.BugReporter
-import edu.umd.cs.findbugs.BugReporterObserver
 import edu.umd.cs.findbugs.ErrorCountingBugReporter
-import edu.umd.cs.findbugs.ProjectStats
 import edu.umd.cs.findbugs.TextUIBugReporter
 import edu.umd.cs.findbugs.classfile.ClassDescriptor
-import edu.umd.cs.findbugs.classfile.IClassObserver
 
 import edu.umd.cs.findbugs.AnalysisError
 import edu.umd.cs.findbugs.classfile.MethodDescriptor
@@ -35,21 +32,12 @@ class DelegateBugReporter extends TextUIBugReporter
 {
 
     List reporterObserverList= []
-    Writer writer = new PrintWriter( System.out )
     def bugCount = 0
     def fileCount = 0
     def missingClassCount = 0
     def errorCount = 0
     Set missingClassSet = []
 
-/*
-    Object invokeMethod( String name, Object[] params )
-    {
-        writer.write( "Calling invokeMethod $name \n" )
-        writer.flush()
-
-    }
-*/
     /**
      * Set the error-reporting verbosity level.
      *
@@ -57,43 +45,14 @@ class DelegateBugReporter extends TextUIBugReporter
      */
     void setErrorVerbosity(int level)
     {
-        println "setting Error Verbosity"
-
         this.errorVerbosity = level
 
         this.reporterObserverList.each()
         {
             ErrorCountingBugReporter bugReporter = it
-            println bugReporter.toString()
-
             bugReporter.setErrorVerbosity( level )
         }
     }
-
-    /**
-     * Set the priority threshold.
-     *
-     * @param threshold bug instances must be at least as important as
-     *                  this priority to be reported
-    void setPriorityThreshold(int threshold)
-    {
-        System.out.println "setting Priority Threshold"
-
-        this.priorityThreshold = threshold
-
-        System.out.println "set Priority Threshold to $priorityThreshold"
-        System.out.println "Finished setting Priority Threshold"
-        this.reporterObserverList.each()
-        {
-            ErrorCountingBugReporter bugReporter = it
-            println bugReporter.toString()
-
-            bugReporter.setPriorityThreshold( threshold )
-        }
-    }
-*/
-
-    
 
     /**
      * Finish reporting bugs.
@@ -103,46 +62,9 @@ class DelegateBugReporter extends TextUIBugReporter
      void finish()
      {
 
-         println "wrapping it up"
-         println "bugCount is $bugCount"
-         println "fileCount is $fileCount"
-         println "missingClassCount is $missingClassCount"
-         println "errorCount is $errorCount"
-         println()
-
-         def proxyStats = this.projectStats
-
-         proxyStats.recomputeFromClassStats()
-         println "---- Delegate Reporter Project Stats ----"
-         println "Code Size is " + proxyStats.codeSize
-         println "Number of Classes is " + proxyStats.numClasses
-         println "Time Stamp is " + proxyStats.timestamp
-         println "Total Bugs is " + proxyStats.totalBugs
-
-         println()
-         println proxyStats
-         println()
-
-         
-         println "reporterObserverList size is "  + reporterObserverList.size()
-
          this.reporterObserverList.each()
          {
              ErrorCountingBugReporter bugReporter = it
-             println( "Finishing $bugReporter" )
-             def stats = bugReporter.projectStats
-
-             stats.recomputeFromClassStats()
-             println "Code Size is " + stats.codeSize
-             println "Number of is " + stats.numClasses
-             println "Time Stamp is " + stats.timestamp
-             println "Total Bugs is " + stats.totalBugs
-
-             println()
-             println()
-             println stats
-             println()
-
              bugReporter.finish()
          }
      }
@@ -152,13 +74,9 @@ class DelegateBugReporter extends TextUIBugReporter
      */
     void reportQueuedErrors()
     {
-
-        println "Finishing QueuedErrors"
-
         this.reporterObserverList.each()
         {
             ErrorCountingBugReporter bugReporter = it
-
             bugReporter.reportQueuedErrors()
         }
     }
@@ -175,7 +93,7 @@ class DelegateBugReporter extends TextUIBugReporter
      */
     public void addClassObserver(ErrorCountingBugReporter classObserver)
     {
-        reporterObserverList.add(classObserver)
+        reporterObserverList << classObserver
     }
 
     /**
@@ -209,7 +127,6 @@ class DelegateBugReporter extends TextUIBugReporter
         this.reporterObserverList.each()
         {
             ErrorCountingBugReporter bugReporter = it
-
             bugReporter.reportBug( bugInstance )
         }
     }
@@ -224,28 +141,17 @@ class DelegateBugReporter extends TextUIBugReporter
     void observeClass( ClassDescriptor clazz )
     {
         ++this.fileCount
-
-/*
-        this.reporterObserverList.each()
-        {
-            ErrorCountingBugReporter bugReporter = it
-
-            bugReporter.observeClass( clazz )
-        }
-*/        
     }
 
 
     public void reportMissingClass(String s)
     {
-        println( "delegate reportMissingClass" )
-        super.reportMissingClass(s); //To change body of overridden methods use File | Settings | File Templates.
+        super.reportMissingClass( s )
     }
 
     public void reportAnalysisError( AnalysisError analysisError )
     {
-        println( "delegate reportMissingClass" )
-        super.reportAnalysisError(analysisError); //To change body of overridden methods use File | Settings | File Templates.
+        super.reportAnalysisError( analysisError )
     }
 
     public void reportMissingClass( ClassNotFoundException e )
@@ -260,7 +166,6 @@ class DelegateBugReporter extends TextUIBugReporter
         this.reporterObserverList.each()
         {
             ErrorCountingBugReporter bugReporter = it
-
             bugReporter.logError( s )
         }
     }
@@ -272,7 +177,6 @@ class DelegateBugReporter extends TextUIBugReporter
         this.reporterObserverList.each()
         {
             ErrorCountingBugReporter bugReporter = it
-
             bugReporter.logError( s, throwable )
         }
     }
@@ -288,7 +192,4 @@ class DelegateBugReporter extends TextUIBugReporter
     {
         return this.missingClassCount
     }
-
-
-
 }

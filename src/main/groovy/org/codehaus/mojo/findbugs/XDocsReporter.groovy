@@ -24,12 +24,8 @@ import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
 
 import edu.umd.cs.findbugs.AbstractBugReporter
-import edu.umd.cs.findbugs.AnalysisError
 import edu.umd.cs.findbugs.BugInstance
 import edu.umd.cs.findbugs.BugPattern
-import edu.umd.cs.findbugs.BugReporter
-import edu.umd.cs.findbugs.BugReporterObserver
-import edu.umd.cs.findbugs.DelegatingBugReporter
 import edu.umd.cs.findbugs.SortedBugCollection
 import edu.umd.cs.findbugs.SourceLineAnnotation
 import edu.umd.cs.findbugs.TextUIBugReporter
@@ -164,7 +160,6 @@ class XDocsReporter extends TextUIBugReporter
         this.isCurrentClassReportOpened = false
 
         // close the report, write it
-
         this.printErrors()
         this.printSource()
         this.getSink().body_()
@@ -248,9 +243,7 @@ class XDocsReporter extends TextUIBugReporter
      */
     void observeClass( ClassDescriptor classDescriptor )
     {
-
         ++this.fileCount
-
         this.currentClassName = classDescriptor.toDottedClassName()
 
         if ( this.isCurrentClassReportOpened )
@@ -259,8 +252,6 @@ class XDocsReporter extends TextUIBugReporter
         }
 
         this.isCurrentClassReportOpened = false
-
-//        super.observeClass( classDescriptor )
     }
 
     /*
@@ -343,7 +334,6 @@ class XDocsReporter extends TextUIBugReporter
 
     protected void addBugReport( BugInstance bugInstance )
     {
-
         SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation()
         BugPattern pattern = bugInstance.getBugPattern()
         String lineNumber = this.valueForLine( line )
@@ -423,41 +413,20 @@ class XDocsReporter extends TextUIBugReporter
      */
     protected void printErrors()
     {
-
         this.log.info( "There are Errors" )
-
         this.getSink().errorTag()
-
         this.log.info( "Printing Errors" )
-
-
-/*        
-        for ( Iterator i = this.bugCollection.errorIterator() i.hasNext() )
-        {
-            AnalysisError analysisError = (AnalysisError) i.next()
-
-            this.getSink().analysisErrorTag( analysisError.getMessage() )
-        }
-*/     
 
         this.bugCollection.errorIterator().each() {  analysisError ->
             this.getSink().analysisErrorTag( analysisError.getMessage() )
         }
 
         this.log.info( "Printing Missing classes" )
-/*        
-        for ( Iterator i = this.bugCollection.missingClassIterator() i.hasNext() )
-        {
-            String missingClass = (String) i.next()
-            this.getSink().missingClassTag( missingClass )
-        }
-        */     
 
         this.bugCollection.missingClassIterator().each() { missingClass ->
             this.getSink().missingClassTag( missingClass )
         }
         this.getSink().errorTag_()
-
     }
 
     /**
@@ -465,13 +434,9 @@ class XDocsReporter extends TextUIBugReporter
      */
     protected void printSource()
     {
-
         this.log.info( "There are Errors" )
-
         this.getSink( ).ProjectTag( )
-
         this.log.info( "Printing Errors" )
-        
 
         List srcDirs = mavenProject.getCompileSourceRoots( )
         if ( !srcDirs.isEmpty( ) )
@@ -482,10 +447,8 @@ class XDocsReporter extends TextUIBugReporter
         }
 
         this.getSink( ).ProjectTag_( )
-
     }
 
-    
     /**
      * Return the value to display. If FindBugs does not provide a line number, a default message is returned. The line
      * number otherwise.
@@ -543,8 +506,7 @@ class XDocsReporter extends TextUIBugReporter
      */
     protected void doReportBug( BugInstance bugInstance )
     {
-        this.log.info( "  Found a bug: " + bugInstance.getMessage() )
-
+        this.log.debug( "  Found a bug: " + bugInstance.getMessage() )
         this.addBugReport( bugInstance )
 
         if ( this.bugCollection.add( bugInstance ) )
@@ -552,10 +514,7 @@ class XDocsReporter extends TextUIBugReporter
             ++this.bugCount
             this.notifyObservers( bugInstance )
         }
-
     }
-
-
 }
 
      
