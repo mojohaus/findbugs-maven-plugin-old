@@ -354,9 +354,7 @@ class FindBugsMojo extends AbstractMavenReport
      */
     String getDescription( Locale locale )
     {
-        def bundle = FindBugsMojo.getBundle( locale )
-        
-        return bundle.getString( FindBugsMojo.DESCRIPTION_KEY )
+        return FindBugsMojo.getBundle( locale ).getString( FindBugsMojo.DESCRIPTION_KEY )
 
     }
 
@@ -371,9 +369,7 @@ class FindBugsMojo extends AbstractMavenReport
      */
     String getName( Locale locale )
     {
-        def bundle = FindBugsMojo.getBundle( locale )
-        return bundle.getString( FindBugsMojo.NAME_KEY )
-
+        return FindBugsMojo.getBundle( locale ).getString( FindBugsMojo.NAME_KEY )
     }
 
     /**
@@ -400,7 +396,7 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void addClasspathEntriesToFindBugsProject( Project findBugsProject )
     {
-        def auxClasspathElements = getProject().getCompileClasspathElements()
+        def auxClasspathElements = project.compileClasspathElements
 
         auxClasspathElements.each() { auxClasspathElement ->
             if ( log.isDebugEnabled() )
@@ -412,7 +408,7 @@ class FindBugsMojo extends AbstractMavenReport
 
         if ( log.isDebugEnabled() )
         {
-            def findbugsAuxClasspath = findBugsProject.getAuxClasspathEntryList()
+            def findbugsAuxClasspath = findBugsProject.auxClasspathEntryList
 
             findbugsAuxClasspath.each(){ findbugsAuxClasspathEntry ->
                 log.debug( "  Added to AuxClasspath ->" + findbugsAuxClasspathEntry.toString() )
@@ -434,7 +430,6 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void addFiltersToFindBugs( FindBugs2Proxy findBugs )
     {
-
         def dir = "${project.build.directory}"
         File destFile
         String fileName           
@@ -482,24 +477,6 @@ class FindBugsMojo extends AbstractMavenReport
         else
         {
             log.info( "  No bug exclude filter." )
-        }
-    }
-
-    /**
-     * Adds the source files to the find bugs project. The return value of the method call <code>addFile</code> is
-     * omited, because we are not interested if the java source is already added.
-     * 
-     * @param sourceFiles
-     *            The java sources (Type <code>java.io.File</code>) to add to the project.
-     * @param findBugsProject
-     *            The find bugs project to add the java source to.
-     * 
-     */
-    protected void addJavaSourcesToFindBugsProject( List sourceFiles,  Project findBugsProject )
-    {
-        sourceFiles.each() { sourceFile ->
-            String filePath = sourceFile.getAbsolutePath()
-            findBugsProject.addFile( filePath )
         }
     }
 
@@ -676,23 +653,6 @@ class FindBugsMojo extends AbstractMavenReport
     }
 
     /**
-     * Prints out the source roots to the logger with severity debug.
-     * 
-     * @param locale
-     *            The locale to print out the messages.
-     * @param pSourceDirectory
-     *            The source directory to print.
-     * 
-     */
-    protected void debugSourceDirectory( Locale locale, File pSourceDirectory )
-    {
-        ResourceBundle bundle = FindBugsMojo.getBundle( locale )
-        String sourceRootMessage = bundle.getString( FindBugsMojo.SOURCE_ROOT_KEY )
-        log.debug( "  " + sourceRootMessage )
-        log.debug( "    " + pSourceDirectory.getAbsolutePath() )
-    }
-
-    /**
      * Executes the generation of the report.
      * 
      * Callback from Maven Site Plugin or from AbstractMavenReport.execute() => generate().
@@ -707,8 +667,13 @@ class FindBugsMojo extends AbstractMavenReport
     {
         if ( !skip )
         {
+            ResourceBundle bundle = FindBugsMojo.getBundle( locale )
+
             FindBugs2Proxy findBugs = null
-            debugSourceDirectory( locale, classFilesDirectory )
+
+//            debugSourceDirectory( locale, classFilesDirectory )
+            log.debug( "  " + bundle.getString( FindBugsMojo.SOURCE_ROOT_KEY ) )
+            log.debug( "    " + classFilesDirectory.getAbsolutePath() )
 
             if ( !canGenerateReport() )
             {
@@ -771,8 +736,7 @@ class FindBugsMojo extends AbstractMavenReport
     protected String getCorePlugin( Locale locale )
     {
         ResourceBundle bundle = getBundle( locale )
-        String corePluginName = bundle.getString( FINDBUGS_COREPLUGIN )
-        return corePluginName
+        return bundle.getString( FINDBUGS_COREPLUGIN )
     }
 
     /**
@@ -870,31 +834,7 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected String getOutputDirectory()
     {
-        new File( outputDirectory ).mkdirs()
-
-        return outputDirectory
-    }
-
-    /**
-     * Returns the maven project.
-     * 
-     * @return the maven project
-     * @see org.apache.maven.reporting.AbstractMavenReport#getProject()
-     */
-    protected MavenProject getProject()
-    {
-        return project
-    }
-
-    /**
-     * Returns the doxia site renderer.
-     * 
-     * @return the doxia Renderer
-     * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
-     */
-    protected Renderer getSiteRenderer()
-    {
-        return siteRenderer
+        return new File( outputDirectory ).mkdirs()
     }
 
     /**
@@ -984,7 +924,12 @@ class FindBugsMojo extends AbstractMavenReport
         findBugsProject.projectName = "${project.name}"
 
 
-        addJavaSourcesToFindBugsProject( sourceFiles, findBugsProject )
+        //  Adds the source files to the find bugs project.
+        sourceFiles.each() { sourceFile ->
+            String filePath = sourceFile.getAbsolutePath()
+            findBugsProject.addFile( filePath )
+        }
+
         addClasspathEntriesToFindBugsProject( findBugsProject )
 
         FindBugs2Proxy findBugs = new FindBugs2Proxy()

@@ -81,13 +81,6 @@ class DelegateBugReporter extends TextUIBugReporter
         }
     }
 
-    /**
-     * Add an observer.
-     *
-     * @param observer the observer
-     */
-//    void addObserver(BugReporterObserver observer){ }
-
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.classfile.IClassObserver)
      */
@@ -95,12 +88,6 @@ class DelegateBugReporter extends TextUIBugReporter
     {
         reporterObserverList << classObserver
     }
-
-    /**
-     * Get ProjectStats object used to store statistics about
-     * the overall project being analyzed.
-     */
-//    ProjectStats getProjectStats() {  }
 
     /**
      * Get the real bug reporter at the end of a chain of delegating bug reporters.
@@ -185,11 +172,5 @@ class DelegateBugReporter extends TextUIBugReporter
     {
         super.reportSkippedAnalysis( methodDescriptor )
 
-    }
-
-
-    public int getMissingClassCount()
-    {
-        return this.missingClassCount
     }
 }

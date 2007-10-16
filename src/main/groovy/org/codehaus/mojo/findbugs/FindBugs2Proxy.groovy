@@ -23,8 +23,6 @@ import edu.umd.cs.findbugs.BugReporter
 import edu.umd.cs.findbugs.ErrorCountingBugReporter
 import edu.umd.cs.findbugs.FindBugs2
 
-import org.codehaus.groovy.runtime.InvokerHelper
-
 /**
  * Helper for FindBugs2 class
  *

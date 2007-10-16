@@ -38,7 +38,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id: XDocsReporter.groovy 2561 2006-10-24 21:06:39Z gleclaire $
  */
-//class XDocsReporter extends DelegatingBugReporter implements BugReporterObserver
 class XDocsReporter extends TextUIBugReporter
 {
 
@@ -169,38 +168,6 @@ class XDocsReporter extends TextUIBugReporter
     }
 
     /**
-     * @return the effort
-     */
-    EffortParameter getEffort()
-    {
-        return this.effort
-    }
-
-    /**
-     * @return the log
-     */
-    Log getLog()
-    {
-        return this.log
-    }
-
-    /**
-     * @return the outputWriter
-     */
-    Writer getOutputWriter()
-    {
-        return this.outputWriter
-    }
-
-    /**
-     * @return the resourceBundle
-     */
-    ResourceBundle getResourceBundle()
-    {
-        return this.resourceBundle
-    }
-
-    /**
      * @return the sink
      */
     FindbugsXdocSink getSink()
@@ -208,18 +175,15 @@ class XDocsReporter extends TextUIBugReporter
         if ( !this.sink )
         {
             this.sink = new FindbugsXdocSink( this.getOutputWriter() )
-            this.initialiseReport()
+
+            // Initialises the report.
+            this.getSink().head()
+            this.getSink().head_()
+
+            this.getSink().body( this.getFindBugsVersion(), this.threshold.getName(), this.effort.getName() )
 
         }
         return this.sink
-    }
-
-    /**
-     * @return the threshold
-     */
-    ThresholdParameter getThreshold()
-    {
-        return this.threshold
     }
 
     void logError( String message )
@@ -276,32 +240,6 @@ class XDocsReporter extends TextUIBugReporter
         super.reportMissingClass( ex )
     }
 
-    /**
-     * @param effort
-     *            the effort to set
-     */
-    void setEffort( EffortParameter effort )
-    {
-        this.effort = effort
-    }
-
-    /**
-     * @param log
-     *            the log to set
-     */
-    void setLog( Log log )
-    {
-        this.log = log
-    }
-
-    /**
-     * @param outputWriter
-     *            the outputWriter to set
-     */
-    void setOutputWriter( Writer outputWriter )
-    {
-        this.outputWriter = outputWriter
-    }
 
     /**
      * @param resourceBundle
@@ -310,26 +248,6 @@ class XDocsReporter extends TextUIBugReporter
     void setResourceBundle( ResourceBundle resourceBundle )
     {
         this.resourceBundle = resourceBundle
-    }
-
-    /**
-     * @param threshold
-     *            the threshold to set
-     */
-    void setThreshold( ThresholdParameter threshold )
-    {
-        this.threshold = threshold
-    }
-
-    /**
-     * Initialises the report.
-     */
-    private void initialiseReport()
-    {
-        this.getSink().head()
-        this.getSink().head_()
-
-        this.getSink().body( this.getFindBugsVersion(), this.threshold.getName(), this.effort.getName() )
     }
 
     protected void addBugReport( BugInstance bugInstance )
@@ -462,11 +380,7 @@ class XDocsReporter extends TextUIBugReporter
     {
         String value = null
 
-        if ( !line )
-        {
-            value = this.resourceBundle.getString( XDocsReporter.NOLINE_KEY )
-        }
-        else
+        if ( line )
         {
             int startLine = line.getStartLine()
             int endLine = line.getEndLine()
@@ -479,26 +393,23 @@ class XDocsReporter extends TextUIBugReporter
                 }
                 else
                 {
-                    value = String.valueOf( startLine )
+                    value = startLine.toString()
                 }
             }
             else
             {
-                value = String.valueOf( startLine ) + "-" + String.valueOf( endLine )
+                value = startLine.toString() + "-" + endLine.toString()
             }
         }
+        else
+        {
+            value = this.resourceBundle.getString( XDocsReporter.NOLINE_KEY )
+        }
+
 
         return value
     }
 
-/*
-    void reportBug( BugInstance bugInstance )
-    {
-        this.addBugReport( bugInstance )
-        super.reportBug( bugInstance )
-    }
-*/
-    
     /**
      * @param bugInstance
      *            The bug to report
@@ -516,6 +427,4 @@ class XDocsReporter extends TextUIBugReporter
         }
     }
 }
-
-     
      

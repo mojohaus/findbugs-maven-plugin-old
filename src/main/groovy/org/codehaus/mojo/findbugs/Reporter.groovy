@@ -196,7 +196,7 @@ class Reporter extends TextUIBugReporter
      * The logger to write logs to.
      * 
      */
-    Log mavenLog;
+    Log mavenLog
 
     
     /**
@@ -489,28 +489,28 @@ class Reporter extends TextUIBugReporter
 
         // information about FindBugs
         this.sink.paragraph()
-        this.sink.text( this.getReportLinkTitle() + " " )
-        this.sink.link( this.getFindBugsLink() )
-        this.sink.text( this.getFindBugsName() )
+        this.sink.text( this.bundle.getString( Reporter.LINKTITLE_KEY ) + " " )
+        this.sink.link( this.bundle.getString( Reporter.LINK_KEY ) )
+        this.sink.text( this.bundle.getString( Reporter.NAME_KEY ) )
         this.sink.link_()
         this.sink.paragraph_()
 
         this.sink.paragraph()
-        this.sink.text( this.getVersionTitle() + " " )
+        this.sink.text( this.bundle.getString( VERSIONTITLE_KEY ) + " " )
         this.sink.italic()
-        this.sink.text( this.getFindBugsVersion() )
+        this.sink.text( edu.umd.cs.findbugs.Version.RELEASE )
         this.sink.italic_()
         this.sink.paragraph_()
 
         this.sink.paragraph()
-        this.sink.text( this.getThresholdTitle() + " " )
+        this.sink.text( this.bundle.getString( Reporter.THRESHOLD_KEY ) + " " )
         this.sink.italic()
         this.sink.text( this.threshold.getName() )
         this.sink.italic_()
         this.sink.paragraph_()
 
         this.sink.paragraph()
-        this.sink.text( this.getEffortTitle() + " " )
+        this.sink.text( this.bundle.getString( Reporter.EFFORT_KEY ) + " " )
         this.sink.italic()
         this.sink.text( this.effort.getName() )
         this.sink.italic_()
@@ -560,7 +560,7 @@ class Reporter extends TextUIBugReporter
 
         // description link
         this.sink.tableCell()
-        this.sink.link( this.getDetailsLink( type ) )
+        this.sink.link( this.bundle.getString( Reporter.DETAILSLINK_KEY ) + "#" + type )
         this.sink.text( type )
         this.sink.link_()
         this.sink.tableCell_()
@@ -569,7 +569,7 @@ class Reporter extends TextUIBugReporter
         this.sink.tableCell()
         if ( this.isJXRReportEnabled )
         {
-            this.sink.rawText( this.assembleJXRHyperlink( line, lineNumber ) )
+            this.sink.rawText( assembleJXRHyperlink( line, lineNumber ) )
         }
         else
         {
@@ -636,104 +636,6 @@ class Reporter extends TextUIBugReporter
     }
 
     /**
-     * Gets the link to details description on findbugs site.
-     * 
-     * @param pType
-     *            the bug type
-     * @return The report link.
-     * 
-     */
-    protected String getDetailsLink( String pType )
-    {
-        String link = this.bundle.getString( Reporter.DETAILSLINK_KEY ) + "#" + pType
-
-        return link
-    }
-
-    /**
-     * Gets the effort title of the report.
-     * 
-     * @return The effort title of the report.
-     * 
-     */
-    protected String getEffortTitle()
-    {
-        String effortTitle = this.bundle.getString( Reporter.EFFORT_KEY )
-        return effortTitle
-    }
-
-    /**
-     * Gets the title for the files title.
-     * 
-     * @return The name for the File Section.
-     * 
-     */
-    protected String getFilesTitle()
-    {
-        String fileTitle = this.bundle.getString( Reporter.FILES_KEY )
-        return fileTitle
-    }
-
-    /**
-     * Gets the title for the summary section.
-     * 
-     * @return The name for the Summary Section.
-     * 
-     */
-    protected String getSummaryTitle()
-    {
-        String summaryTitle = this.bundle.getString( Reporter.SUMMARY_KEY )
-        return summaryTitle
-    }
-
-    /**
-     * Gets the link to FindBugs.
-     * 
-     * @return The report link.
-     * 
-     */
-    protected String getFindBugsLink()
-    {
-        String link = this.bundle.getString( Reporter.LINK_KEY )
-        return link
-    }
-
-    /**
-     * Gets the name of FindBugs.
-     * 
-     * @return The name of FindBugs.
-     * 
-     */
-    protected String getFindBugsName()
-    {
-        String name = this.bundle.getString( Reporter.NAME_KEY )
-        return name
-    }
-
-    /**
-     * Gets the Findbugs Version of the report.
-     * 
-     * @return The Findbugs Version used on the report.
-     * 
-     */
-    protected String getFindBugsVersion()
-    {
-        return edu.umd.cs.findbugs.Version.RELEASE
-    }
-
-    /**
-     * Gets the name of the link to FindBugs.
-     * 
-     * @return The report link title.
-     * 
-     */
-    protected String getReportLinkTitle()
-    {
-        String reportLink = this.bundle.getString( Reporter.LINKTITLE_KEY )
-        return reportLink
-    }
-
-    /**
      * Gets the report title.
      * 
      * @return The report title.
@@ -741,32 +643,7 @@ class Reporter extends TextUIBugReporter
      */
     protected String getReportTitle()
     {
-        String reportTitle = this.bundle.getString( Reporter.REPORT_TITLE_KEY )
-        return reportTitle
-    }
-
-    /**
-     * Gets the threshold title of the report.
-     * 
-     * @return The threshold title of the report.
-     * 
-     */
-    protected String getThresholdTitle()
-    {
-        String threshholdTitle = this.bundle.getString( Reporter.THRESHOLD_KEY )
-        return threshholdTitle
-    }
-
-    /**
-     * Gets the Findbugs Version title of the report.
-     * 
-     * @return The Findbugs Version used on the report.
-     * 
-     */
-    protected String getVersionTitle()
-    {
-        String versionTitle = this.bundle.getString( VERSIONTITLE_KEY )
-        return versionTitle
+        return this.bundle.getString( Reporter.REPORT_TITLE_KEY )
     }
 
     /**
@@ -825,13 +702,9 @@ class Reporter extends TextUIBugReporter
      */
     protected String valueForLine( SourceLineAnnotation line )
     {
-        String value = null
+        String value
 
-        if ( line == null )
-        {
-            value = this.bundle.getString( Reporter.NOLINE_KEY )
-        }
-        else
+        if ( line )
         {
             int startLine = line.getStartLine()
             int endLine = line.getEndLine()
@@ -844,13 +717,17 @@ class Reporter extends TextUIBugReporter
                 }
                 else
                 {
-                    value = String.valueOf( startLine )
+                    value = startLine.toString()
                 }
             }
             else
             {
-                value = String.valueOf( startLine ) + "-" + String.valueOf( endLine )
+                value = startLine.toString() + "-" + endLine.toString()
             }
+        }
+        else
+        {
+            value = this.bundle.getString( Reporter.NOLINE_KEY )
         }
 
         return value
@@ -865,7 +742,7 @@ class Reporter extends TextUIBugReporter
         
         // the summary section
         this.sink.sectionTitle1()
-        this.sink.text( this.getSummaryTitle() )
+        this.sink.text( this.bundle.getString( Reporter.SUMMARY_KEY ) )
         this.sink.sectionTitle1_()
 
         this.sink.table()
@@ -897,22 +774,22 @@ class Reporter extends TextUIBugReporter
 
         // files
         this.sink.tableCell()
-        this.sink.text( Integer.toString( this.fileCount ) )
+        this.sink.text( this.fileCount.toString() )
         this.sink.tableCell_()
 
         // bug
         this.sink.tableCell()
-        this.sink.text( Integer.toString( this.bugCount ) )
+        this.sink.text( this.bugCount.toString() )
         this.sink.tableCell_()
 
         // Errors
         this.sink.tableCell()
-        this.sink.text( Integer.toString( this.errorCount ) )
+        this.sink.text( this.errorCount.toString() )
         this.sink.tableCell_()
 
         // Missing Classes
         this.sink.tableCell()
-        this.sink.text( Integer.toString( this.missingClassCount ) )
+        this.sink.text( this.missingClassCount.toString() )
         this.sink.tableCell_()
 
         this.sink.tableRow_()
@@ -930,7 +807,7 @@ class Reporter extends TextUIBugReporter
         
         // the Files section
         this.sink.sectionTitle1()
-        this.sink.text( this.getFilesTitle() )
+        this.sink.text( this.bundle.getString( Reporter.FILES_KEY ) )
         this.sink.sectionTitle1_()
 
         /**
@@ -996,7 +873,7 @@ class Reporter extends TextUIBugReporter
 
         // class bug total count
         this.sink.tableCell()
-        this.sink.text( Integer.toString( classBugs ) )
+        this.sink.text( classBugs.toString() )
         this.sink.tableCell_()
 
         this.sink.tableRow_()
