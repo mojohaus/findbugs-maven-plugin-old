@@ -11,10 +11,10 @@
 	<version>1.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Maven FindBugs PlugIn</name>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
-  </issueManagement>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://jira.codehaus.org/browse/MFINDBUGS</url>
+	</issueManagement>
 	<inceptionYear>2005</inceptionYear>
 	<organization>
 		<name>CodeHaus</name>
@@ -71,10 +71,10 @@
 		</license>
 	</licenses>
 	<properties>
-        <groovy.plugin.version>1.0-beta-2</groovy.plugin.version>
-<!--
-        <groovy.plugin.version>1.0-beta-3-SNAPSHOT</groovy.plugin.version>
--->
+		<groovy.plugin.version>1.0-beta-2</groovy.plugin.version>
+		<!--
+			<groovy.plugin.version>1.0-beta-3-SNAPSHOT</groovy.plugin.version>
+		-->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -101,8 +101,6 @@
 			<groupId>net.sourceforge.findbugs</groupId>
 			<artifactId>findbugs</artifactId>
 			<version>1.2.0</version>
-			<!-- 			<version>1.1.1</version>  -->
-			<!-- 			<version>1.2.0-rc3</version>  -->
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo.groovy</groupId>
@@ -136,15 +134,18 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-		</plugins>
-	</build>
-	<reporting>
-		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo.groovy</groupId>
-				<artifactId>groovy-maven-plugin</artifactId>
-				<version>${groovy.plugin.version}</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<additionalProjectnatures>
+						<projectnature>	org.codehaus.groovy.eclipse.groovyNature</projectnature>
+					</additionalProjectnatures>
+					<additionalBuildcommands>
+						<buildcommand>org.codehaus.groovy.eclipse.groovyBuilder</buildcommand>
+					</additionalBuildcommands>
+				</configuration>
 			</plugin>
 		</plugins>
-	</reporting>
+	</build>
 </project>

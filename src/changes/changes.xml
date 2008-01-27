@@ -7,6 +7,9 @@
 	</properties>
 	<body>
 		<release version="1.2-SNAPSHOT" date="in SVN">
+            <action dev="gl" type="fix" issue="MFINDBUGS-38">
+                Add groovy nature to pom.xml
+            </action>
             <action dev="gl" type="update">
                 Added the ability to run the FindBugs native xml reporter
             </action>
