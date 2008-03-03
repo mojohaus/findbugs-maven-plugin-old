@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>mojo</artifactId>
 		<groupId>org.codehaus.mojo</groupId>
-		<version>14</version>
+		<version>16</version>
 	</parent>
 	<artifactId>findbugs-maven-plugin</artifactId>
 	<version>1.2-SNAPSHOT</version>
@@ -142,7 +142,7 @@
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
 					<additionalProjectnatures>
-						<projectnature>	org.codehaus.groovy.eclipse.groovyNature</projectnature>
+						<projectnature>org.codehaus.groovy.eclipse.groovyNature</projectnature>
 					</additionalProjectnatures>
 					<additionalBuildcommands>
 						<buildcommand>org.codehaus.groovy.eclipse.groovyBuilder</buildcommand>
