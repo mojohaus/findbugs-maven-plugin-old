@@ -46,10 +46,12 @@ import edu.umd.cs.findbugs.config.UserPreferences
 import edu.umd.cs.findbugs.filter.FilterException
 
 /**
- * Generates a FindBugs report.
+ * Generates a FindBugs Report when the site plugin is run.
+ * The HTML report is generated for site commands only.
+ * The optional report formats are generated for both the site and findbugs:findbugs commands.
  * 
  * @goal findbugs
- * @description Generates a FindBugs Report.
+ * @description Generates a FindBugs Report when the site plugin is run.
  * @execute phase="compile"
  * @requiresDependencyResolution compile
  * @requiresProject
@@ -215,7 +217,7 @@ class FindBugsMojo extends AbstractMavenReport
     MavenProject project
 
     /**
-     * Threshold of minimum bug severity to report. Valid values are High, Medium, Low and Exp (for experimental).
+     * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
      * 
      * @parameter
      */

@@ -62,4 +62,4 @@ Maven 2 FindBugs Plugin - How to Use
 export MAVEN_OPTS=-Xmx384M
 -------------------
 
-Using the findbugs:findbugs goal only generates the xml reports.
+ Using the findbugs:findbugs goal only generates the xml reports.
