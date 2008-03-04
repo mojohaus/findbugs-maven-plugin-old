@@ -72,7 +72,7 @@
 	</licenses>
 	<properties>
 		<doxia.version>1.0-alpha-8</doxia.version>
-                <groovy.plugin.version>1.0-beta-2</groovy.plugin.version>
+                <groovy.plugin.version>1.0-beta-3</groovy.plugin.version>
 		<!--
 			<groovy.plugin.version>1.0-beta-3-SNAPSHOT</groovy.plugin.version>
 		-->
@@ -119,13 +119,16 @@
 				<version>${groovy.plugin.version}</version>
 				<executions>
 					<execution>
-						<goals>
-							<goal>compile</goal>
-						</goals>
+                        <goals>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                            <goal>generateTestStubs</goal>
+                            <goal>testCompile</goal>
+                        </goals>
 					</execution>
 				</executions>
 			</plugin>
-
+<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-plugin-plugin</artifactId>
@@ -137,6 +140,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+-->                        
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>

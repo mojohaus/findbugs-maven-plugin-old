@@ -1129,4 +1129,15 @@ class FindBugsMojo extends AbstractMavenReport
 
         throw new MojoExecutionException("$msg", cause)
     }
+
+    protected MavenProject getProject()
+    {
+        return this.project 
+    }
+
+    protected Renderer getSiteRenderer()
+    {
+        return this.siteRenderer
+    }
+
 }
