@@ -329,7 +329,7 @@ class Reporter extends TextUIBugReporter
      */
     void finish()
     {
-        this.mavenLog.info( "Finished searching for bugs!" )
+        this.mavenLog.debug( "Finished searching for bugs!" )
 
         this.printSummary()
 

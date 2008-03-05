@@ -150,6 +150,31 @@ class XDocsReporter extends TextUIBugReporter
     void finish()
     {
 
+
+        this.isCurrentClassReportOpened = false
+
+        this.bugCollection.each() {bugInstance ->
+
+            this.log.debug( "Annotation Class is " + bugInstance.getPrimarySourceLineAnnotation().getClassName() )
+            this.log.debug( "Class is " + this.currentClassName )
+            this.log.debug( " " )
+
+            if ( !bugInstance.getPrimarySourceLineAnnotation().getClassName().equals( this.currentClassName ) )
+            {
+
+                this.currentClassName = bugInstance.getPrimarySourceLineAnnotation().getClassName()
+
+                if ( this.isCurrentClassReportOpened )
+                {
+                    this.closeClassReportSection()
+                    this.isCurrentClassReportOpened = false
+                }
+            }
+
+            this.addBugReport( bugInstance )
+        }
+
+
         // close file tag if needed
         if ( this.isCurrentClassReportOpened )
         {
@@ -266,7 +291,7 @@ class XDocsReporter extends TextUIBugReporter
             this.isCurrentClassReportOpened = true
         }
 
-        this.log.debug( "  Found a bug: " + bugInstance.getMessage() )
+        this.log.debug( "  Found a bug: " + bugInstance.getMessage()  + bugInstance.getMessageWithPriorityType())
         this.getSink().bugInstance( type, priority, category, message, lineNumber )
     }
 
@@ -331,9 +356,8 @@ class XDocsReporter extends TextUIBugReporter
      */
     protected void printErrors()
     {
-        this.log.info( "There are Errors" )
-        this.getSink().errorTag()
         this.log.info( "Printing Errors" )
+        this.getSink().errorTag()
 
         this.bugCollection.errorIterator().each() {  analysisError ->
             this.getSink().analysisErrorTag( analysisError.getMessage() )
@@ -352,9 +376,8 @@ class XDocsReporter extends TextUIBugReporter
      */
     protected void printSource()
     {
-        this.log.info( "There are Errors" )
+        this.log.info( "Printing Source Roots" )
         this.getSink( ).ProjectTag( )
-        this.log.info( "Printing Errors" )
 
         List srcDirs = mavenProject.getCompileSourceRoots( )
         if ( !srcDirs.isEmpty( ) )
@@ -418,7 +441,6 @@ class XDocsReporter extends TextUIBugReporter
     protected void doReportBug( BugInstance bugInstance )
     {
         this.log.debug( "  Found a bug: " + bugInstance.getMessage() )
-        this.addBugReport( bugInstance )
 
         if ( this.bugCollection.add( bugInstance ) )
         {

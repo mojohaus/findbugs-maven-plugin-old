@@ -583,7 +583,7 @@ class FindBugsMojo extends AbstractMavenReport
                 {
                     fail( "The addin plugin has an invalid URL", exception )
                 }
-                log.info( "  Adding Plugin: " + pluginFile.toString() )
+                log.debug( "  Adding Plugin: " + pluginFile.toString() )
             }
         }
  
