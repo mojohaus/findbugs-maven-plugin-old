@@ -45,7 +45,7 @@ class FindbugsXdocSink extends SinkAdapter
     void analysisErrorTag( String className )
     {
         this.markup( "<AnalysisError>" )
-        this.markup( className );
+        this.markup( HtmlTools.escapeHTML( className ) )
         this.markup( " </AnalysisError>" + EOL )
     }
 
@@ -57,7 +57,7 @@ class FindbugsXdocSink extends SinkAdapter
     void body( String version, String threshold, String effort )
     {
         this.markup( "<BugCollection" );
-        this.markup( " version=" + '"' + version + '"' );
+        this.markup( " version=" + '"' + version + '"' )
         this.markup( " threshold=" + '"' + threshold + '"' )
         this.markup( " effort=" + '"' + effort + '"' )
 
@@ -84,7 +84,7 @@ class FindbugsXdocSink extends SinkAdapter
     void classTag( String className )
     {
         this.markup( "<file" );
-        this.markup( " classname=" + '"' + className + '"' )
+        this.markup( " classname=" + '"' + HtmlTools.escapeHTML( className ) + '"' )
         this.markup( " >" + EOL )
     }
 
@@ -121,7 +121,7 @@ class FindbugsXdocSink extends SinkAdapter
     void missingClassTag( String className )
     {
         this.markup( "<MissingClass>" )
-        this.markup( className )
+        this.markup( HtmlTools.escapeHTML( className ) )
         this.markup( " </MissingClass>" + EOL )
     }
 
@@ -143,7 +143,7 @@ class FindbugsXdocSink extends SinkAdapter
     void srcDirTag( String className )
     {
         this.markup( "<SrcDir>" )
-        this.markup( className )
+        this.markup( HtmlTools.escapeHTML( className ) )
         this.markup( "</SrcDir>" + EOL )
     }
 }
