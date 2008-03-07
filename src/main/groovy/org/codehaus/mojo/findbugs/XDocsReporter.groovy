@@ -171,7 +171,7 @@ class XDocsReporter extends TextUIBugReporter
                 }
             }
 
-            this.addBugReport( bugInstance )
+            this.printBug( bugInstance )
         }
 
 
@@ -275,7 +275,13 @@ class XDocsReporter extends TextUIBugReporter
         this.resourceBundle = resourceBundle
     }
 
-    protected void addBugReport( BugInstance bugInstance )
+    /**
+     * Print the bug collection to a line in the table
+     *
+     * @param bugInstance
+     *            the bug to print
+     */
+    protected void printBug( BugInstance bugInstance )
     {
         SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation()
         BugPattern pattern = bugInstance.getBugPattern()
