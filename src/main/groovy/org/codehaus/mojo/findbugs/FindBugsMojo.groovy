@@ -217,6 +217,14 @@ class FindBugsMojo extends AbstractMavenReport
     MavenProject project
 
     /**
+     * Encoding used for xml files. Default value is UTF-8.
+     * 
+     * @parameter default-value="UTF-8"
+     * @readonly
+     */
+    String xmlEncoding
+
+    /**
      * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
      * 
      * @parameter
@@ -952,7 +960,7 @@ class FindBugsMojo extends AbstractMavenReport
             XMLBugReporter xmlBugReporter = new XMLBugReporter( findBugsProject )
             xmlBugReporter.setAddMessages( findbugsXmlWithMessages )
             textUiBugReporter = xmlBugReporter
-            textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugsXml.xml" ) ) )
+            textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugsXml.xml" ), true, "${xmlEncoding}"  ) )
             textUiBugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
 
             bugReporter = textUiBugReporter
@@ -965,7 +973,7 @@ class FindBugsMojo extends AbstractMavenReport
         {
             // legacy xdoc format
             textUiBugReporter = new XDocsBugReporter( findBugsProject )
-            textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugs.xdoc" ) ) )
+            textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugs.xdoc" ), true, "${xmlEncoding}" ) )
             textUiBugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
 
             bugReporter = textUiBugReporter
@@ -987,7 +995,7 @@ class FindBugsMojo extends AbstractMavenReport
             }
 
             XDocsReporter xDocsReporter = new XDocsReporter( this.getProject() )
-            xDocsReporter.setOutputWriter( new FileWriter( new File( "${xmlOutputDirectory}/findbugs.xml" ) ) )
+            xDocsReporter.setOutputWriter( new OutputStreamWriter( new FileOutputStream( new File( "${xmlOutputDirectory}/findbugs.xml" ) ), "UTF-8" ) )
             xDocsReporter.setResourceBundle( bundle )
             xDocsReporter.setLog( log )
             xDocsReporter.setEffort( getEffortParameter() )

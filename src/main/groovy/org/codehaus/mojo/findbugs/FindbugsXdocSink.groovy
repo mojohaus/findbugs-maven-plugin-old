@@ -33,6 +33,8 @@ import org.apache.maven.doxia.util.LineBreaker
  */
 class FindbugsXdocSink extends SinkAdapter
 {
+
+    String xdocEncoding
     static final String EOL = System.getProperty( "line.separator" )
 
     LineBreaker out
@@ -40,6 +42,7 @@ class FindbugsXdocSink extends SinkAdapter
     FindbugsXdocSink( Writer out )
     {
         this.out = new LineBreaker( out )
+        this.xdocEncoding = out.getEncoding()
     }
 
     void analysisErrorTag( String className )
@@ -115,7 +118,8 @@ class FindbugsXdocSink extends SinkAdapter
 
     void head()
     {
-        this.markup( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + EOL )
+//        this.markup( "<?xml version=\"1.0\" encoding=\"" + xdocEncoding + "\"?>" + EOL )
+        this.markup( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + EOL )
     }
 
     void missingClassTag( String className )

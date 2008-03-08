@@ -30,7 +30,7 @@ Maven 2 FindBugs Plugin - How to Use
   <plugin>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>findbugs-maven-plugin</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.1 or 1.2-SNAPSHOT</version>
     <configuration>
       <xmlOutput>true|false</xmlOutput>
       <xmlOutputDirectory>directory location of findbugs xdoc xml report</xmlOutputDirectory>
@@ -44,8 +44,8 @@ Maven 2 FindBugs Plugin - How to Use
       <pluginList>/libs/fb-contrib/fb-contrib-2.8.0.jar</pluginList>
       <debug>true|false</debug>
       <relaxed>true|false</relaxed>
-      <xmlOutputDirectory>true|false</xmlOutputDirectory>
-      <findbugsXmlOutput>directory location of findbugs legact xml format report</findbugsXmlOutput>
+      <findbugsXmlOutput>true|false</findbugsXmlOutput>
+      <findbugsXmlOutputDirectory>directory location of findbugs legact xml format report</findbugsXmlOutputDirectory>
     </configuration>
   </plugin>
   [...]

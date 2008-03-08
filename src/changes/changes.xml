@@ -7,6 +7,9 @@
     </properties>
     <body>
         <release version="1.2-SNAPSHOT" date="in SVN">
+            <action dev="gl" type="fix" issue="MFINDBUGS-50">
+                Fix file encoding used to generate xdoc report to use UTF-8
+            </action>
             <action dev="gl" type="update">
                 Added support for Findbugs v1.2.1
             </action>
