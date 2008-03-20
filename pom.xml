@@ -72,9 +72,19 @@
 	</licenses>
 	<properties>
 		<doxia.version>1.0-alpha-8</doxia.version>
-                <groovy.plugin.version>1.0-beta-3</groovy.plugin.version>
+                <groovy.plugin.version>1.0-beta-2</groovy.plugin.version>
+		<!--
+			<groovy.plugin.version>1.0-beta-3-SNAPSHOT</groovy.plugin.version>
+		-->
 	</properties>
 	<dependencies>
+<!--
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-artifact</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+-->
 		<dependency>
 			<groupId>org.apache.maven.reporting</groupId>
 			<artifactId>maven-reporting-impl</artifactId>
@@ -109,14 +119,23 @@
 				<version>${groovy.plugin.version}</version>
 				<executions>
 					<execution>
-                        <goals>
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
-                            <goal>testCompile</goal>
-                        </goals>
+						<goals>
+							<goal>compile</goal>
+						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.mojo.groovy</groupId>
+						<artifactId>groovy-mojo-tools</artifactId>
+						<version>${groovy.plugin.version}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
