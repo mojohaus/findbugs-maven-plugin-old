@@ -1,4 +1,4 @@
-package org.codehaus.mojo.findbugs;
+package org.codehaus.mojo.findbugs
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

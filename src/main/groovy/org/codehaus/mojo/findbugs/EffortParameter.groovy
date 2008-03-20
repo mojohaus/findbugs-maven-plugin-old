@@ -1,4 +1,4 @@
-package org.codehaus.mojo.findbugs;
+package org.codehaus.mojo.findbugs
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,8 +19,8 @@ package org.codehaus.mojo.findbugs;
  * under the License.
  */
 
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
+import edu.umd.cs.findbugs.FindBugs
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting
 
 /**
  * Constant values for the configuration parameter <code>effort</code>.
@@ -35,31 +35,31 @@ class EffortParameter
      * High effort.
      * 
      */
-    static final EffortParameter MAX = new EffortParameter( "Max", FindBugs.MAX_EFFORT );
+    static final EffortParameter MAX = new EffortParameter( "Max", FindBugs.MAX_EFFORT )
 
     /**
      * Normal effort.
      * 
      */
-    static final EffortParameter DEFAULT = new EffortParameter( "Default", FindBugs.DEFAULT_EFFORT );
+    static final EffortParameter DEFAULT = new EffortParameter( "Default", FindBugs.DEFAULT_EFFORT )
 
     /**
      * Low effort.
      * 
      */
-    static final EffortParameter MIN = new EffortParameter( "Min", FindBugs.MIN_EFFORT );
+    static final EffortParameter MIN = new EffortParameter( "Min", FindBugs.MIN_EFFORT )
 
     /**
      * The effort value.
      * 
      */
-    AnalysisFeatureSetting[] value;
+    AnalysisFeatureSetting[] value
 
     /**
      * The effort name.
      * 
      */
-    String name;
+    String name
 
     /**
      * Hide default constructor.
@@ -67,10 +67,10 @@ class EffortParameter
      */
     private EffortParameter()
     {
-        super();
+        super()
 
-        this.value = null;
-        this.name = null;
+        this.value = null
+        this.name = null
     }
 
     /**
@@ -83,15 +83,15 @@ class EffortParameter
      */
     private EffortParameter( final String name, final AnalysisFeatureSetting[] value )
     {
-        super();
+        super()
 
         if ( ( name == null ) || ( name.trim().length() == 0 ) )
         {
-            throw new IllegalArgumentException( "Argument name not allowed to be null" );
+            throw new IllegalArgumentException( "Argument name not allowed to be null" )
         }
 
-        this.value = value;
-        this.name = name;
+        this.value = value
+        this.name = name
     }
     
     /**
@@ -99,7 +99,7 @@ class EffortParameter
      */
     AnalysisFeatureSetting[] getValue()
     {
-        return this.value;
+        return this.value
     }
 
     /**
