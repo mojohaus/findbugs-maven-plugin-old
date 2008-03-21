@@ -1,4 +1,10 @@
-Maven 2 FindBugs Plugin - Introduction
+ ------
+ Introduction
+ ------
+ ------
+ ------
+
+FindBugs Maven Plugin
 
  FindBugs looks for bugs in Java programs. It is based on the concept of bug patterns. A bug pattern is a code idiom that is often an error. Bug patterns arise for a variety of reasons:
   
@@ -16,6 +22,6 @@ Maven 2 FindBugs Plugin - Introduction
  
  FindBugs uses BCEL to analyze Java bytecode.  It uses dom4j for XML manipulation.
  
- This introduction is an excerpt from the Facts Sheet at {{{http://findbugs.sourceforge.net/factSheet.html}FindBugs home page}}
+ This introduction is an excerpt from the Facts Sheet at {{{http://findbugs.sourceforge.net/factSheet.html}FindBugs home page}}.
 
  See a {{{findbugs.html}sample report}}.
