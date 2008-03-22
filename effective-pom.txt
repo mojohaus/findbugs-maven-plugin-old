@@ -1,0 +1,392 @@
+[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: 'help'.
+WAGON_VERSION: 1.0-beta-2
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building Maven FindBugs PlugIn
+[INFO]    task-segment: [help:effective-pom] (aggregator-style)
+[INFO] ----------------------------------------------------------------------------
+[INFO] [help:effective-pom]
+[INFO] 
+************************************************************************************
+Effective POM for project 'org.codehaus.mojo:findbugs-maven-plugin:maven-plugin:1.2-SNAPSHOT'
+************************************************************************************
+<?xml version="1.0"?><project>
+  <parent>
+    <artifactId>mojo</artifactId>
+    <groupId>org.codehaus.mojo</groupId>
+    <version>16</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>findbugs-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <name>Maven FindBugs PlugIn</name>
+  <version>1.2-SNAPSHOT</version>
+  <description>This Plug-In generates reports based on the FindBugs Library</description>
+  <url>http://mojo.codehaus.org/findbugs-maven-plugin</url>
+  <prerequisites>
+    <maven>2.0.5</maven>
+  </prerequisites>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
+  </issueManagement>
+  <inceptionYear>2005</inceptionYear>
+  <mailingLists>
+    <mailingList>
+      <name>Development List</name>
+      <subscribe>dev-subscribe@mojo.codehaus.org</subscribe>
+      <unsubscribe>dev-unsubscribe@mojo.codehaus.org</unsubscribe>
+      <post>dev@mojo.codehaus.org</post>
+      <archive>http://archive.mojo.codehaus.org/dev/</archive>
+    </mailingList>
+    <mailingList>
+      <name>User List</name>
+      <subscribe>user-subscribe@mojo.codehaus.org</subscribe>
+      <unsubscribe>user-unsubscribe@mojo.codehaus.org</unsubscribe>
+      <post>user@mojo.codehaus.org</post>
+      <archive>http://archive.mojo.codehaus.org/user/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Commits List</name>
+      <subscribe>scm-subscribe@mojo.codehaus.org</subscribe>
+      <unsubscribe>scm-unsubscribe@mojo.codehaus.org</unsubscribe>
+      <archive>http://archive.mojo.codehaus.org/scm/</archive>
+    </mailingList>
+  </mailingLists>
+  <developers>
+    <developer>
+      <id>cr</id>
+      <name>Cyrill Ruettimann</name>
+      <email>mypublicaddress@mac.com</email>
+      <organization></organization>
+      <roles>
+        <role>Documentation</role>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>gl</id>
+      <name>Garvin LeClaire</name>
+      <email>gleclaire@codehaus.org</email>
+      <url>http://gdleclaire.blogspot.com</url>
+      <organization></organization>
+      <roles>
+        <role>Documentation</role>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Detlef Pleiss</name>
+      <email>d.pleiss@comundus.com</email>
+      <organization>comundus GmbH</organization>
+      <organizationUrl>http://www.comundus.com</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </contributor>
+  </contributors>
+  <licenses>
+    <license>
+      <name>Apache 2.0</name>
+      <url>LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/mojo/tags/mojo-16/findbugs-maven-plugin</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/tags/mojo-16/findbugs-maven-plugin</developerConnection>
+    <url>http://svn.codehaus.org/mojo/tags/mojo-16/findbugs-maven-plugin</url>
+  </scm>
+  <organization>
+    <name>CodeHaus</name>
+    <url>http://www.codehaus.org</url>
+  </organization>
+  <build>
+    <sourceDirectory>/Users/garvin/NetBeansProjects/findbugs-maven-plugin/src/main/java</sourceDirectory>
+    <scriptSourceDirectory>src/main/scripts</scriptSourceDirectory>
+    <testSourceDirectory>/Users/garvin/NetBeansProjects/findbugs-maven-plugin/src/test/java</testSourceDirectory>
+    <outputDirectory>/Users/garvin/NetBeansProjects/findbugs-maven-plugin/target/classes</outputDirectory>
+    <testOutputDirectory>/Users/garvin/NetBeansProjects/findbugs-maven-plugin/target/test-classes</testOutputDirectory>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+    <resources>
+      <resource>
+        <directory>/Users/garvin/NetBeansProjects/findbugs-maven-plugin/src/main/resources</directory>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>/Users/garvin/NetBeansProjects/findbugs-maven-plugin/src/test/resources</directory>
+      </testResource>
+    </testResources>
+    <directory>/Users/garvin/NetBeansProjects/findbugs-maven-plugin/target</directory>
+    <finalName>findbugs-maven-plugin-1.2-SNAPSHOT</finalName>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <tagBase>https://svn.codehaus.org/mojo/tags</tagBase>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>2.0-beta-5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo.groovy</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <version>1.0-beta-3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generateStubs</goal>
+              <goal>compile</goal>
+              <goal>generateTestStubs</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalProjectnatures>
+            <projectnature>org.codehaus.groovy.eclipse.groovyNature</projectnature>
+          </additionalProjectnatures>
+          <additionalBuildcommands>
+            <buildcommand>org.codehaus.groovy.eclipse.groovyBuilder</buildcommand>
+          </additionalBuildcommands>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-help-plugin</artifactId>
+        <version>2.0.2</version>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots />
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+    </repository>
+    <repository>
+      <releases />
+      <snapshots />
+      <id>Apache Snapshots</id>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+    </repository>
+    <repository>
+      <releases />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>Codehaus</id>
+      <url>http://repository.codehaus.org/</url>
+    </repository>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <id>codehaus.org</id>
+      <name>Maven Central Development Repository</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots />
+      <id>Codehaus Plugin Snapshots</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>Codehaus Plugins</id>
+      <url>http://repository.codehaus.org/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases />
+      <snapshots />
+      <id>Apache Plugin Snapshots</id>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <id>codehaus.org</id>
+      <name>Maven Central Development Plugin Repository</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>central</id>
+      <name>Maven Plugin Repository</name>
+      <url>http://repo1.maven.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.mojo.groovy</groupId>
+      <artifactId>groovy-mojo-support</artifactId>
+      <version>1.0-beta-3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.doxia</groupId>
+      <artifactId>doxia-core</artifactId>
+      <version>1.0-alpha-8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.reporting</groupId>
+      <artifactId>maven-reporting-api</artifactId>
+      <version>2.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.findbugs</groupId>
+      <artifactId>findbugs</artifactId>
+      <version>1.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.reporting</groupId>
+      <artifactId>maven-reporting-impl</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+  </dependencies>
+  <reporting>
+    <outputDirectory>target/site</outputDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <configLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven_checks.xml</configLocation>
+          <headerLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt</headerLocation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <links>
+            <link>http://java.sun.com/j2ee/1.4/docs/api</link>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+            <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
+            <link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
+            <link>http://www.junit.org/junit/javadoc/</link>
+            <link>http://logging.apache.org/log4j/docs/api/</link>
+            <link>http://jakarta.apache.org/regexp/apidocs/</link>
+            <link>http://jakarta.apache.org/velocity/api/</link>
+          </links>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.0</version>
+      </plugin>
+    </plugins>
+  </reporting>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.1</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <distributionManagement>
+    <repository>
+      <id>codehaus.org</id>
+      <name>Mojo Central Repository</name>
+      <url>dav:https://dav.codehaus.org/repository/mojo/</url>
+    </repository>
+    <snapshotRepository>
+      <id>codehaus.org</id>
+      <name>Mojo Central Development Repository</name>
+      <url>dav:https://dav.codehaus.org/snapshots.repository/mojo/</url>
+    </snapshotRepository>
+    <site>
+      <id>codehaus.org</id>
+      <name>Mojo Website</name>
+      <url>dav:https://dav.codehaus.org/mojo/findbugs-maven-plugin</url>
+    </site>
+  </distributionManagement>
+  <properties>
+    <doxia.version>1.0-alpha-8</doxia.version>
+    <groovy.plugin.version>1.0-beta-3</groovy.plugin.version>
+  </properties>
+</project>
+************************************************************************************
+
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 1 second
+[INFO] Finished at: Thu Mar 20 17:19:15 EDT 2008
+[INFO] Final Memory: 3M/7M
+[INFO] ------------------------------------------------------------------------
