@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.FindBugs2
  * Helper for FindBugs2 class
  *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: FindBugs2.groovy  $
+ * @version $Id$
  */
  
 class FindBugs2Proxy extends FindBugs2

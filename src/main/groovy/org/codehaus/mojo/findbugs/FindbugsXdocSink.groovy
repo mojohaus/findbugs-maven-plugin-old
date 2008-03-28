@@ -29,7 +29,7 @@ import org.apache.maven.doxia.util.LineBreaker
  * A doxia Sink which produces an FindBugs model.
  * 
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: FindbugsXdocSink.groovy 2561 2006-10-24 21:06:39Z gleclaire $
+ * @version $Id$
  */
 class FindbugsXdocSink extends SinkAdapter
 {

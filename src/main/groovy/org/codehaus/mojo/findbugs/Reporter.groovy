@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor
  * FindBugs if a bug is found.
  * 
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: Reporter.groovy 4598 2007-07-19 20:46:32Z gleclaire $
+ * @version $Id$
  */
 class Reporter extends TextUIBugReporter
 {

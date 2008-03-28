@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.filter.FilterException
  * @requiresProject
  * 
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: FindBugsMojo.groovy 4041 2007-05-07 02:55:00Z gleclaire $
+ * @version $Id$
  */
 class FindBugsMojo extends AbstractMavenReport
 {

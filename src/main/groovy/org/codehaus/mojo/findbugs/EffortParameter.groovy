@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting
  * Constant values for the configuration parameter <code>effort</code>.
  * 
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: EffortParameter.groovy 2561 2006-10-24 21:06:39Z gleclaire $
+ * @version $Id$
  */
 class EffortParameter
 {

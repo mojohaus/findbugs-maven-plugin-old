@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor
  * FindBugs if a bug is found.
  * 
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: XDocsReporter.groovy 2561 2006-10-24 21:06:39Z gleclaire $
+ * @version $Id$
  */
 class XDocsReporter extends TextUIBugReporter
 {
