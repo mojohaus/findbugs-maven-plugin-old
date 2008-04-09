@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.filter.FilterException
  * @requiresProject
  * 
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: FindBugsMojo.groovy 4041 2007-05-07 02:55:00Z gleclaire $
+ * @version $Id: FindBugsMojo.groovy 6727 2008-04-09 02:18:10Z gleclaire $
  */
 class FindBugsMojo extends AbstractMavenReport
 {
@@ -556,6 +556,7 @@ class FindBugsMojo extends AbstractMavenReport
     protected void addPluginsToFindBugs( Locale locale )
     {
         def corepluginpath
+        URL[] pluginURL
 
         try
         {
@@ -566,36 +567,42 @@ class FindBugsMojo extends AbstractMavenReport
             fail( "The core plugin has an invalid URL", exception )
         }
 
-        log.debug( "  coreplugin Jar is located at " + corepluginpath.toString() )
+        log.info( "  coreplugin Jar is located at " + corepluginpath.toString() )
 
-        URL[] plugins = corepluginpath
-        
+//        URL[] plugins = []
+        def plugins = []
+        plugins << corepluginpath
+
+
         if ( pluginList )
         {
-            log.debug( "  Adding Plugins " )
+            log.info( "  Adding Plugins " )
             String[] pluginJars = pluginList.split( "," )
 
             pluginJars.each() { pluginJar ->
-                def pluginFile = pluginJar.trim()
+                def pluginFileName = pluginJar.trim()
 
-                if ( !pluginFile.endsWith( ".jar" ) )
+                if ( !pluginFileName.endsWith( ".jar" ) )
                 {
-                    throw new IllegalArgumentException( "Plugin File is not a Jar file: " + pluginFile )
+                    throw new IllegalArgumentException( "Plugin File is not a Jar file: " + pluginFileName )
                 }
 
                 try
                 {
-                    plugins += new File( pluginFile ).toURL()
+                    log.info( "  Processing Plugin: " + pluginFileName.toString() )
+//                    def pluginFile = new File( pluginFileName.toString() )
+//                    plugins << pluginFile.toURL()
+                    plugins << new File( pluginFileName.toString() ).toURL()
                 }
                 catch ( MalformedURLException exception )
                 {
                     fail( "The addin plugin has an invalid URL", exception )
                 }
-                log.debug( "  Adding Plugin: " + pluginFile.toString() )
             }
         }
  
-        DetectorFactoryCollection.rawInstance().setPluginList( plugins )
+        pluginURL = plugins.toArray()
+        DetectorFactoryCollection.rawInstance().setPluginList( pluginURL  )
 
         log.debug( "  Done Adding Plugins" )
     }
