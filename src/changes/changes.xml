@@ -10,6 +10,9 @@
             <action dev="gl" type="update">
                 Added support for Findbugs v1.3.2
             </action>
+            <action dev="gl" type="fix" issue="MFINDBUGS-54">
+              Specifying a pluginList configuration value throws an exception
+           </action>
         </release>
         <release version="1.2.0" date="2008-03-27" description="Update for Findbugs 1.2.0">
             <action dev="gl" type="fix" issue="MFINDBUGS-50">
