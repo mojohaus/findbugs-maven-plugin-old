@@ -21,8 +21,9 @@ package org.codehaus.mojo.findbugs;
 
 import java.io.Writer
 
-import org.apache.maven.doxia.module.HtmlTools
+//import org.apache.maven.doxia.module.HtmlTools
 import org.apache.maven.doxia.sink.SinkAdapter
+import org.apache.maven.doxia.util.HtmlTools
 import org.apache.maven.doxia.util.LineBreaker
 
 /**

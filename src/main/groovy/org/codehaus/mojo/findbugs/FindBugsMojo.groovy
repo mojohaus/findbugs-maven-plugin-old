@@ -32,6 +32,8 @@ import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
 
+import org.codehaus.plexus.resource.ResourceManager
+import org.codehaus.plexus.resource.loader.FileResourceLoader
 import org.codehaus.plexus.util.FileUtils
 
 import edu.umd.cs.findbugs.BugReporter
@@ -336,6 +338,13 @@ class FindBugsMojo extends AbstractMavenReport
     boolean skip
 
     /**
+     * @component
+     * @required
+     * @readonly
+     */
+    private ResourceManager resourceManager
+
+    /**
      * Checks whether prerequisites for generating this report are given.
      * 
      * @return true if report can be generated, otherwise false
@@ -448,17 +457,37 @@ class FindBugsMojo extends AbstractMavenReport
         {
             try 
             {
+
+
+                log.info( "  Searching  includeFilterFile.....")
+                destFile = resourceManager.getResourceAsFile( includeFilterFile,  "includeFilter.xml")
+//                destFile = resourceManager.resolveLocation( includeFilterFile,  "includeFilter.xml")
+                log.info( "  Done Searching  includeFilterFile.....")
+
+                /**
+                 * Adds the specified filters of the project to the findbugs.
+                 *
+                 * @param findBugs
+                 *            The find bugs to add the filters.
+                 * @throws IOException
+                 *             If filter file could not be read.
+                 * @throws FilterException
+                 *             If filter file was invalid.
+                 *
                 URL url = new URL( includeFilterFile )
                 fileName = includeFilterFile.tokenize("/")[-1]
                 destFile = new File( dir, fileName )
                 FileUtils.copyURLToFile( url,  destFile)
-    
+                 */
+
             }
             catch (MalformedURLException me)
             {
-                destFile = new File( includeFilterFile ) 
+                log.info( "  oops... " + includeFilterFile)
+                destFile = new File( includeFilterFile )
             }
 
+            log.info( "  Decoded bug include filter " + destFile.toString())
             log.info( "  Using bug include filter " + includeFilterFile)
             findBugs.addFilter( destFile.toString() , true )
         }
@@ -682,6 +711,12 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void executeReport( Locale locale )
     {
+        
+        resourceManager.addSearchPath( FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath() )
+        resourceManager.addSearchPath( "url", "" )
+
+        resourceManager.setOutputDirectory( new File( project.getBuild().getDirectory() ) )
+
         if ( !skip )
         {
             ResourceBundle bundle = FindBugsMojo.getBundle( locale )
