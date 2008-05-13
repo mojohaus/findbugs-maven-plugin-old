@@ -342,7 +342,7 @@ class FindBugsMojo extends AbstractMavenReport
      * @required
      * @readonly
      */
-    private ResourceManager resourceManager
+    ResourceManager resourceManager
 
     /**
      * Checks whether prerequisites for generating this report are given.
