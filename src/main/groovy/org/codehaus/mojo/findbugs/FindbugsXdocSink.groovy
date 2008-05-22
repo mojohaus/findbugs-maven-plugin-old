@@ -27,7 +27,7 @@ import org.apache.maven.doxia.util.LineBreaker
 
 /**
  * A doxia Sink which produces an FindBugs model.
- * 
+ *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
@@ -35,65 +35,65 @@ class FindbugsXdocSink extends SinkAdapter
 {
 
     String xdocEncoding
-    static final String EOL = System.getProperty( "line.separator" )
+    static final String EOL = System.getProperty("line.separator")
 
     LineBreaker out
 
-    FindbugsXdocSink( Writer out )
+    FindbugsXdocSink(Writer out)
     {
-        this.out = new LineBreaker( out )
+        this.out = new LineBreaker(out)
         this.xdocEncoding = out.getEncoding()
     }
 
-    void analysisErrorTag( String className )
+    void analysisErrorTag(String className)
     {
-        this.markup( "<AnalysisError>" )
-        this.markup( HtmlTools.escapeHTML( className ) )
-        this.markup( " </AnalysisError>" + EOL )
+        this.markup("<AnalysisError>")
+        this.markup(HtmlTools.escapeHTML(className))
+        this.markup(" </AnalysisError>" + EOL)
     }
 
     void body()
     {
-        this.markup( "<BugCollection>" + EOL )
+        this.markup("<BugCollection>" + EOL)
     }
 
-    void body( String version, String threshold, String effort )
+    void body(String version, String threshold, String effort)
     {
-        this.markup( "<BugCollection" );
-        this.markup( " version=" + '"' + version + '"' )
-        this.markup( " threshold=" + '"' + threshold + '"' )
-        this.markup( " effort=" + '"' + effort + '"' )
+        this.markup("<BugCollection");
+        this.markup(" version=" + '"' + version + '"')
+        this.markup(" threshold=" + '"' + threshold + '"')
+        this.markup(" effort=" + '"' + effort + '"')
 
-        this.markup( " >" + EOL );
+        this.markup(" >" + EOL);
     }
 
     void body_()
     {
-        this.markup( "</BugCollection>" + EOL )
+        this.markup("</BugCollection>" + EOL)
         this.out.flush();
     }
 
-    void bugInstance( String type, String priority, String category, String message, String lineNumber )
+    void bugInstance(String type, String priority, String category, String message, String lineNumber)
     {
-        this.markup( "<BugInstance" );
-        this.markup( " type=" + '"' + HtmlTools.escapeHTML( type ) + '"' )
-        this.markup( " priority=" + '"' + HtmlTools.escapeHTML( priority ) + '"' )
-        this.markup( " category=" + '"' + HtmlTools.escapeHTML( category ) + '"' )
-        this.markup( " message=" + '"' + HtmlTools.escapeHTML( message ) + '"' )
-        this.markup( " lineNumber=" + '"' + HtmlTools.escapeHTML( lineNumber ) + '"' )
-        this.markup( " />" + EOL )
+        this.markup("<BugInstance");
+        this.markup(" type=" + '"' + HtmlTools.escapeHTML(type) + '"')
+        this.markup(" priority=" + '"' + HtmlTools.escapeHTML(priority) + '"')
+        this.markup(" category=" + '"' + HtmlTools.escapeHTML(category) + '"')
+        this.markup(" message=" + '"' + HtmlTools.escapeHTML(message) + '"')
+        this.markup(" lineNumber=" + '"' + HtmlTools.escapeHTML(lineNumber) + '"')
+        this.markup(" />" + EOL)
     }
 
-    void classTag( String className )
+    void classTag(String className)
     {
-        this.markup( "<file" );
-        this.markup( " classname=" + '"' + HtmlTools.escapeHTML( className ) + '"' )
-        this.markup( " >" + EOL )
+        this.markup("<file");
+        this.markup(" classname=" + '"' + HtmlTools.escapeHTML(className) + '"')
+        this.markup(" >" + EOL)
     }
 
     void classTag_()
     {
-        this.markup( "</file>" + EOL )
+        this.markup("</file>" + EOL)
     }
 
     void close()
@@ -103,12 +103,12 @@ class FindbugsXdocSink extends SinkAdapter
 
     void errorTag()
     {
-        this.markup( "<Errors>" + EOL )
+        this.markup("<Errors>" + EOL)
     }
 
     void errorTag_()
     {
-        this.markup( "</Errors>" + EOL )
+        this.markup("</Errors>" + EOL)
     }
 
     void flush()
@@ -119,35 +119,35 @@ class FindbugsXdocSink extends SinkAdapter
     void head()
     {
 //        this.markup( "<?xml version=\"1.0\" encoding=\"" + xdocEncoding + "\"?>" + EOL )
-        this.markup( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + EOL )
+        this.markup("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + EOL)
     }
 
-    void missingClassTag( String className )
+    void missingClassTag(String className)
     {
-        this.markup( "<MissingClass>" )
-        this.markup( HtmlTools.escapeHTML( className ) )
-        this.markup( " </MissingClass>" + EOL )
+        this.markup("<MissingClass>")
+        this.markup(HtmlTools.escapeHTML(className))
+        this.markup(" </MissingClass>" + EOL)
     }
 
-    protected void markup( String text )
+    protected void markup(String text)
     {
-        this.out.write( text, true )
+        this.out.write(text, true)
     }
 
     void ProjectTag()
     {
-        this.markup( "<Project>" + EOL )
+        this.markup("<Project>" + EOL)
     }
 
     void ProjectTag_()
     {
-        this.markup( "</Project>" + EOL )
+        this.markup("</Project>" + EOL)
     }
 
-    void srcDirTag( String className )
+    void srcDirTag(String className)
     {
-        this.markup( "<SrcDir>" )
-        this.markup( HtmlTools.escapeHTML( className ) )
-        this.markup( "</SrcDir>" + EOL )
+        this.markup("<SrcDir>")
+        this.markup(HtmlTools.escapeHTML(className))
+        this.markup("</SrcDir>" + EOL)
     }
 }

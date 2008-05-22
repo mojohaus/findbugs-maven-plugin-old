@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.Detector
 
 /**
  * Constant values for the configuration parameter <code>threshold</code>.
- * 
+ *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
@@ -32,55 +32,55 @@ class ThresholdParameter
 
     /**
      * High priority threshold.
-     * 
+     *
      */
-    static final ThresholdParameter HIGH = new ThresholdParameter( "High", Detector.HIGH_PRIORITY )
+    static final ThresholdParameter HIGH = new ThresholdParameter("High", Detector.HIGH_PRIORITY)
 
     /**
      * Normal priority threshold.
-     * 
+     *
      */
-    static final ThresholdParameter NORMAL = new ThresholdParameter( "Normal", Detector.NORMAL_PRIORITY )
+    static final ThresholdParameter NORMAL = new ThresholdParameter("Normal", Detector.NORMAL_PRIORITY)
 
     /**
      * Low priority threshold.
-     * 
+     *
      */
-    static final ThresholdParameter LOW = new ThresholdParameter( "Low", Detector.LOW_PRIORITY )
+    static final ThresholdParameter LOW = new ThresholdParameter("Low", Detector.LOW_PRIORITY)
 
     /**
      * Experimental priority threshold.
-     * 
+     *
      */
-    static final ThresholdParameter EXP = new ThresholdParameter( "Exp", Detector.EXP_PRIORITY )
+    static final ThresholdParameter EXP = new ThresholdParameter("Exp", Detector.EXP_PRIORITY)
 
     /**
      * ??? priority threshold.
-     * 
+     *
      */
-    static final ThresholdParameter IGNORE = new ThresholdParameter( "Ignore", Detector.IGNORE_PRIORITY )
+    static final ThresholdParameter IGNORE = new ThresholdParameter("Ignore", Detector.IGNORE_PRIORITY)
 
     /**
      * Default priority threshold.
-     * 
+     *
      */
     static final ThresholdParameter DEFAULT = ThresholdParameter.LOW
 
     /**
      * The threshold value.
-     * 
+     *
      */
     int value
 
     /**
      * The threshold name.
-     * 
+     *
      */
-     String name
+    String name
 
     /**
      * Hide default constructor.
-     * 
+     *
      */
     private ThresholdParameter()
     {
@@ -92,18 +92,18 @@ class ThresholdParameter
 
     /**
      * Default constructor.
-     * 
+     *
      * @param name
      *            The threshold name to set.
      * @param value
      *            The threshold value to set.
      */
-    private ThresholdParameter( final String name, final int value )
+    private ThresholdParameter(final String name, final int value)
     {
         super()
-        if ( !name || ( name.trim().length() == 0 ) )
+        if ( !name || (name.trim().length() == 0) )
         {
-            throw new IllegalArgumentException( "Argument name not allowed to be null or empty" )
+            throw new IllegalArgumentException("Argument name not allowed to be null or empty")
         }
         this.value = value
         this.name = name
