@@ -32,6 +32,8 @@ import org.apache.maven.plugin.logging.Log
 import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
 
+import org.codehaus.plexus.resource.ResourceManager
+import org.codehaus.plexus.resource.loader.FileResourceLoader
 import org.codehaus.plexus.util.FileUtils
 
 import edu.umd.cs.findbugs.BugReporter
@@ -336,6 +338,14 @@ class FindBugsMojo extends AbstractMavenReport
     boolean skip
 
     /**
+     * @component
+     * @required
+     * @readonly
+     * @since 2.0
+     */
+    ResourceManager resourceManager
+
+    /**
      * Checks whether prerequisites for generating this report are given.
      * 
      * @return true if report can be generated, otherwise false
@@ -448,18 +458,17 @@ class FindBugsMojo extends AbstractMavenReport
         {
             try 
             {
-                URL url = new URL( includeFilterFile )
-                fileName = includeFilterFile.tokenize("/")[-1]
-                destFile = new File( dir, fileName )
-                FileUtils.copyURLToFile( url,  destFile)
-    
+                log.debug( "  Searching  includeFilterFile.....")
+                destFile = resourceManager.getResourceAsFile( includeFilterFile )
+
+                log.debug( "  Done Searching includeFilterFile with resource Manager....."+ destFile.getAbsoluteFile())
             }
             catch (MalformedURLException me)
             {
-                destFile = new File( includeFilterFile ) 
+                destFile = new File( includeFilterFile )
             }
 
-            log.info( "  Using bug include filter " + includeFilterFile)
+            log.info( "  Using bug include filter " + destFile.toString())
             findBugs.addFilter( destFile.toString() , true )
         }
         else
@@ -471,17 +480,17 @@ class FindBugsMojo extends AbstractMavenReport
         {
             try
             {
-                URL url = new URL( excludeFilterFile )
-                fileName = excludeFilterFile.tokenize("/")[-1]
-                destFile = new File( dir, fileName )
-                FileUtils.copyURLToFile( url,  destFile)
+                log.debug( "  Searching  excludeFilterFile.....")
+                destFile = resourceManager.getResourceAsFile( excludeFilterFile )
+
+                log.debug( "  Done Searching excludeFilterFile with resource Manager....."+ destFile.getAbsoluteFile())
             }
             catch (MalformedURLException me)
             {
                 destFile = new File( excludeFilterFile ) 
             }
 
-           log.info( "  Using bug exclude filter " + excludeFilterFile)
+           log.info( "  Using bug exclude filter " + destFile.toString())
            findBugs.addFilter( destFile.toString() , false )
         }
         else
@@ -682,6 +691,15 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void executeReport( Locale locale )
     {
+        
+        resourceManager.addSearchPath( FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath() )
+        resourceManager.addSearchPath( "url", "" )
+
+        resourceManager.setOutputDirectory( new File( project.getBuild().getDirectory() ) )
+
+        log.info("resourceManager outputDirectory is " + resourceManager.outputDirectory )
+
+
         if ( !skip )
         {
             ResourceBundle bundle = FindBugsMojo.getBundle( locale )
