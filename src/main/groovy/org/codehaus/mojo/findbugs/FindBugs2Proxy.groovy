@@ -29,25 +29,26 @@ import edu.umd.cs.findbugs.FindBugs2
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
- 
+
 class FindBugs2Proxy extends FindBugs2
 {
 
     DelegateBugReporter bugReporter
 
 
-    void initializeProxyReporter( int thresholdParameter )
+    void initializeProxyReporter(int thresholdParameter)
     {
         DelegateBugReporter delegateBugReporter = new DelegateBugReporter()
         this.bugReporter = delegateBugReporter
-        this.bugReporter.setPriorityThreshold( thresholdParameter )
+        this.bugReporter.setPriorityThreshold(thresholdParameter)
 
-        super.setBugReporter( new ErrorCountingBugReporter( delegateBugReporter ) )
+        super.setBugReporter(new ErrorCountingBugReporter(delegateBugReporter))
     }
 
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
      */
+
     BugReporter getBugReporter()
     {
         return this.bugReporter
@@ -56,10 +57,11 @@ class FindBugs2Proxy extends FindBugs2
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
      */
-    void setBugReporter( BugReporter bugReporter )
+
+    void setBugReporter(BugReporter bugReporter)
     {
-        ErrorCountingBugReporter errorCountingBugReporter = new ErrorCountingBugReporter( bugReporter )
-        this.addClassObserver( errorCountingBugReporter )
-        this.bugReporter.addClassObserver( errorCountingBugReporter )
+        ErrorCountingBugReporter errorCountingBugReporter = new ErrorCountingBugReporter(bugReporter)
+        this.addClassObserver(errorCountingBugReporter)
+        this.bugReporter.addClassObserver(errorCountingBugReporter)
     }
 }

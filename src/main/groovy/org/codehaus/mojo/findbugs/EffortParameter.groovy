@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting
 
 /**
  * Constant values for the configuration parameter <code>effort</code>.
- * 
+ *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
@@ -33,37 +33,37 @@ class EffortParameter
 
     /**
      * High effort.
-     * 
+     *
      */
-    static final EffortParameter MAX = new EffortParameter( "Max", FindBugs.MAX_EFFORT )
+    static final EffortParameter MAX = new EffortParameter("Max", FindBugs.MAX_EFFORT)
 
     /**
      * Normal effort.
-     * 
+     *
      */
-    static final EffortParameter DEFAULT = new EffortParameter( "Default", FindBugs.DEFAULT_EFFORT )
+    static final EffortParameter DEFAULT = new EffortParameter("Default", FindBugs.DEFAULT_EFFORT)
 
     /**
      * Low effort.
-     * 
+     *
      */
-    static final EffortParameter MIN = new EffortParameter( "Min", FindBugs.MIN_EFFORT )
+    static final EffortParameter MIN = new EffortParameter("Min", FindBugs.MIN_EFFORT)
 
     /**
      * The effort value.
-     * 
+     *
      */
     AnalysisFeatureSetting[] value
 
     /**
      * The effort name.
-     * 
+     *
      */
     String name
 
     /**
      * Hide default constructor.
-     * 
+     *
      */
     private EffortParameter()
     {
@@ -75,25 +75,25 @@ class EffortParameter
 
     /**
      * Default constructor.
-     * 
+     *
      * @param name
      *            The effort name to set.
      * @param value
      *            The effort value to set.
      */
-    private EffortParameter( final String name, final AnalysisFeatureSetting[] value )
+    private EffortParameter(final String name, final AnalysisFeatureSetting[] value)
     {
         super()
 
-        if ( ( name == null ) || ( name.trim().length() == 0 ) )
+        if ( (name == null) || (name.trim().length() == 0) )
         {
-            throw new IllegalArgumentException( "Argument name not allowed to be null" )
+            throw new IllegalArgumentException("Argument name not allowed to be null")
         }
 
         this.value = value
         this.name = name
     }
-    
+
     /**
      * @return The effort value.
      */

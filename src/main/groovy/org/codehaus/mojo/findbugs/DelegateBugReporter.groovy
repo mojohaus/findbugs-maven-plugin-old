@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor
 class DelegateBugReporter extends TextUIBugReporter
 {
 
-    List reporterObserverList= []
+    List reporterObserverList = []
     def bugCount = 0
     def fileCount = 0
     def missingClassCount = 0
@@ -48,10 +48,10 @@ class DelegateBugReporter extends TextUIBugReporter
         this.errorVerbosity = level
 
         this.reporterObserverList.each()
-        {
-            ErrorCountingBugReporter bugReporter = it
-            bugReporter.setErrorVerbosity( level )
-        }
+                {
+                    ErrorCountingBugReporter bugReporter = it
+                    bugReporter.setErrorVerbosity(level)
+                }
     }
 
     /**
@@ -59,15 +59,15 @@ class DelegateBugReporter extends TextUIBugReporter
      * If any bug reports have been queued, calling this method
      * will flush them.
      */
-     void finish()
-     {
+    void finish()
+    {
 
-         this.reporterObserverList.each()
-         {
-             ErrorCountingBugReporter bugReporter = it
-             bugReporter.finish()
-         }
-     }
+        this.reporterObserverList.each()
+                {
+                    ErrorCountingBugReporter bugReporter = it
+                    bugReporter.finish()
+                }
+    }
 
     /**
      * Report any accumulated error messages.
@@ -75,15 +75,16 @@ class DelegateBugReporter extends TextUIBugReporter
     void reportQueuedErrors()
     {
         this.reporterObserverList.each()
-        {
-            ErrorCountingBugReporter bugReporter = it
-            bugReporter.reportQueuedErrors()
-        }
+                {
+                    ErrorCountingBugReporter bugReporter = it
+                    bugReporter.reportQueuedErrors()
+                }
     }
 
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.classfile.IClassObserver)
      */
+
     public void addClassObserver(ErrorCountingBugReporter classObserver)
     {
         reporterObserverList << classObserver
@@ -107,15 +108,15 @@ class DelegateBugReporter extends TextUIBugReporter
      *            The bug to report
      * @see edu.umd.cs.findbugs.AbstractBugReporter #doReportBug(edu.umd.cs.findbugs.BugInstance)
      */
-    protected void doReportBug( BugInstance bugInstance )
+    protected void doReportBug(BugInstance bugInstance)
     {
         ++this.bugCount
 
         this.reporterObserverList.each()
-        {
-            ErrorCountingBugReporter bugReporter = it
-            bugReporter.reportBug( bugInstance )
-        }
+                {
+                    ErrorCountingBugReporter bugReporter = it
+                    bugReporter.reportBug(bugInstance)
+                }
     }
 
     /**
@@ -125,7 +126,7 @@ class DelegateBugReporter extends TextUIBugReporter
      *            the class
      * @see edu.umd.cs.findbugs.classfile.IClassObserver #observeClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
      */
-    void observeClass( ClassDescriptor clazz )
+    void observeClass(ClassDescriptor clazz)
     {
         ++this.fileCount
     }
@@ -133,15 +134,15 @@ class DelegateBugReporter extends TextUIBugReporter
 
     public void reportMissingClass(String s)
     {
-        super.reportMissingClass( s )
+        super.reportMissingClass(s)
     }
 
-    public void reportAnalysisError( AnalysisError analysisError )
+    public void reportAnalysisError(AnalysisError analysisError)
     {
-        super.reportAnalysisError( analysisError )
+        super.reportAnalysisError(analysisError)
     }
 
-    public void reportMissingClass( ClassNotFoundException e )
+    public void reportMissingClass(ClassNotFoundException e)
     {
         super.reportMissingClass(e)
     }
@@ -151,26 +152,26 @@ class DelegateBugReporter extends TextUIBugReporter
         ++this.errorCount
 
         this.reporterObserverList.each()
-        {
-            ErrorCountingBugReporter bugReporter = it
-            bugReporter.logError( s )
-        }
+                {
+                    ErrorCountingBugReporter bugReporter = it
+                    bugReporter.logError(s)
+                }
     }
-                             
-    public void logError( String s, Throwable throwable )
+
+    public void logError(String s, Throwable throwable)
     {
         ++this.errorCount
 
         this.reporterObserverList.each()
-        {
-            ErrorCountingBugReporter bugReporter = it
-            bugReporter.logError( s, throwable )
-        }
+                {
+                    ErrorCountingBugReporter bugReporter = it
+                    bugReporter.logError(s, throwable)
+                }
     }
 
-    public void reportSkippedAnalysis( MethodDescriptor methodDescriptor )
+    public void reportSkippedAnalysis(MethodDescriptor methodDescriptor)
     {
-        super.reportSkippedAnalysis( methodDescriptor )
+        super.reportSkippedAnalysis(methodDescriptor)
 
     }
 }
