@@ -13,6 +13,7 @@
       <item name="Sample Report" href="examples/findbugs.html"/>
       <item name="Sample XML xdoc Report" href="examples/findbugs.xml"/>
       <item name="Sample Legacy XML Report" href="examples/findbugsXml.xml"/>
+      <item name="Multi-Module Configuration" href="examples/multi-module-config.html"/>
     </menu>
   </body>
 </project>
