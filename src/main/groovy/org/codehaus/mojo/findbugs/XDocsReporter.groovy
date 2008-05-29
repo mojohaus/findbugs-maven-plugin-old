@@ -264,16 +264,6 @@ class XDocsReporter extends TextUIBugReporter
         super.reportMissingClass(ex)
     }
 
-
-    /**
-     * @param resourceBundle
-     *            the resourceBundle to set
-    void setResourceBundle(ResourceBundle resourceBundle)
-    {
-        this.resourceBundle = resourceBundle
-    }
-     */
-
     /**
      * Print the bug collection to a line in the table
      *
@@ -406,7 +396,7 @@ class XDocsReporter extends TextUIBugReporter
      */
     protected String valueForLine(SourceLineAnnotation line)
     {
-        String value = null
+        String value
 
         if ( line )
         {

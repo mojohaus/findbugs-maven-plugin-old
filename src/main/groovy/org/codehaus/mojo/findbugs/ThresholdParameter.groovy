@@ -101,27 +101,12 @@ class ThresholdParameter
     private ThresholdParameter(final String name, final int value)
     {
         super()
-        if ( !name || (name.trim().length() == 0) )
+//        if ( !name || (name.trim().length() == 0) )
+        if ( !name )
         {
             throw new IllegalArgumentException("Argument name not allowed to be null or empty")
         }
         this.value = value
         this.name = name
     }
-
-    /**
-     * @return The threshold value.
-    int getValue()
-    {
-        return this.value
-    }
-     */
-
-    /**
-     * @return The threshold name.
-    String getName()
-    {
-        return this.name
-    }
-     */
 }

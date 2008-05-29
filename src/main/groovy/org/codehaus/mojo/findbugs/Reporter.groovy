@@ -592,12 +592,13 @@ class Reporter extends TextUIBugReporter
      */
     protected String assembleJXRHyperlink(SourceLineAnnotation line, String lineNumber)
     {
-        String hyperlink = null
+        String hyperlink
         String prefix = this.bundle.getString(Reporter.JXR_PATHPREFIX_KEY)
         String path =
         prefix + Reporter.URL_SEPARATOR + this.currentClassName.replaceAll("[.]", "/").replaceAll("[\$].*", "")
 
-        if ( line == null )
+//        if ( line == null )
+        if ( !line )
         {
             hyperlink = "<a href=\"" + path + ".html\">" + lineNumber + "</a>"
         } else

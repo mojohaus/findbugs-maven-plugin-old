@@ -464,7 +464,7 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void addFiltersToFindBugs( FindBugs2Proxy findBugs )
     {
-        def dir = "${project.build.directory}"
+//        def dir = "${project.build.directory}"
         File destFile
         String fileName           
             
@@ -528,7 +528,8 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void addClassScreenerToFindBugs( FindBugs2Proxy findBugs )
     {
-        if ( onlyAnalyze != null )
+//        if ( onlyAnalyze != null )
+        if ( onlyAnalyze )
         {
             log.debug( "  Adding ClassScreener " )
             // The argument is a comma-separated list of classes and packages
@@ -648,6 +649,7 @@ class FindBugsMojo extends AbstractMavenReport
             boolean enableVisitor = true
             String[] visitorList
 
+//            if ( omitVisitors != null )
             if ( omitVisitors != null )
             {
                 enableVisitor = false
@@ -664,7 +666,8 @@ class FindBugsMojo extends AbstractMavenReport
             visitorList.each() { visitorListItem ->
                 def visitorName = visitorListItem.trim()
                 DetectorFactory factory = DetectorFactoryCollection.instance().getFactory( visitorName )
-                if ( factory == null )
+//                if ( factory == null )
+                if ( !factory )
                 {
                     throw new IllegalArgumentException( "Unknown detector: " + visitorName )
                 }
@@ -897,7 +900,8 @@ class FindBugsMojo extends AbstractMavenReport
 
         ThresholdParameter thresholdParameter = ThresholdParameter.DEFAULT
 
-        if ( threshold == null )
+//        if ( threshold == null )
+        if ( !threshold )
         {
             log.info( "  No threshold provided, using default threshold." )
         }
@@ -1006,21 +1010,6 @@ class FindBugsMojo extends AbstractMavenReport
             findBugs.setBugReporter( bugReporter )
         }
 
-        /*
-
-        if ( findbugsXdocOutput )
-        {
-            // legacy xdoc format
-            textUiBugReporter = new XDocsBugReporter( findBugsProject )
-            textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugs.xdoc" ), true, "${xmlEncoding}" ) )
-            textUiBugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
-
-            bugReporter = textUiBugReporter
-            findBugs.setBugReporter( bugReporter )
-
-        }
-        */
-
         if ( xmlOutput )
         {
             log.info( "  Using the xdoc format" )
@@ -1108,7 +1097,7 @@ class FindBugsMojo extends AbstractMavenReport
 
         List reportPlugins = getProject().getReportPlugins()
         
-        Iterator iterator = reportPlugins.iterator()
+//        Iterator iterator = reportPlugins.iterator()
         reportPlugins.each() { reportPlugin ->
             if ( artifactId.equals( reportPlugin.getArtifactId() ) )
             {

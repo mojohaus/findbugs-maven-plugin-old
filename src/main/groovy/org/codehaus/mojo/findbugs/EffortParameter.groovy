@@ -85,7 +85,8 @@ class EffortParameter
     {
         super()
 
-        if ( (name == null) || (name.trim().length() == 0) )
+//        if ( (name == null) || (name.trim().length() == 0) )
+        if ( !name )
         {
             throw new IllegalArgumentException("Argument name not allowed to be null")
         }
@@ -93,20 +94,4 @@ class EffortParameter
         this.value = value
         this.name = name
     }
-
-    /**
-     * @return The effort value.
-    AnalysisFeatureSetting[] getValue()
-    {
-        return this.value
-    }
-     */
-
-    /**
-     * @return The effort name.
-    String getName()
-    {
-        return this.name
-    }
-     */
 }

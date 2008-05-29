@@ -118,7 +118,6 @@ class FindbugsXdocSink extends SinkAdapter
 
     void head()
     {
-//        this.markup( "<?xml version=\"1.0\" encoding=\"" + xdocEncoding + "\"?>" + EOL )
         this.markup("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + EOL)
     }
 
