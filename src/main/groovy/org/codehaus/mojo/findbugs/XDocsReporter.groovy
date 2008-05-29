@@ -268,11 +268,11 @@ class XDocsReporter extends TextUIBugReporter
     /**
      * @param resourceBundle
      *            the resourceBundle to set
-     */
     void setResourceBundle(ResourceBundle resourceBundle)
     {
         this.resourceBundle = resourceBundle
     }
+     */
 
     /**
      * Print the bug collection to a line in the table

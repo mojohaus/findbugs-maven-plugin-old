@@ -111,17 +111,17 @@ class ThresholdParameter
 
     /**
      * @return The threshold value.
-     */
     int getValue()
     {
         return this.value
     }
+     */
 
     /**
      * @return The threshold name.
-     */
     String getName()
     {
         return this.name
     }
+     */
 }

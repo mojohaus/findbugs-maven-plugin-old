@@ -1,4 +1,4 @@
-
+                                                                                           
 package org.codehaus.mojo.findbugs
 
 /*
@@ -131,6 +131,7 @@ class FindBugsMojo extends AbstractMavenReport
      * Turn on and off xml output of the Findbugs report.
      * 
      * @parameter default-value="false"
+     * @since 1.0.0
      */
     boolean xmlOutput
 
@@ -139,6 +140,7 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      * @parameter default-value="${project.build.directory}"
      * @required
+     * @since 1.0.0
      */
     File xmlOutputDirectory
 
@@ -146,6 +148,7 @@ class FindBugsMojo extends AbstractMavenReport
      * Turn on and off findbugs native xml output of the Findbugs report.
      *
      * @parameter default-value="false"
+     * @since 1.2.0
      */
     boolean findbugsXmlOutput
 
@@ -154,6 +157,7 @@ class FindBugsMojo extends AbstractMavenReport
      *
      * @parameter default-value="${project.build.directory}"
      * @required
+     * @since 1.2.0
      */
     File findbugsXmlOutputDirectory
 
@@ -162,6 +166,7 @@ class FindBugsMojo extends AbstractMavenReport
      * Turn on and off xml output of the Findbugs report.
      *
      * @parameter default-value="false"
+     * @since 1.2.0
      */
     boolean findbugsXmlWithMessages
 
@@ -246,6 +251,7 @@ class FindBugsMojo extends AbstractMavenReport
      * File name of the include filter. Only bugs in matching the filters are reported.
      * 
      * @parameter
+     * @since 1.0-beta-1
      */
     String includeFilterFile
 
@@ -253,6 +259,7 @@ class FindBugsMojo extends AbstractMavenReport
      * File name of the exclude filter. Bugs matching the filters are not reported.
      * 
      * @parameter
+     * @since 1.0-beta-1
      */
     String excludeFilterFile
 
@@ -260,6 +267,7 @@ class FindBugsMojo extends AbstractMavenReport
      * Effort of the bug finders. Valid values are Min, Default and Max.
      * 
      * @parameter
+     * @since 1.0-beta-1
      */
     String effort
 
@@ -275,6 +283,7 @@ class FindBugsMojo extends AbstractMavenReport
      * positives.
      * 
      * @parameter default-value="false"
+     * @since 1.1
      */
     Boolean relaxed
 
@@ -282,6 +291,7 @@ class FindBugsMojo extends AbstractMavenReport
      * The visitor list to run. This is a comma-delimited list.
      * 
      * @parameter
+     * @since 1.0-beta-1
      */
     String visitors
 
@@ -289,6 +299,7 @@ class FindBugsMojo extends AbstractMavenReport
      * The visitor list to omit. This is a comma-delimited list.
      * 
      * @parameter
+     * @since 1.0-beta-1
      */
     String omitVisitors
 
@@ -296,6 +307,7 @@ class FindBugsMojo extends AbstractMavenReport
      * The plugin list to include in the report. This is a comma-delimited list.
      * 
      * @parameter
+     * @since 1.0-beta-1
      */
     String pluginList
 
@@ -311,6 +323,7 @@ class FindBugsMojo extends AbstractMavenReport
      * Restrict analysis to find bugs to given comma-separated list of classes and packages.
      * 
      * @parameter
+     * @since 1.1
      */
     String onlyAnalyze
 
@@ -334,6 +347,7 @@ class FindBugsMojo extends AbstractMavenReport
      * Skip entire check.
      * 
      * @parameter expression="${findbugs.skip}" default-value="false"
+     * @since 1.1
      */
     boolean skip
 

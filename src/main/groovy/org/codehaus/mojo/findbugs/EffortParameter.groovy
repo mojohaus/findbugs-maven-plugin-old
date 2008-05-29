@@ -96,17 +96,17 @@ class EffortParameter
 
     /**
      * @return The effort value.
-     */
     AnalysisFeatureSetting[] getValue()
     {
         return this.value
     }
+     */
 
     /**
      * @return The effort name.
-     */
     String getName()
     {
         return this.name
     }
+     */
 }

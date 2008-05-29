@@ -29,7 +29,7 @@ Multimodule Configuration
 
   <<Note:>> This implemented in version 2.0 fo the Findbugs plugin.
 
-  <<Credit:>> This is a shamelessly plagiarization of the Checkstyle
+  <<Credit:>> This is a shameless plagiarization of the Checkstyle
   plugin for consistency and due to my laziness.
 
 
