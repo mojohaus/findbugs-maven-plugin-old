@@ -216,7 +216,7 @@ class FindBugsMojo extends AbstractMavenReport
 
     /**
      * Maven Project
-     * 
+     *
      * @parameter expression="${project}"
      * @required
      * @readonly
@@ -424,9 +424,7 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      * @param findBugsProject
      *            The find bugs project to add the aux classpath entries.
-     * @throws DependencyResolutionRequiredException
-     *             Exception that occurs when an artifact file is used, but has not been resolved.
-     * 
+     *
      */
     protected void addClasspathEntriesToFindBugsProject( Project findBugsProject )
     {
@@ -456,15 +454,10 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      * @param findBugs
      *            The find bugs to add the filters.
-     * @throws IOException
-     *             If filter file could not be read.
-     * @throws FilterException
-     *             If filter file was invalid.
-     * 
+     *
      */
     protected void addFiltersToFindBugs( FindBugs2Proxy findBugs )
     {
-//        def dir = "${project.build.directory}"
         File destFile
         String fileName           
             
@@ -518,17 +511,10 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      * @param locale
      *            The locale to print out the messages. Used here to get the nameof the coreplugin from the properties.
-     * @throws ArtifactNotFoundException
-     *             If the coreplugin could not be found.
-     * @throws ArtifactResolutionException
-     *             If the coreplugin could not be resolved.
-     * @throws MavenReportException
-     *             If the findBugs plugins URL could not be resolved.
-     * 
+     *
      */
     protected void addClassScreenerToFindBugs( FindBugs2Proxy findBugs )
     {
-//        if ( onlyAnalyze != null )
         if ( onlyAnalyze )
         {
             log.debug( "  Adding ClassScreener " )
@@ -569,12 +555,6 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      * @param locale
      *            The locale to print out the messages. Used here to get the nameof the coreplugin from the properties.
-     * @throws ArtifactNotFoundException
-     *             If the coreplugin could not be found.
-     * @throws ArtifactResolutionException
-     *             If the coreplugin could not be resolved.
-     * @throws MavenReportException
-     *             If the findBugs plugins URL could not be resolved.
      * 
      */
     protected void addPluginsToFindBugs( Locale locale )
@@ -593,7 +573,6 @@ class FindBugsMojo extends AbstractMavenReport
 
         log.info( "  coreplugin Jar is located at " + corepluginpath.toString() )
 
-//        URL[] plugins = []
         def plugins = []
         plugins << corepluginpath
 
@@ -614,8 +593,6 @@ class FindBugsMojo extends AbstractMavenReport
                 try
                 {
                     log.info( "  Processing Plugin: " + pluginFileName.toString() )
-//                    def pluginFile = new File( pluginFileName.toString() )
-//                    plugins << pluginFile.toURL()
                     plugins << new File( pluginFileName.toString() ).toURL()
                 }
                 catch ( MalformedURLException exception )
@@ -650,7 +627,8 @@ class FindBugsMojo extends AbstractMavenReport
             String[] visitorList
 
 //            if ( omitVisitors != null )
-            if ( omitVisitors != null )
+//            if ( omitVisitors != null )
+            if ( omitVisitors )
             {
                 enableVisitor = false
                 visitorList = omitVisitors.split( "," )
@@ -702,8 +680,6 @@ class FindBugsMojo extends AbstractMavenReport
      * 
      * @param locale
      *            the locale the report should be generated for
-     * @throws MavenReportException
-     *             if anything goes wrong
      * @see org.apache.maven.reporting.AbstractMavenReport #executeReport(java.util.Locale)
      */
     protected void executeReport( Locale locale )
@@ -723,7 +699,6 @@ class FindBugsMojo extends AbstractMavenReport
 
             FindBugs2Proxy findBugs = null
 
-//            debugSourceDirectory( locale, classFilesDirectory )
             log.debug( "  " + bundle.getString( FindBugsMojo.SOURCE_ROOT_KEY ) )
             log.debug( "    " + classFilesDirectory.getAbsolutePath() )
 
@@ -797,11 +772,7 @@ class FindBugsMojo extends AbstractMavenReport
      * @param locale
      *            The locale of the messages.
      * @return The File reference to the coreplugin JAR
-     * @throws ArtifactNotFoundException
-     *             If the coreplugin could not be found.
-     * @throws ArtifactResolutionException
-     *             If the coreplugin could not be resolved.
-     * 
+     *
      */
     protected File getCorePluginPath( Locale locale )
     {
@@ -858,9 +829,7 @@ class FindBugsMojo extends AbstractMavenReport
      * @param locale
      *            The locale to print out the messages.
      * @return A list containing the java sources or an empty list if no java sources are found.
-     * @throws IOException
-     *             If there are problems searching for java sources.
-     * 
+     *
      */
     protected List getJavaSources( Locale locale, File pSourceDirectory )
     {
@@ -900,7 +869,6 @@ class FindBugsMojo extends AbstractMavenReport
 
         ThresholdParameter thresholdParameter = ThresholdParameter.DEFAULT
 
-//        if ( threshold == null )
         if ( !threshold )
         {
             log.info( "  No threshold provided, using default threshold." )
@@ -950,19 +918,7 @@ class FindBugsMojo extends AbstractMavenReport
      * @param sourceFiles
      *            The source files FindBugs should analyse.
      * @return An initialised FindBugs object.
-     * @throws DependencyResolutionRequiredException
-     *             Exception that occurs when an artifact file is used, but has not been resolved.
-     * @throws IOException
-     *             If filter file could not be read.
-     * @throws FilterException
-     *             If filter file was invalid.
-     * @throws ArtifactNotFoundException
-     *             If the coreplugin could not be found.
-     * @throws ArtifactResolutionException
-     *             If the coreplugin could not be resolved.
-     * @throws MavenReportException
-     *             If the findBugs plugins cannot be initialized
-     * 
+     *
      */
     protected FindBugs2Proxy initialiseFindBugs( Locale locale, List sourceFiles )
     {
@@ -1097,7 +1053,6 @@ class FindBugsMojo extends AbstractMavenReport
 
         List reportPlugins = getProject().getReportPlugins()
         
-//        Iterator iterator = reportPlugins.iterator()
         reportPlugins.each() { reportPlugin ->
             if ( artifactId.equals( reportPlugin.getArtifactId() ) )
             {
