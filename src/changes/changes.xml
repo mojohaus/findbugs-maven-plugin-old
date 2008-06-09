@@ -8,7 +8,7 @@
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
       <action dev="gl" type="update">
-        Add Integration Tests
+        Add Integration Tests using shitty plugin
       </action>
       <action dev="gl" type="update">
         update to gmaven-plugin version 1.0-rc-3-SNAPSHOT
