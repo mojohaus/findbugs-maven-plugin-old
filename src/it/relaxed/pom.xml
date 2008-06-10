@@ -40,6 +40,8 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
+          <findbugsXmlOutput>true</findbugsXmlOutput>
+          <xmlOutput>true</xmlOutput>
           <relaxed>true|false</relaxed>
           <!--
               <findbugsXmlOutput>true</findbugsXmlOutput>

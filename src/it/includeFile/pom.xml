@@ -51,6 +51,8 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
+          <findbugsXmlOutput>true</findbugsXmlOutput>
+          <xmlOutput>true</xmlOutput>
           <includeFilterFile>whizbang/lib-filter.xml</includeFilterFile>
           <!--
               <findbugsXmlOutput>true</findbugsXmlOutput>

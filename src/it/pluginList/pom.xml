@@ -41,6 +41,8 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
+          <findbugsXmlOutput>true</findbugsXmlOutput>
+          <xmlOutput>true</xmlOutput>
           <pluginList>/Applications/Findbugs/fb-contrib-3.4.2.jar</pluginList>
           <!--
               <findbugsXmlOutput>true</findbugsXmlOutput>

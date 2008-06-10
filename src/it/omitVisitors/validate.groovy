@@ -14,9 +14,64 @@
  * limitations under the License.
  */
 
-def indexFile = 'target/site/index.html'
-assert new File(basedir, indexFile).exists()
+
+assert new File(basedir, 'target/site/index.html').exists()
 
 assert new File(basedir, 'target/site/findbugs.html').exists()
+
+assert new File(basedir, 'target/findbugs.xml').exists()
+
+assert new File(basedir, 'target/findbugsXml.xml').exists()
+
+
+def path = new XmlSlurper().parse(new File(basedir, 'target/site/findbugs.html'))
+
+println '***************************'
+println "Checking HTML file"
+println '***************************'
+
+//def bugNodes = path.body.div.findAll {it.@id == 'bodyColumn'}.div[1].table.tr[1].td[1]  //.div.table.tr.td
+//println "bugNodes value is ${bugNodes.toInteger()}"
+def findbugsErrors = path.body.div.findAll {it.@id == 'bodyColumn'}.div[1].table.tr[1].td[1].toInteger()
+println "Error Count is ${findbugsErrors}"
+
+println '***************************'
+println "Checking xDoc file"
+println '***************************'
+
+path = new XmlSlurper().parse(new File(basedir, 'target/findbugs.xml'))
+
+allNodes = path.depthFirst().collect{ it }
+def xdocErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
+println "BugInstance size is ${xdocErrors}"
+
+assert findbugsErrors == xdocErrors
+
+xdocErrors = allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "URF_UNREAD_FIELD" }.size()
+xdocErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "UUF_UNUSED_FIELD"}.size()
+xdocErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "DLS_DEAD_LOCAL_STORE"}.size()
+println "BugInstance with includes size is ${xdocErrors}"
+
+assert 0 == xdocErrors
+
+
+println '**********************************'
+println "Checking Findbugs Native XML file"
+println '**********************************'
+
+path = new XmlSlurper().parse(new File(basedir, 'target/findbugsXml.xml'))
+
+allNodes = path.depthFirst().collect{ it }
+def findbugsXmlErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
+println "BugInstance size is ${findbugsXmlErrors}"
+
+assert findbugsErrors == findbugsXmlErrors
+
+findbugsXmlErrors = allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "URF_UNREAD_FIELD" }.size()
+findbugsXmlErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "UUF_UNUSED_FIELD"}.size()
+findbugsXmlErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "DLS_DEAD_LOCAL_STORE"}.size()
+println "BugInstance with includes size is ${findbugsXmlErrors}"
+
+assert 0 == findbugsXmlErrors
 
 

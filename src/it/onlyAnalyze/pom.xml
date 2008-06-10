@@ -41,6 +41,8 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
+          <findbugsXmlOutput>true</findbugsXmlOutput>
+          <xmlOutput>true</xmlOutput>
           <onlyAnalyze>BC_Unconfirmed_Cast</onlyAnalyze>
           <!--
               <findbugsXmlOutput>true</findbugsXmlOutput>
