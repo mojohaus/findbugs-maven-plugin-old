@@ -1,12 +1,15 @@
 <document>
   <properties>
     <title>Maven Findbugs plugin changelog</title>
-    <author email="mypublicaddress@mac.com">
-      Cyrill Rüttimann
+    <author email="gleclaire@codehaus.org">
+      Garvin LeClaire
     </author>
   </properties>
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
+      <action dev="gl" type="update" issue="MFINDBUGS-26">
+        Fail build if findbugs detects bugs
+      </action>
       <action dev="gl" type="update">
         Add Integration Tests using shitty plugin
       </action>

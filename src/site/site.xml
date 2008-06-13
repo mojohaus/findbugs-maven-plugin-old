@@ -14,6 +14,7 @@
       <item name="Sample XML xdoc Report" href="examples/findbugs.xml"/>
       <item name="Sample Legacy XML Report" href="examples/findbugsXml.xml"/>
       <item name="Multi-Module Configuration" href="examples/multi-module-config.html"/>
+      <item name="violation Checking Configuration" href="examples/violationChecking.html"/>
     </menu>
   </body>
 </project>
