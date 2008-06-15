@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
+      <action dev="gl" type="fix" issue="MFINDBUGS-58">
+        When there are no class, findbugs crash
+      </action>
       <action dev="gl" type="update" issue="MFINDBUGS-26">
         Fail build if findbugs detects bugs
       </action>
