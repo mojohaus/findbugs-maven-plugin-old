@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.filter.FilterException
 /**
  * Generates a FindBugs Report when the site plugin is run.
  * The HTML report is generated for site commands only.
- * The optional report formats are generated for both the site and findbugs:findbugs commands.
+ * The optional report formats are generated for both the site commands.
  * 
  * @goal findbugs
  * @description Generates a FindBugs Report when the site plugin is run.

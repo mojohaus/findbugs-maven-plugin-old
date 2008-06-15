@@ -46,6 +46,9 @@ import org.codehaus.plexus.util.FileUtils
 
 
 /**
+ * Fail the build if Findbugs finds an error.
+ * An XML report is put out by default in the target directory with the errors.
+ * 
  * @since 2.0
  * @goal check
  * @execute phase="verify"
