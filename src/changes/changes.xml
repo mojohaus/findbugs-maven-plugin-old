@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
+      <action dev="gl" type="fix" issue="MFINDBUGS-56">
+        StackOverflow exception (Infinite Recursion?)
+      </action>
       <action dev="gl" type="fix" issue="MFINDBUGS-58">
         When there are no class, findbugs crash
       </action>
