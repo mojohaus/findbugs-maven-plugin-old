@@ -23,8 +23,8 @@
     <version>testing</version>
     <relativePath>../common.xml</relativePath>
   </parent>
-  <artifactId>basic</artifactId>
-  <name>basic</name>
+  <artifactId>basic-2</artifactId>
+  <name>basic-2</name>
   <packaging>jar</packaging>
   <reporting>
     <excludeDefaults>true</excludeDefaults>
