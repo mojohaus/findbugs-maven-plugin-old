@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
+      <action dev="gl" type="update" issue="MFINDBUGS-60">
+         Add the ability to launch the Findbugs GUI
+      </action>
       <action dev="gl" type="fix" issue="MFINDBUGS-56">
         StackOverflow exception (Infinite Recursion?)
       </action>

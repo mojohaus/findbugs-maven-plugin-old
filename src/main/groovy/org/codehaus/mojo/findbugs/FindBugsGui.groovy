@@ -43,11 +43,10 @@ import org.codehaus.groovy.maven.mojo.GroovyMojo
  */
 
 class FindBugsGui extends GroovyMojo
-{
-    /**
-     * The name of the property resource bundle (Filesystem).
-     *
-     */
+{/**
+ * The name of the property resource bundle (Filesystem).
+ *
+ */
     static final String BUNDLE_NAME = "findbugs"
 
     /**
@@ -66,7 +65,7 @@ class FindBugsGui extends GroovyMojo
     /**
      * Directory containing the class files for FindBugs to analyze.
      *
-     * @parameter default-value="${project.build.outputDirectory}"
+     * @parameter default-value="$ {project.build.outputDirectory} "
      * @required
      */
     File classFilesDirectory
@@ -81,7 +80,7 @@ class FindBugsGui extends GroovyMojo
     /**
      * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
      *
-     * @parameter expression="${plugin.artifacts}"
+     * @parameter expression="${plugin.artifacts} "
      * @required
      * @readonly
      */
@@ -107,7 +106,7 @@ class FindBugsGui extends GroovyMojo
     /**
      * Maven Project
      *
-     * @parameter expression="${project}"
+     * @parameter expression="${project} "
      * @required
      * @readonly
      */
@@ -125,7 +124,7 @@ class FindBugsGui extends GroovyMojo
     /**
      * Specifies the directory where the findbugs native xml output will be generated.
      *
-     * @parameter default-value="${project.build.directory}"
+     * @parameter default-value="${project.build.directory} "
      * @required
      *
      */
@@ -137,25 +136,22 @@ class FindBugsGui extends GroovyMojo
 
         def auxClasspathElements = project.compileClasspathElements
 
-        ant.project.setProperty('basedir', findbugsXmlOutputDirectory.getAbsolutePath() )
-        
+        ant.project.setProperty('basedir', findbugsXmlOutputDirectory.getAbsolutePath())
+        System.setProperty("findbugs.debug", "true")
+
 
         ant.java(classname: "edu.umd.cs.findbugs.LaunchAppropriateUI", fork: "true", failonerror: "true", clonevm: "true")
-        {
-//           jvmarg('-Dfindbugs.jaws=true')
-           sysproperty(key: "findbugs.jaws", value: "true")
-           classpath()
-           {
-
-                           auxClasspathElements.each() { auxClasspathElement ->
-                               if ( log.isDebugEnabled() )
-                               {
-                                   log.info( "  Trying to Add to AuxClasspath ->" + auxClasspathElements.toString() )
-                               }
-                               pathelement(location: auxClasspathElement.toString() )
-                           }
-          }
-        }
-   }
+                {
+                    sysproperty(key: "findbugs.jaws", value: "true")
+                    classpath()
+                            {
+                                auxClasspathElements.each() {auxClasspathElement ->
+                                    pathelement(location: auxClasspathElement.toString())
+                                }
+                            }
+                    arg("-project")
+                    arg("${findbugsXmlOutputDirectory}/findbugsXml.xml")
+                }
+    }
 
 }
