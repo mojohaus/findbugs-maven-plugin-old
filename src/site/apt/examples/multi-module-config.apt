@@ -56,9 +56,11 @@ whizbang
   We'll start by adding another sub project that will house our common
   configuration. Let's call it <build-tools>. In it we put the resources that
   we want to include. In this example, we will add configuration files for the
-  Findbugs plugin. Configuration files for other plugins, like the PMD and Checkstyle
-  plugin, can be included in the same subproject if you like. 
-
+  Findbugs plugin. Configuration files for other plugins, like the PMD and 
+  Checkstyle plugin, can be included in the same subproject if you like.
+  We will create another directory and call it <whiz-progs> and create a pom.xml
+  file. We will move our core, gui, and jmx modules to <whiz-progs>.
+  
 +-----+
 whizbang
 |-- pom.xml
@@ -71,19 +73,20 @@ whizbang
 |   |               |-- lib-filter.xml
 |   |               `-- LICENSE.TXT
 |   `-- pom.xml
-|-- core
-|-- gui
-|-- jmx
-`-- src
+|`-- src
+|
+`-- whiz-progs
+    |-- pom.xml
+    |-- core
+    |-- gui
+    `-- jmx
 +-----+
-
   <<Tip:>> put the resources into a subdirectory that you can ensure will be
   unique and not conflict with anyone else.
 
-* Configure the other projects to use it
+* Configure the top level pom 
 
-  Now we can include the Findbugs configuration in the top level
-  <<<pom.xml>>>.
+  The top level pom jusr references the two modules
 
 +-----+
 <project>
@@ -93,6 +96,30 @@ whizbang
   <version>1.0</version>
   <packaging>pom</packaging>
   <name>WhizBang Parent</name>
+  <modules>
+    <module>build-tools</module>
+    <module>modules</module>
+  </modules>
+</project>
++-----+
+
+
+* Configure the other projects to build-tools
+
+  Now we can include the Findbugs configuration in the whiz-progs <<<pom.xml>>>.
+
++-----+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.example.whizbang</groupId>
+    <artifactId>whizbang-parent</artifactId>
+    <version>1.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <packaging>pom</packaging>
+    <artifactId>whiz-progs</artifactId>
+  <name>WhizBang Programs</name>
   <build>
     <extensions>
       <extension>
@@ -117,7 +144,6 @@ whizbang
     </plugins>
   </reporting>
   <modules>
-    <module>build-tools</module>
     <module>core</module>
     <module>jmx</module>
     <module>gui</module>
@@ -132,7 +158,7 @@ whizbang
   Based on the Findbugs plugin configuration above, the values of
   <<<includeFilterFile>>> will be resolved from the
   classpath. The <build-tools> jar was included in the classpath when it was
-  declared as a dependency to the plugin.
+  declared as an dependency to the plugin.
 
   <<Note:>> For the classpath reference, the build-tools was referred to as an
   extension and not as a plugin dependency. This is due to the fact that if it

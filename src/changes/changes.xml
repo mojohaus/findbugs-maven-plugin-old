@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
+      <action dev="gl" type="fix" issue="MFINDBUGS-62">
+        Site example for multiprojects doesn't work
+      </action>
       <action dev="gl" type="update" issue="MFINDBUGS-60">
          Add the ability to launch the Findbugs GUI
       </action>
