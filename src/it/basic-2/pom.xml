@@ -26,4 +26,34 @@
   <artifactId>basic-2</artifactId>
   <name>basic-2</name>
   <packaging>jar</packaging>
+  <reporting>
+    <excludeDefaults>true</excludeDefaults>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>testing</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <findbugsXmlOutput>true</findbugsXmlOutput>
+          <xmlOutput>true</xmlOutput>
+          <!--
+              <findbugsXmlOutput>true</findbugsXmlOutput>
+              <xmlOutput>true</xmlOutput>
+              <onlyAnalyze>BC_Unconfirmed_Cast</onlyAnalyze>
+              <pluginList>/Applications/Findbugs/fb-contrib-3.4.2.jar</pluginList>
+              <excludeFilterFile>~/SourceCode/findbugs/findbugsTestCases/lib-filter.xml</excludeFilterFile>
+              <excludeFilterFile>whizbang/lib-filter.xml</excludeFilterFile>
+              <includeFilterFile>~/SourceCode/findbugs/findbugsTestCases/lib-filter.xml</includeFilterFile>
+              <includeFilterFile>whizbang/lib-filter.xml</includeFilterFile>
+            -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
