@@ -3,11 +3,14 @@
  <properties>
     <title>Maven Findbugs Testing</title>
   </properties>
-
   <body>
     <section name="Welcome to Maven Findbugs Testing">
       <p>
+<<<<<<< .mine
+     </p>
+=======
       </p>
+>>>>>>> .r7316
     </section>
   </body>
 </document>
