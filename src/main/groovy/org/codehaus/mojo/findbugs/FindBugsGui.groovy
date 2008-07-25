@@ -149,8 +149,8 @@ class FindBugsGui extends GroovyMojo
                                     pathelement(location: auxClasspathElement.toString())
                                 }
                             }
-                    arg("-project")
-                    arg("${findbugsXmlOutputDirectory}/findbugsXml.xml")
+//                    arg("-project")
+//                    arg("${findbugsXmlOutputDirectory}/findbugsXml.xml")
                 }
     }
 
