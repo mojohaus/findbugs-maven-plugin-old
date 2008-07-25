@@ -14,16 +14,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+<project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
-  <artifactId>multi</artifactId>
-  <version>testing</version>
-  <name>multi</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>module-tools</module>
-    <module>modules</module>
-  </modules>
+  <parent>
+    <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
+    <artifactId>modules</artifactId>
+    <version>testing</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>module-1</artifactId>
+  <name>module-1</name>
+  <packaging>jar</packaging>
 </project>
