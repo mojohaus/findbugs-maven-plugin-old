@@ -13,29 +13,23 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
--->
-
-<project>
-  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
     <artifactId>common</artifactId>
     <version>testing</version>
     <relativePath>../common.xml</relativePath>
   </parent>
-  <artifactId>basic</artifactId>
-  <name>basic</name>
+-->
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
+  <version>testing</version>
+  <artifactId>empty</artifactId>
+  <name>empty</name>
   <packaging>jar</packaging>
-  <build>
-    <sourceDirectory>src/main/java</sourceDirectory>
-  </build>
   <reporting>
-    <excludeDefaults>true</excludeDefaults>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
@@ -45,16 +39,6 @@
           <threshold>Low</threshold>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
-          <!--
-              <findbugsXmlOutput>true</findbugsXmlOutput>
-              <xmlOutput>true</xmlOutput>
-              <onlyAnalyze>BC_Unconfirmed_Cast</onlyAnalyze>
-              <pluginList>/Applications/Findbugs/fb-contrib-3.4.2.jar</pluginList>
-              <excludeFilterFile>~/SourceCode/findbugs/findbugsTestCases/lib-filter.xml</excludeFilterFile>
-              <excludeFilterFile>whizbang/lib-filter.xml</excludeFilterFile>
-              <includeFilterFile>~/SourceCode/findbugs/findbugsTestCases/lib-filter.xml</includeFilterFile>
-              <includeFilterFile>whizbang/lib-filter.xml</includeFilterFile>
-            -->
         </configuration>
       </plugin>
     </plugins>
