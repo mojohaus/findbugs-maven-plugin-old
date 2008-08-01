@@ -13,14 +13,7 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-  <parent>
-    <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
-    <artifactId>common</artifactId>
-    <version>testing</version>
-    <relativePath>../common.xml</relativePath>
-  </parent>
 -->
-
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
@@ -33,7 +26,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>testing</version>
+        <version>2.0-SNAPSHOT</version>
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
