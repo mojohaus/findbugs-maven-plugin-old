@@ -71,6 +71,12 @@ class Reporter extends TextUIBugReporter
      *
      */
     static final String COLUMN_CATEGORY_KEY = "report.findbugs.column.category"
+    
+    /**
+     * The key to get the column title for the priority.
+     *
+     */
+    static final String COLUMN_PRIORITY_KEY = "report.findbugs.column.priority"
 
     /**
      * The key to get the column title for the details.
@@ -533,6 +539,7 @@ class Reporter extends TextUIBugReporter
         String lineNumber = this.valueForLine(line)
         String category = pattern.getCategory()
         String type = pattern.getType()
+        String priority = bugInstance.getPriorityString()
 
         this.mavenLog.debug("Bug line = " + line.getClassName())
         this.mavenLog.debug("Bug pattern = " + pattern.getShortDescription())
@@ -577,6 +584,12 @@ class Reporter extends TextUIBugReporter
         }
 
         this.sink.tableCell_()
+        
+        // priority
+        this.sink.tableCell()
+        this.sink.text(priority)
+        this.sink.tableCell_()
+        
         this.sink.tableRow_()
     }
 
@@ -655,6 +668,7 @@ class Reporter extends TextUIBugReporter
         String columnBugCategory = this.bundle.getString(Reporter.COLUMN_CATEGORY_KEY)
         String columnDescriptionLink = this.bundle.getString(Reporter.COLUMN_DETAILS_KEY)
         String columnLineText = this.bundle.getString(Reporter.COLUMN_LINE_KEY)
+        String priorityText = this.bundle.getString(Reporter.COLUMN_PRIORITY_KEY)
 
         this.mavenLog.debug("Opening Class Report Section")
 
@@ -688,6 +702,11 @@ class Reporter extends TextUIBugReporter
         this.sink.text(columnLineText)
         this.sink.tableHeaderCell_()
 
+        // priority
+        this.sink.tableHeaderCell()
+        this.sink.text(priorityText)
+        this.sink.tableHeaderCell_()
+        
         this.sink.tableRow_()
     }
 

@@ -57,6 +57,17 @@
       </roles>
       <timezone>+1</timezone>
     </contributor>
+    <contributor>
+      <name>Rolf Kulemann</name>
+      <email>roku@apache.org</email>
+      <organization>NEO Business Partners</organization>
+      <organizationUrl>http://www.neo-partners.com</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <url>https://www.xing.com/profile/Rolf_Kulemann</url>
+      <timezone>+1</timezone>
+    </contributor>
   </contributors>
   <licenses>
     <license>
