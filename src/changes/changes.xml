@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
+      <action dev="gl" type="fix" issue="MFINDBUGS-61">
+        Fail on project without any classes
+      </action>
       <action dev="Rolf Kulemann" type="update" issue="MFINDBUGS-63">
          FindBugs report doens't show priority of bug
       </action>

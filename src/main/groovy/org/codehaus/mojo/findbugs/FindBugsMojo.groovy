@@ -367,9 +367,17 @@ class FindBugsMojo extends AbstractMavenReport
      */
     boolean canGenerateReport()
     {
-        if ( !skip )
+
+        if ( !skip  && classFilesDirectory.exists() )
         {
-            return classFilesDirectory.exists()
+            def canGenerate = false
+
+            classFilesDirectory.eachFileRecurse {
+                if (it.name.contains('.class'))
+                    canGenerate = true
+            }
+
+            return canGenerate
         }
         else
         {
@@ -684,13 +692,14 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void executeReport( Locale locale )
     {
-        
+
+
         resourceManager.addSearchPath( FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath() )
         resourceManager.addSearchPath( "url", "" )
 
         resourceManager.setOutputDirectory( new File( project.getBuild().getDirectory() ) )
 
-        log.info("resourceManager outputDirectory is " + resourceManager.outputDirectory )
+        log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory )
 
 
         if ( !skip )
@@ -699,8 +708,8 @@ class FindBugsMojo extends AbstractMavenReport
 
             FindBugs2Proxy findBugs = null
 
-            log.debug( "  " + bundle.getString( FindBugsMojo.SOURCE_ROOT_KEY ) )
-            log.debug( "    " + classFilesDirectory.getAbsolutePath() )
+            log.info( "  " + bundle.getString( FindBugsMojo.SOURCE_ROOT_KEY ) )
+            log.info( "    " + classFilesDirectory.getAbsolutePath() )
 
             if ( !canGenerateReport() )
             {
