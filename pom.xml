@@ -78,7 +78,7 @@
   </licenses>
   <properties>
     <doxia.version>1.0-alpha-8</doxia.version>
-    <groovy.plugin.version>1.0-rc-3-SNAPSHOT</groovy.plugin.version>
+    <groovy.plugin.version>1.0-rc-3</groovy.plugin.version>
   </properties>
   <dependencies>
     <dependency>

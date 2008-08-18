@@ -51,17 +51,18 @@ class FindBugsGui extends GroovyMojo
     static final String BUNDLE_NAME = "findbugs"
 
     /**
-     * The name of the coreplugin.
-     *
-     */
-    static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin"
-
-    /**
      * The regex pattern to search for java class files.
      *
      */
     static final String JAVA_REGEX_PATTERN = "**/*.class"
 
+
+    /**
+     * locale to use for Resource bundle.
+     *
+     *
+     */
+     static Locale locale = Locale.ENGLISH
 
     /**
      * Directory containing the class files for FindBugs to analyze.
@@ -137,25 +138,35 @@ class FindBugsGui extends GroovyMojo
 
         def auxClasspathElements = project.compileClasspathElements
 
+        log.debug( "  Plugin Artifacts to be added ->" + pluginArtifacts.toString() )
+
+
+
+
         ant.project.setProperty('basedir', findbugsXmlOutputDirectory.getAbsolutePath() )
-        
+        ant.project.setProperty('verbose', "true" )
+
 
         ant.java(classname: "edu.umd.cs.findbugs.LaunchAppropriateUI", fork: "true", failonerror: "true", clonevm: "true")
         {
-//           jvmarg('-Dfindbugs.jaws=true')
+//           arg(value: '-loadbugs')
+//           arg(value: '${findbugsXmlOutputDirectory}/findbugsXml.xml')
+
            sysproperty(key: "findbugs.jaws", value: "true")
+
            classpath()
            {
 
-                           auxClasspathElements.each() { auxClasspathElement ->
-                               if ( log.isDebugEnabled() )
-                               {
-                                   log.info( "  Trying to Add to AuxClasspath ->" + auxClasspathElements.toString() )
-                               }
-                               pathelement(location: auxClasspathElement.toString() )
-                           }
-          }
+               auxClasspathElements.each() { auxClasspathElement ->
+                    log.debug( "  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString() )
+                    pathelement(location: auxClasspathElement.toString() )
+               }
+
+               pluginArtifacts.each() { pluginArtifact ->
+                     log.debug( "  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString() )
+                     pathelement(location: pluginArtifact.file )
+                }
+            }
         }
    }
-
 }
