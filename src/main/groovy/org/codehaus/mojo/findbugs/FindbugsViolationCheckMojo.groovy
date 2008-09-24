@@ -51,7 +51,7 @@ import org.codehaus.plexus.util.FileUtils
  * 
  * @since 2.0
  * @goal check
- * @execute phase="verify"
+ * @phase verify
  * 
  * @description Fail the build if there were any FindBugs violations in the source code.
  * @requiresDependencyResolution compile

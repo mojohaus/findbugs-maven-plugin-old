@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.0-SNAPSHOT" date="in SVN">
+      <action dev="gl" type="fix" issue="MFINDBUGS-65">
+        Default binding of goal check to the lifecycle verify phase
+      </action>
       <action dev="gl" type="update">
         update to gmaven-plugin version 1.0-rc-3
       </action>
