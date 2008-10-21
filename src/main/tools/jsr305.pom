@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sourceforge.findbugs</groupId>
-	<artifactId>bcel</artifactId>
+	<artifactId>jsr305</artifactId>
 	<version>1.3.5</version>
 	<packaging>jar</packaging>
 	<url>http://findbugs.sourceforge.net/</url>
-	<name>FindBugs-bcel</name>
-	<description>Modified BCEL for Findbugs</description>
+	<name>FindBugs-jsr305</name>
+	<description>JSR305 Annotations for Findbugs</description>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
