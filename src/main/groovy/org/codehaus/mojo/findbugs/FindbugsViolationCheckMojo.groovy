@@ -423,27 +423,14 @@ class FindbugsViolationCheckMojo extends GroovyMojo
      */
     protected void addPluginsToFindBugs( )
     {
-        def corepluginpath
+//        def corepluginpath
         URL[] pluginURL
-
-        try
-        {
-            corepluginpath = getCorePluginPath( ).toURL()
-        }
-        catch ( MalformedURLException exception )
-        {
-            fail( "The core plugin has an invalid URL", exception )
-        }
-
-        log.debug( "  coreplugin Jar is located at " + corepluginpath.toString() )
-
         def plugins = []
-        plugins << corepluginpath
 
 
         if ( pluginList )
         {
-            log.debug( "  Adding Plugins " )
+            log.info( "  Adding Plugins " )
             String[] pluginJars = pluginList.split( "," )
 
             pluginJars.each() { pluginJar ->
@@ -456,7 +443,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo
 
                 try
                 {
-                    log.debug( "  Processing Plugin: " + pluginFileName.toString() )
+                    log.info( "  Processing Plugin: " + pluginFileName.toString() )
                     plugins << new File( pluginFileName.toString() ).toURL()
                 }
                 catch ( MalformedURLException exception )
@@ -565,20 +552,6 @@ class FindbugsViolationCheckMojo extends GroovyMojo
                 preferences.enableDetector( factory, enableVisitor )
             }
         }
-    }
-
-    /**
-     * Get the File reference for the Findbugs core plugin.
-     *
-     * @return The File reference to the coreplugin JAR
-     *
-     */
-    protected File getCorePluginPath( )
-    {
-         def corePluginPath = pluginArtifacts.find(){artifact ->
-             artifact.getArtifactId() == bundle.getString( FINDBUGS_COREPLUGIN )
-         }
-         return corePluginPath.file
     }
 
     /**

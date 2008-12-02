@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy
+#!groovy
 
 def findbugsHome = System.getenv("FINDBUGS_HOME")
 
@@ -22,24 +22,10 @@ println "os.name is " + System.getProperty("os.name")
 
 if (System.getProperty("os.name").toLowerCase().contains("windows")) cmdPrefix = """cmd /c """
 
+def modules = ["findbugs", "annotations", "findbugs-ant", "bcel", "jsr305", "jFormatString" ]
 
-def cmd = cmdPrefix + """mvn install:install-file -DpomFile=findbugs.pom -Dfile=${findbugsHome}/lib/findbugs.jar -DgroupId=net.sourceforge.findbugs -DartifactId=findbugs -Dversion=${findbugsVersion} -Dpackaging=jar"""
-def proc = cmd.execute()
-println proc.text
-
-cmd = cmdPrefix + """mvn install:install-file -DpomFile=bcel.pom -Dfile=${findbugsHome}/lib/bcel.jar -DgroupId=net.sourceforge.findbugs -DartifactId=bcel -Dversion=${findbugsVersion} -Dpackaging=jar"""
-proc = cmd.execute()
-println proc.text
-
-cmd = cmdPrefix + """mvn install:install-file -DpomFile=annotations.pom -Dfile=${findbugsHome}/lib/annotations.jar -DgroupId=net.sourceforge.findbugs -DartifactId=annotations -Dversion=${findbugsVersion} -Dpackaging=jar"""
-proc = cmd.execute()
-println proc.text
-
-cmd = cmdPrefix + """mvn install:install-file -DpomFile=findbugs-ant.pom -Dfile=${findbugsHome}/lib/findbugs-ant.jar -DgroupId=net.sourceforge.findbugs -DartifactId=findbugs-ant -Dversion=${findbugsVersion} -Dpackaging=jar"""
-proc = cmd.execute()
-println proc.text
-
-cmd = cmdPrefix + """mvn install:install-file -DpomFile=jsr305.pom -Dfile=${findbugsHome}/lib/jsr305.jar -DgroupId=net.sourceforge.findbugs -DartifactId=jsr305 -Dversion=${findbugsVersion} -Dpackaging=jar"""
-proc = cmd.execute()
-println proc.text
-
+modules.each(){ module ->
+    cmd = cmdPrefix + """mvn install:install-file -DpomFile=${module}.pom -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=net.sourceforge.findbugs -DartifactId=${module} -Dversion=${findbugsVersion} -Dpackaging=jar"""
+    proc = cmd.execute()
+    println proc.text
+}

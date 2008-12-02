@@ -2,17 +2,15 @@
 
 def findbugsHome = System.getenv("FINDBUGS_HOME")
 
-def cli = new CliBuilder(usage:'fb2repo -f findbugs.home -version version -u repositoryURL')
+def cli = new CliBuilder(usage:'fb2repo -f findbugs.home -version version')
 cli.h(longOpt: 'help', 'usage information')
 cli.f(argName: 'findbugs.home',  longOpt: 'home', required: false, args: 1, type:GString, 'Findbugs home directory')
 cli.v(argName: 'version',  longOpt: 'version', required: true, args: 1, type:GString, 'Findbugs version')
-cli.u(argName: 'url',  longOpt: 'url', required: true, args: 1, type:GString, 'Repository URL')
 
 def opt = cli.parse(args)
 if (opt.h) cli.help()
 if (opt.f) findbugsHome = opt.f
 def findbugsVersion = opt.v
-def repoUrl = opt.u
 
 println "findbugsHome is ${findbugsHome}"
 println "findbugsVersion is ${findbugsVersion}"
@@ -27,7 +25,7 @@ if (System.getProperty("os.name").toLowerCase().contains("windows")) cmdPrefix =
 def modules = ["findbugs", "annotations", "findbugs-ant", "bcel", "jsr305", "jFormatString" ]
 
 modules.each(){ module ->
-    cmd = cmdPrefix + """mvn deploy:deploy-file -DpomFile=${module}.pom -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=net.sourceforge.findbugs -DartifactId=${module} -Dversion=${findbugsVersion} -Durl=${repoUrl} -Dpackaging=jar"""
+    cmd = cmdPrefix + """mvn repository:bundle-pack -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=net.sourceforge.findbugs -DartifactId=${module} -Dversion=${findbugsVersion}"""
     proc = cmd.execute()
     println proc.text
 }

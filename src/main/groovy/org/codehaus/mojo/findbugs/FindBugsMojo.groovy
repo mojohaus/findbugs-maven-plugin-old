@@ -116,7 +116,7 @@ class FindBugsMojo extends AbstractMavenReport
      * The name of the coreplugin.
      * 
      */
-    static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin"
+//    static final String FINDBUGS_COREPLUGIN = "report.findbugs.coreplugin"
 
     /**
      * Location where generated html will be created.
@@ -567,22 +567,9 @@ class FindBugsMojo extends AbstractMavenReport
      */
     protected void addPluginsToFindBugs( Locale locale )
     {
-        def corepluginpath
+//        def corepluginpath
         URL[] pluginURL
-
-        try
-        {
-            corepluginpath = getCorePluginPath( locale ).toURL()
-        }
-        catch ( MalformedURLException exception )
-        {
-            fail( "The core plugin has an invalid URL", exception )
-        }
-
-        log.info( "  coreplugin Jar is located at " + corepluginpath.toString() )
-
         def plugins = []
-        plugins << corepluginpath
 
 
         if ( pluginList )
@@ -761,19 +748,6 @@ class FindBugsMojo extends AbstractMavenReport
         }
     }
 
-    /**
-     * Retrieve the coreplugin module name
-     * 
-     * @param locale
-     *            The locale to print out the messages.
-     * @return corePluginName The coreplugin module name.
-     * 
-     */
-    protected String getCorePlugin( Locale locale )
-    {
-        ResourceBundle bundle = getBundle( locale )
-        return bundle.getString( FINDBUGS_COREPLUGIN )
-    }
 
     /**
      * Get the File reference for the Findbugs core plugin.
@@ -997,7 +971,7 @@ class FindBugsMojo extends AbstractMavenReport
             findBugs.setBugReporter( xDocsReporter )
         }
 
-        if ( !pluginLoaded )
+        if ( !pluginLoaded && pluginList )
         {
             addPluginsToFindBugs( locale )
             pluginLoaded = true

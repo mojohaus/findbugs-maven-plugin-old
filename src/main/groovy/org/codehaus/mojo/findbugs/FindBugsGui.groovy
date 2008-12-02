@@ -138,7 +138,10 @@ class FindBugsGui extends GroovyMojo
 
         def auxClasspathElements = project.compileClasspathElements
 
-        log.debug( "  Plugin Artifacts to be added ->" + pluginArtifacts.toString() )
+        if ( debug )
+        {
+            log.info( "  Plugin Artifacts to be added ->" + pluginArtifacts.toString() )
+        }
 
 
 
@@ -163,8 +166,12 @@ class FindBugsGui extends GroovyMojo
                }
 
                pluginArtifacts.each() { pluginArtifact ->
-                     log.debug( "  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString() )
-                     pathelement(location: pluginArtifact.file )
+                   if (debug)
+                   {
+                       log.info( "  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString() )
+                   }
+
+                   pathelement(location: pluginArtifact.file )
                 }
             }
         }
