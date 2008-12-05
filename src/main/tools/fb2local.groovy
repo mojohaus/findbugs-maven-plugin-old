@@ -8,7 +8,8 @@ cli.f(argName: 'findbugs.home',  longOpt: 'home', required: false, args: 1, type
 cli.v(argName: 'version',  longOpt: 'version', required: true, args: 1, type:GString, 'Findbugs version')
 
 def opt = cli.parse(args)
-if (opt.h) cli.help()
+if (!opt) { return }
+if (opt.h) opt.usage()
 if (opt.f) findbugsHome = opt.f
 def findbugsVersion = opt.v
 

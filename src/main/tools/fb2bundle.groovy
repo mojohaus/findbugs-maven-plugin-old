@@ -2,13 +2,14 @@
 
 def findbugsHome = System.getenv("FINDBUGS_HOME")
 
-def cli = new CliBuilder(usage:'fb2repo -f findbugs.home -version version')
+def cli = new CliBuilder(usage:'fb2bundle -f findbugs.home -version version')
 cli.h(longOpt: 'help', 'usage information')
 cli.f(argName: 'findbugs.home',  longOpt: 'home', required: false, args: 1, type:GString, 'Findbugs home directory')
 cli.v(argName: 'version',  longOpt: 'version', required: true, args: 1, type:GString, 'Findbugs version')
 
 def opt = cli.parse(args)
-if (opt.h) cli.help()
+if (!opt) { return }
+if (opt.h) opt.usage()
 if (opt.f) findbugsHome = opt.f
 def findbugsVersion = opt.v
 

@@ -9,7 +9,8 @@ cli.v(argName: 'version',  longOpt: 'version', required: true, args: 1, type:GSt
 cli.u(argName: 'url',  longOpt: 'url', required: true, args: 1, type:GString, 'Repository URL')
 
 def opt = cli.parse(args)
-if (opt.h) cli.help()
+if (!opt) { return }
+if (opt.h) opt.usage()
 if (opt.f) findbugsHome = opt.f
 def findbugsVersion = opt.v
 def repoUrl = opt.u
