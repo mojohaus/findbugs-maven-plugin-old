@@ -191,7 +191,7 @@
     <repository>
       <id>findbugs-sandbox</id>
       <name>findbugs-sandbox Development Repository</name>
-      <url>http://gleclaire.home.insightbb.com/m2</url>
+      <url>http://singularity.svn.sourceforge.net/svnroot/singularity/repos/repo/</url>
     </repository>
   </repositories>
   <pluginRepositories>
