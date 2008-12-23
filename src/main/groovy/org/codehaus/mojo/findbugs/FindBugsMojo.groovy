@@ -188,6 +188,15 @@ class FindBugsMojo extends AbstractMavenReport
     File classFilesDirectory
 
     /**
+     * The directories containing the sources to be compiled.
+     *
+     * @parameter expression="${project.compileSourceRoots}"
+     * @required
+     * @readonly
+     */
+    private List compileSourceRoots
+
+    /**
      * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
      * 
      * @parameter expression="${plugin.artifacts}"
@@ -923,10 +932,15 @@ class FindBugsMojo extends AbstractMavenReport
         }
 
         addClasspathEntriesToFindBugsProject( findBugsProject )
+        compileSourceRoots.each() {
+          log.info( "  Adding Source Directory: " + it )
+          findBugsProject.addSourceDir(it)
+        }
 
         FindBugs2Proxy findBugs = new FindBugs2Proxy()
 
         findBugs.setProject( findBugsProject )
+
 
         findBugs.initializeProxyReporter( this.getThresholdParameter().getValue() )
 
