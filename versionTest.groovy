@@ -17,6 +17,11 @@ if (opt.m) mavenTopDir = opt.m
 if (opt.p) executePath = opt.p
 if (opt.l) logFile = new File(opt.l)
 
+if (logFile) {
+ logFile.write "\n"
+}
+
+
 println "Maven Top Directory is ${mavenTopDir}"
 
 mavenDirs = []
@@ -47,7 +52,7 @@ mavenDirs.each(){ mavenDir ->
     logFile << procText
   }
 
-  proc = "${mavenDir}/bin/mvn -Dshit=true install".execute(ENVtoArray(), null)
+  proc = "${mavenDir}/bin/mvn -Dshit=true clean install".execute(ENVtoArray(), null)
   proc.waitFor()
   procText = proc.text
   println procText
