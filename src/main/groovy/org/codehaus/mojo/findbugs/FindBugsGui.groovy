@@ -28,8 +28,7 @@ import org.codehaus.groovy.maven.mojo.GroovyMojo
 /**
  * Launch the Findbugs GUI.
  * It will use all the parameters in the POM fle.
- * FindBugs 1.3.2 GUI does not have a load option.
- *
+ * 
  * @since 2.0
  * @goal gui
  *
