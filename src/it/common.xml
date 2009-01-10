@@ -45,6 +45,7 @@
 
   <build>
     <sourceDirectory>/opt/findbugs/findbugsTestCases/src/java</sourceDirectory>
+    <testSourceDirectory>/opt/findbugs/findbugsTestCases/test/java</testSourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

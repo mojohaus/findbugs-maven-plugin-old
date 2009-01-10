@@ -23,6 +23,8 @@ package org.codehaus.mojo.findbugs
 import org.apache.maven.doxia.sink.Sink
 import org.apache.maven.plugin.logging.Log
 
+import org.codehaus.plexus.util.PathTool
+
 import edu.umd.cs.findbugs.AnalysisError
 import edu.umd.cs.findbugs.BugInstance
 import edu.umd.cs.findbugs.BugPattern
@@ -42,855 +44,917 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor
 class Reporter extends TextUIBugReporter
 {
 
-    /**
-     * The key to get the value if the line number is not available.
-     *
-     */
-    static final String NOLINE_KEY = "report.findbugs.noline"
+  /**
+   * The key to get the value if the line number is not available.
+   *
+   */
+  static final String NOLINE_KEY = "report.findbugs.noline"
 
-    /**
-     * The key to get the column title for the line.
-     *
-     */
-    static final String COLUMN_LINE_KEY = "report.findbugs.column.line"
+  /**
+   * The key to get the column title for the line.
+   *
+   */
+  static final String COLUMN_LINE_KEY = "report.findbugs.column.line"
 
-    /**
-     * The key to get the column title for the bug.
-     *
-     */
-    static final String COLUMN_BUG_KEY = "report.findbugs.column.bug"
+  /**
+   * The key to get the column title for the bug.
+   *
+   */
+  static final String COLUMN_BUG_KEY = "report.findbugs.column.bug"
 
-    /**
-     * The key to get the column title for the bugs.
-     *
-     */
-    static final String COLUMN_BUGS_KEY = "report.findbugs.column.bugs"
+  /**
+   * The key to get the column title for the bugs.
+   *
+   */
+  static final String COLUMN_BUGS_KEY = "report.findbugs.column.bugs"
 
-    /**
-     * The key to get the column title for the category.
-     *
-     */
-    static final String COLUMN_CATEGORY_KEY = "report.findbugs.column.category"
+  /**
+   * The key to get the column title for the category.
+   *
+   */
+  static final String COLUMN_CATEGORY_KEY = "report.findbugs.column.category"
     
-    /**
-     * The key to get the column title for the priority.
-     *
-     */
-    static final String COLUMN_PRIORITY_KEY = "report.findbugs.column.priority"
+  /**
+   * The key to get the column title for the priority.
+   *
+   */
+  static final String COLUMN_PRIORITY_KEY = "report.findbugs.column.priority"
 
-    /**
-     * The key to get the column title for the details.
-     *
-     */
-    static final String COLUMN_DETAILS_KEY = "report.findbugs.column.details"
+  /**
+   * The key to get the column title for the details.
+   *
+   */
+  static final String COLUMN_DETAILS_KEY = "report.findbugs.column.details"
 
-    /**
-     * The key to get the report title of the Plug-In from the bundle.
-     *
-     */
-    static final String REPORT_TITLE_KEY = "report.findbugs.reporttitle"
+  /**
+   * The key to get the report title of the Plug-In from the bundle.
+   *
+   */
+  static final String REPORT_TITLE_KEY = "report.findbugs.reporttitle"
 
-    /**
-     * The key to get the report link title of the Plug-In from the bundle.
-     *
-     */
-    static final String LINKTITLE_KEY = "report.findbugs.linktitle"
+  /**
+   * The key to get the report link title of the Plug-In from the bundle.
+   *
+   */
+  static final String LINKTITLE_KEY = "report.findbugs.linktitle"
 
-    /**
-     * The key to get the report link of the Plug-In from the bundle.
-     *
-     */
-    static final String LINK_KEY = "report.findbugs.link"
+  /**
+   * The key to get the report link of the Plug-In from the bundle.
+   *
+   */
+  static final String LINK_KEY = "report.findbugs.link"
 
-    /**
-     * The key to get the name of the Plug-In from the bundle.
-     *
-     */
-    static final String NAME_KEY = "report.findbugs.name"
+  /**
+   * The key to get the name of the Plug-In from the bundle.
+   *
+   */
+  static final String NAME_KEY = "report.findbugs.name"
 
-    /**
-     * The key to get the files title of the Plug-In from the bundle.
-     *
-     */
-    static final String FILES_KEY = "report.findbugs.files"
+  /**
+   * The key to get the files title of the Plug-In from the bundle.
+   *
+   */
+  static final String FILES_KEY = "report.findbugs.files"
 
-    /**
-     * The key to get the threshold of the report from the bundle.
-     *
-     */
-    static final String THRESHOLD_KEY = "report.findbugs.threshold"
+  /**
+   * The key to get the threshold of the report from the bundle.
+   *
+   */
+  static final String THRESHOLD_KEY = "report.findbugs.threshold"
 
-    /**
-     * The character to separate URL tokens.
-     *
-     */
-    static final String URL_SEPARATOR = "/"
+  /**
+   * The character to separate URL tokens.
+   *
+   */
+  static final String URL_SEPARATOR = "/"
 
-    /**
-     * The key to get the jxr-plugin path prefix.
-     *
-     */
-    static final String JXR_PATHPREFIX_KEY = "report.findbugs.jxrplugin.pathprefix"
+  /**
+   * The key to get the effort of the report from the bundle.
+   *
+   */
+  static final String EFFORT_KEY = "report.findbugs.effort"
 
-    /**
-     * The key to get the effort of the report from the bundle.
-     *
-     */
-    static final String EFFORT_KEY = "report.findbugs.effort"
+  /**
+   * The key to get the link to FindBugs description page from the bundle.
+   *
+   */
+  static final String DETAILSLINK_KEY = "report.findbugs.detailslink"
 
-    /**
-     * The key to get the link to FindBugs description page from the bundle.
-     *
-     */
-    static final String DETAILSLINK_KEY = "report.findbugs.detailslink"
+  /**
+   * The key to get the version title for FindBugs from the bundle.
+   *
+   */
+  static final String VERSIONTITLE_KEY = "report.findbugs.versiontitle"
 
-    /**
-     * The key to get the version title for FindBugs from the bundle.
-     *
-     */
-    static final String VERSIONTITLE_KEY = "report.findbugs.versiontitle"
+  /**
+   * The key to get the files title of the Plug-In from the bundle.
+   *
+   */
+  static final String SUMMARY_KEY = "report.findbugs.summary"
 
-    /**
-     * The key to get the files title of the Plug-In from the bundle.
-     *
-     */
-    static final String SUMMARY_KEY = "report.findbugs.summary"
+  /**
+   * The key to column title for the Class.
+   *
+   */
+  static final String COLUMN_CLASS_KEY = "report.findbugs.column.class"
 
-    /**
-     * The key to column title for the Class.
-     *
-     */
-    static final String COLUMN_CLASS_KEY = "report.findbugs.column.class"
+  /**
+   * The key to column title for the Classes.
+   *
+   */
+  static final String COLUMN_CLASSES_KEY = "report.findbugs.column.classes"
 
-    /**
-     * The key to column title for the Classes.
-     *
-     */
-    static final String COLUMN_CLASSES_KEY = "report.findbugs.column.classes"
+  /**
+   * The key to column title for the errors.
+   *
+   */
+  static final String COLUMN_ERRORS_KEY = "report.findbugs.column.errors"
 
-    /**
-     * The key to column title for the errors.
-     *
-     */
-    static final String COLUMN_ERRORS_KEY = "report.findbugs.column.errors"
+  /**
+   * The key to column title for the files.
+   *
+   */
+  static final String COLUMN_FILES_KEY = "report.findbugs.column.files"
 
-    /**
-     * The key to column title for the files.
-     *
-     */
-    static final String COLUMN_FILES_KEY = "report.findbugs.column.files"
+  /**
+   * The key to column title for the files.
+   *
+   */
+  static final String COLUMN_MISSINGCLASSES_KEY = "report.findbugs.column.missingclasses"
 
-    /**
-     * The key to column title for the files.
-     *
-     */
-    static final String COLUMN_MISSINGCLASSES_KEY = "report.findbugs.column.missingclasses"
+  /**
+   * The sink to write the report to.
+   *
+   */
+  Sink sink
 
-    /**
-     * The sink to write the report to.
-     *
-     */
-    Sink sink
+  /**
+   * The bundle to get the messages from.
+   *
+   */
+  ResourceBundle bundle
 
-    /**
-     * The bundle to get the messages from.
-     *
-     */
-    ResourceBundle bundle
-
-    /**
-     * The logger to write logs to.
-     *
-     */
-    Log mavenLog
+  /**
+   * The logger to write logs to.
+   *
+   */
+  Log mavenLog
 
 
-    /**
-     * The threshold of bugs severity.
-     *
-     */
-    ThresholdParameter threshold
+  /**
+   * The threshold of bugs severity.
+   *
+   */
+  ThresholdParameter threshold
 
-    /**
-     * The used effort for searching bugs.
-     *
-     */
-    EffortParameter effort
+  /**
+   * The used effort for searching bugs.
+   *
+   */
+  EffortParameter effort
 
-    /**
-     * The name of the current class which is analysed by FindBugs.
-     *
-     */
-    String currentClassName
+  /**
+   * The name of the current class which is analysed by FindBugs.
+   *
+   */
+  String currentClassName
 
-    /**
-     * Signals if the report for the current class is opened.
-     *
-     */
-    boolean mIsCurrentClassReportOpened = false
+  /**
+   * Signals if the report for the current class is opened.
+   *
+   */
+  boolean mIsCurrentClassReportOpened = false
 
-    /**
-     * Signals if the jxr report plugin is enabled.
-     *
-     */
-    boolean isJXRReportEnabled = false
+  /**
+   * Signals if the jxr report plugin is enabled.
+   *
+   */
+  boolean isJXRReportEnabled = false
 
-    /**
-     * The Collection of Bugs and Error collected during analysis.
-     *
-     */
-    SortedBugCollection bugCollection = new SortedBugCollection()
+  /**
+   * The Collection of Bugs and Error collected during analysis.
+   *
+   */
+  SortedBugCollection bugCollection = new SortedBugCollection()
 
-    /**
-     * The running total of bugs reported.
-     *
-     */
-    int bugCount
+  /**
+   * The running total of bugs reported.
+   *
+   */
+  int bugCount
 
-    /**
-     * The running total of missing classes reported.
-     *
-     */
-    int missingClassCount
+  /**
+   * The running total of missing classes reported.
+   *
+   */
+  int missingClassCount
 
-    /**
-     * The running total of files analyzed.
-     *
-     */
-    int fileCount
+  /**
+   * The running total of files analyzed.
+   *
+   */
+  int fileCount
 
-    /**
-     * The Set of missing classes names reported.
-     *
-     */
-    Set missingClassSet = new HashSet()
+  /**
+   * The Set of missing classes names reported.
+   *
+   */
+  Set missingClassSet = new HashSet()
 
-    /**
-     * The running total of errors reported.
-     *
-     */
-    int errorCount
+  /**
+   * The running total of errors reported.
+   *
+   */
+  int errorCount
 
-    /**
-     * Default constructor.
-     *
-     * @param sink
-     *            The sink to generate the report.
-     * @param bundle
-     *            The resource bundle to get the messages from.
-     * @param log
-     *            The logger.
-     * @param threshold
-     *            The threshold for the report.
-     * @param isJXRReportEnabled
-     *            Is the jxr report plugin enabled.
-     * @param effort
-     *            The used effort.
-     */
-    Reporter(Sink sink, ResourceBundle bundle, Log log,
-             ThresholdParameter threshold, boolean isJXRReportEnabled,
-             EffortParameter effort)
-    {
-        super()
+  /**
+   * Location where generated html will be created.
+   *
+   */
 
-        assert sink
-        assert bundle
-        assert log
-        assert threshold
-        assert effort
+  File outputDirectory
 
-        this.sink = sink
-        this.bundle = bundle
-        this.mavenLog = log
-        this.threshold = threshold
-        this.isJXRReportEnabled = isJXRReportEnabled
-        this.effort = effort
-        this.currentClassName = ""
+  /**
+   * Location of the Xrefs to link to.
+   *
+   */
+  File xrefLocation
 
-        this.bugCount = 0
-        this.missingClassCount = 0
-        this.errorCount = 0
-        this.fileCount = 0
+  /**
+   * Location of the Test Xrefs to link to.
+   *
+   */
+  File xrefTestLocation
 
-        this.initialiseReport()
-    }
+  /**
+   * The directories containing the sources to be compiled.
+   *
+   */
+  List compileSourceRoots
 
-    /**
-     * Hide default constructor.
-     *
-     */
-    private Reporter()
-    {
-        super()
+  /**
+   * The directories containing the test-sources to be compiled.
+   *
+   */
+  List testSourceRoots
 
-        this.sink = null
-        this.bundle = null
-        this.mavenLog = null
-        this.threshold = null
-        this.effort = null
-    }
+  /**
+   * Run Findbugs on the tests.
+   *
+   */
+  boolean includeTests
 
-    /**
-     * @see edu.umd.cs.findbugs.BugReporter#finish()
-     */
-    void finish()
-    {
-        this.mavenLog.debug("Finished searching for bugs!")
 
-        this.printSummary()
 
-        this.printFilesSummary()
+  /**
+   * Default constructor.
+   *
+   * @param sink
+   *            The sink to generate the report.
+   * @param bundle
+   *            The resource bundle to get the messages from.
+   * @param log
+   *            The logger.
+   * @param threshold
+   *            The threshold for the report.
+   * @param isJXRReportEnabled
+   *            Is the jxr report plugin enabled.
+   * @param effort
+   *            The used effort.
+   */
+  Reporter(Sink sink, ResourceBundle bundle, Log log,
+    ThresholdParameter threshold, boolean isJXRReportEnabled,
+    EffortParameter effort)
+  {
+    super()
 
-        this.mIsCurrentClassReportOpened = false
+    assert sink
+    assert bundle
+    assert log
+    assert threshold
+    assert effort
 
-        this.bugCollection.each() {bugInstance ->
+    this.sink = sink
+    this.bundle = bundle
+    this.mavenLog = log
+    this.threshold = threshold
+    this.isJXRReportEnabled = isJXRReportEnabled
+    this.effort = effort
+    this.currentClassName = ""
 
-            this.mavenLog.debug("Annotation Class is " + bugInstance.getPrimarySourceLineAnnotation().getClassName())
-            this.mavenLog.debug("Class is " + this.currentClassName)
-            this.mavenLog.debug(" ")
+    this.bugCount = 0
+    this.missingClassCount = 0
+    this.errorCount = 0
+    this.fileCount = 0
 
-            if ( !bugInstance.getPrimarySourceLineAnnotation().getClassName().equals(this.currentClassName) )
-            {
+    this.initialiseReport()
+  }
 
-                this.currentClassName = bugInstance.getPrimarySourceLineAnnotation().getClassName()
+  /**
+   * Hide default constructor.
+   *
+   */
+  private Reporter()
+  {
+    super()
 
-                if ( this.mIsCurrentClassReportOpened )
-                {
-                    this.closeClassReportSection()
-                    this.mIsCurrentClassReportOpened = false
-                }
-            }
+    this.sink = null
+    this.bundle = null
+    this.mavenLog = null
+    this.threshold = null
+    this.effort = null
+  }
 
-            this.printBug(bugInstance)
-        }
+  /**
+   * @see edu.umd.cs.findbugs.BugReporter#finish()
+   */
+  void finish()
+  {
+    this.mavenLog.debug("Finished searching for bugs!")
 
-        // close the last class report section
+    this.printSummary()
+
+    this.printFilesSummary()
+
+    this.mIsCurrentClassReportOpened = false
+
+    this.bugCollection.each() {bugInstance ->
+
+      this.mavenLog.debug("Annotation Class is " + bugInstance.getPrimarySourceLineAnnotation().getClassName())
+      this.mavenLog.debug("Class is " + this.currentClassName)
+      this.mavenLog.debug(" ")
+
+      if ( !bugInstance.getPrimarySourceLineAnnotation().getClassName().equals(this.currentClassName) )
+      {
+
+        this.currentClassName = bugInstance.getPrimarySourceLineAnnotation().getClassName()
+
         if ( this.mIsCurrentClassReportOpened )
         {
-            this.closeClassReportSection()
+          this.closeClassReportSection()
+          this.mIsCurrentClassReportOpened = false
         }
+      }
 
-        // close the report, write it
-        this.sink.body_()
-        this.sink.flush()
-        this.sink.close()
-
-        this.mavenLog.debug("bugCount = " + this.bugCount)
-        this.mavenLog.debug("errorCount = " + this.errorCount)
-        this.mavenLog.debug("missingClassCount = " + this.missingClassCount)
+      this.printBug(bugInstance)
     }
 
-    /**
-     * Get the real bug reporter at the end of a chain of delegating bug reporters. All non-delegating bug reporters
-     * should simply "return this".
-     *
-     * @return the real bug reporter at the end of the chain, or this object if there is no delegation
-     * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
-     */
-    BugReporter getRealBugReporter()
+    // close the last class report section
+    if ( this.mIsCurrentClassReportOpened )
     {
-        return this
+      this.closeClassReportSection()
     }
 
-    /**
-     * Observe a class.
-     *
-     * @param clazz
-     *            the class
-     * @see edu.umd.cs.findbugs.classfile.IClassObserver #observeClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
-     */
-    void observeClass(ClassDescriptor clazz)
-    {
-        this.mavenLog.debug("Observe class: " + clazz.getClassName())
+    // close the report, write it
+    this.sink.body_()
+    this.sink.flush()
+    this.sink.close()
 
-        ++this.fileCount
+    this.mavenLog.debug("bugCount = " + this.bugCount)
+    this.mavenLog.debug("errorCount = " + this.errorCount)
+    this.mavenLog.debug("missingClassCount = " + this.missingClassCount)
+  }
+
+  /**
+   * Get the real bug reporter at the end of a chain of delegating bug reporters. All non-delegating bug reporters
+   * should simply "return this".
+   *
+   * @return the real bug reporter at the end of the chain, or this object if there is no delegation
+   * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
+   */
+  BugReporter getRealBugReporter()
+  {
+    return this
+  }
+
+  /**
+   * Observe a class.
+   *
+   * @param clazz
+   *            the class
+   * @see edu.umd.cs.findbugs.classfile.IClassObserver #observeClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+   */
+  void observeClass(ClassDescriptor clazz)
+  {
+    this.mavenLog.debug("Observe class: " + clazz.getClassName())
+
+    ++this.fileCount
+  }
+
+  /**
+   * Report a queued error.
+   *
+   * @param analysisError
+   *            the queued error
+   * @see edu.umd.cs.findbugs.AbstractBugReporter #reportAnalysisError(edu.umd.cs.findbugs.AnalysisError)
+   */
+  void reportAnalysisError(AnalysisError analysisError)
+  {
+    this.mavenLog.debug("  Found an analysisError: " + analysisError.getMessage())
+    this.bugCollection.addError(analysisError.getMessage())
+    ++this.errorCount
+    super.reportAnalysisError(analysisError)
+  }
+
+  void logError(String message)
+  {
+    this.mavenLog.debug("  Found an analysisError: " + message)
+    this.bugCollection.addError(message)
+    ++this.errorCount
+    super.logError(message)
+  }
+
+  void logError(String message, Throwable e)
+  {
+    this.mavenLog.debug("  Found an analysisError: " + message)
+    this.bugCollection.addError(message)
+    ++this.errorCount
+    super.logError(message, e)
+  }
+
+  /**
+   * Report a missing class.
+   *
+   * @param missingClass
+   *            the name of the class
+   * @see edu.umd.cs.findbugs.AbstractBugReporter #reportMissingClass(java.lang.String)
+   */
+  void reportMissingClass(String missingClass)
+  {
+    this.mavenLog.debug("Found a missing class: " + missingClass)
+    if ( this.missingClassSet.add(missingClass) )
+    {
+      ++this.missingClassCount
+    }
+    super.reportMissingClass(missingClass)
+  }
+
+  void reportMissingClass(ClassNotFoundException ex)
+  {
+    this.mavenLog.debug("Found a missing class: " + ex.getMessage())
+    if ( this.missingClassSet.add(ex.getMessage()) )
+    {
+      ++this.missingClassCount
+    }
+    super.reportMissingClass(ex)
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+   */
+
+  void reportMissingClass(ClassDescriptor classDescriptor)
+  {
+    this.reportMissingClass(classDescriptor.toDottedClassName())
+  }
+
+  /**
+   * Initialises the report.
+   */
+  private void initialiseReport()
+  {
+    this.sink.head()
+    this.sink.title()
+    this.sink.text(this.getReportTitle())
+    this.sink.title_()
+    this.sink.head_()
+
+    this.sink.body()
+
+    // the title of the report
+    this.sink.section1()
+    this.sink.sectionTitle1()
+    this.sink.text(this.getReportTitle())
+    this.sink.sectionTitle1_()
+
+    // information about FindBugs
+    this.sink.paragraph()
+    this.sink.text(this.bundle.getString(Reporter.LINKTITLE_KEY) + " ")
+    this.sink.link(this.bundle.getString(Reporter.LINK_KEY))
+    this.sink.text(this.bundle.getString(Reporter.NAME_KEY))
+    this.sink.link_()
+    this.sink.paragraph_()
+
+    this.sink.paragraph()
+    this.sink.text(this.bundle.getString(VERSIONTITLE_KEY) + " ")
+    this.sink.italic()
+    this.sink.text(edu.umd.cs.findbugs.Version.RELEASE)
+    this.sink.italic_()
+    this.sink.paragraph_()
+
+    this.sink.paragraph()
+    this.sink.text(this.bundle.getString(Reporter.THRESHOLD_KEY) + " ")
+    this.sink.italic()
+    this.sink.text(this.threshold.getName())
+    this.sink.italic_()
+    this.sink.paragraph_()
+
+    this.sink.paragraph()
+    this.sink.text(this.bundle.getString(Reporter.EFFORT_KEY) + " ")
+    this.sink.italic()
+    this.sink.text(this.effort.getName())
+    this.sink.italic_()
+    this.sink.paragraph_()
+    this.sink.section1_()
+
+  }
+
+  /**
+   * Print the bug collection to a line in the table
+   *
+   * @param bugInstance
+   *            the bug to print
+   */
+  protected void printBug(BugInstance bugInstance)
+  {
+    SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation()
+    BugPattern pattern = bugInstance.getBugPattern()
+    String lineNumber = this.valueForLine(line)
+    String category = pattern.getCategory()
+    String type = pattern.getType()
+    String priority = bugInstance.getPriorityString()
+
+    this.mavenLog.debug("Bug line = " + line.getClassName())
+    this.mavenLog.debug("Bug pattern = " + pattern.getShortDescription())
+    this.mavenLog.debug("Bug line Number = " + lineNumber)
+    this.mavenLog.debug("Bug Category = " + category)
+    this.mavenLog.debug("Bug Type = " + type)
+    this.mavenLog.debug(" ")
+
+    if ( !this.mIsCurrentClassReportOpened )
+    {
+      this.openClassReportSection()
+      this.mIsCurrentClassReportOpened = true
     }
 
-    /**
-     * Report a queued error.
-     *
-     * @param analysisError
-     *            the queued error
-     * @see edu.umd.cs.findbugs.AbstractBugReporter #reportAnalysisError(edu.umd.cs.findbugs.AnalysisError)
-     */
-    void reportAnalysisError(AnalysisError analysisError)
+    this.sink.tableRow()
+
+    // bug
+    this.sink.tableCell()
+    this.sink.text(bugInstance.getMessageWithoutPrefix())
+    this.sink.tableCell_()
+
+    // category
+    this.sink.tableCell()
+    this.sink.text(category)
+    this.sink.tableCell_()
+
+    // description link
+    this.sink.tableCell()
+    this.sink.link(this.bundle.getString(Reporter.DETAILSLINK_KEY) + "#" + type)
+    this.sink.text(type)
+    this.sink.link_()
+    this.sink.tableCell_()
+
+    // line
+    this.sink.tableCell()
+    if ( this.isJXRReportEnabled )
     {
-        this.mavenLog.debug("  Found an analysisError: " + analysisError.getMessage())
-        this.bugCollection.addError(analysisError.getMessage())
-        ++this.errorCount
-        super.reportAnalysisError(analysisError)
+      this.sink.rawText(assembleJXRHyperlink(line, lineNumber))
+    } else
+    {
+      this.sink.text(lineNumber)
     }
 
-    void logError(String message)
-    {
-        this.mavenLog.debug("  Found an analysisError: " + message)
-        this.bugCollection.addError(message)
-        ++this.errorCount
-        super.logError(message)
-    }
+    this.sink.tableCell_()
+        
+    // priority
+    this.sink.tableCell()
+    this.sink.text(priority)
+    this.sink.tableCell_()
+        
+    this.sink.tableRow_()
+  }
 
-    void logError(String message, Throwable e)
-    {
-        this.mavenLog.debug("  Found an analysisError: " + message)
-        this.bugCollection.addError(message)
-        ++this.errorCount
-        super.logError(message, e)
-    }
+  /**
+   * Assembles the hyperlink to point to the source code.
+   *
+   * @param line
+   *            The line number object with the bug.
+   * @param lineNumber
+   *            The line number to show in the hyperlink.
+   * @return The hyperlink which points to the code.
+   *
+   */
+  protected String assembleJXRHyperlink(SourceLineAnnotation line, String lineNumber)
+  {
+    String hyperlink
+    String prefix
 
-    /**
-     * Report a missing class.
-     *
-     * @param missingClass
-     *            the name of the class
-     * @see edu.umd.cs.findbugs.AbstractBugReporter #reportMissingClass(java.lang.String)
-     */
-    void reportMissingClass(String missingClass)
-    {
-        this.mavenLog.debug("Found a missing class: " + missingClass)
-        if ( this.missingClassSet.add(missingClass) )
+    compileSourceRoots.each { compileSourceRoot ->
+      if (new File(compileSourceRoot + File.separator + line.getSourcePath()).exists() )
+      {
+        prefix = PathTool.getRelativePath( outputDirectory.getAbsolutePath(), xrefLocation.getAbsolutePath() );
+        if ( !prefix )
         {
-            ++this.missingClassCount
+          prefix = ".";
         }
-        super.reportMissingClass(missingClass)
+        prefix = prefix + Reporter.URL_SEPARATOR + xrefLocation.getName() + Reporter.URL_SEPARATOR
+        return
+      }
     }
 
-    void reportMissingClass(ClassNotFoundException ex)
+
+    if ( includeTests && !prefix )
     {
-        this.mavenLog.debug("Found a missing class: " + ex.getMessage())
-        if ( this.missingClassSet.add(ex.getMessage()) )
+      testSourceRoots.each { testSourceRoot ->
+        if (new File(testSourceRoot + File.separator + line.getSourcePath()).exists() )
         {
-            ++this.missingClassCount
+          prefix = PathTool.getRelativePath( outputDirectory.getAbsolutePath(), xrefTestLocation.getAbsolutePath() );
+          if ( !prefix )
+          {
+            prefix = ".";
+          }
+          prefix = prefix + Reporter.URL_SEPARATOR + xrefTestLocation.getName() + Reporter.URL_SEPARATOR
+          return
         }
-        super.reportMissingClass(ex)
+      }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
-     */
+    def path = prefix + line.className.replaceAll("[.]", "/").replaceAll("[\$].*", "")
 
-    void reportMissingClass(ClassDescriptor classDescriptor)
+    if ( !line )
     {
-        this.reportMissingClass(classDescriptor.toDottedClassName())
+      hyperlink = "<a href=\"" + path + ".html\">" + lineNumber + "</a>"
+    } else
+    {
+      hyperlink = "<a href=\"" + path + ".html#" + line.getStartLine() + "\">" + lineNumber + "</a>"
     }
 
-    /**
-     * Initialises the report.
-     */
-    private void initialiseReport()
+    return hyperlink
+  }
+
+  /**
+   * Closes the class report section.
+   */
+  protected void closeClassReportSection()
+  {
+    this.mavenLog.debug("Closing report Section")
+    this.sink.table_()
+    this.sink.section2_()
+  }
+
+  /**
+   * @param bugInstance
+   *            The bug to report
+   * @see edu.umd.cs.findbugs.AbstractBugReporter #doReportBug(edu.umd.cs.findbugs.BugInstance)
+   */
+  protected void doReportBug(BugInstance bugInstance)
+  {
+    this.mavenLog.debug("  Found a bug: " + bugInstance.getMessage())
+    if ( this.bugCollection.add(bugInstance) )
     {
-        this.sink.head()
-        this.sink.title()
-        this.sink.text(this.getReportTitle())
-        this.sink.title_()
-        this.sink.head_()
-
-        this.sink.body()
-
-        // the title of the report
-        this.sink.section1()
-        this.sink.sectionTitle1()
-        this.sink.text(this.getReportTitle())
-        this.sink.sectionTitle1_()
-
-        // information about FindBugs
-        this.sink.paragraph()
-        this.sink.text(this.bundle.getString(Reporter.LINKTITLE_KEY) + " ")
-        this.sink.link(this.bundle.getString(Reporter.LINK_KEY))
-        this.sink.text(this.bundle.getString(Reporter.NAME_KEY))
-        this.sink.link_()
-        this.sink.paragraph_()
-
-        this.sink.paragraph()
-        this.sink.text(this.bundle.getString(VERSIONTITLE_KEY) + " ")
-        this.sink.italic()
-        this.sink.text(edu.umd.cs.findbugs.Version.RELEASE)
-        this.sink.italic_()
-        this.sink.paragraph_()
-
-        this.sink.paragraph()
-        this.sink.text(this.bundle.getString(Reporter.THRESHOLD_KEY) + " ")
-        this.sink.italic()
-        this.sink.text(this.threshold.getName())
-        this.sink.italic_()
-        this.sink.paragraph_()
-
-        this.sink.paragraph()
-        this.sink.text(this.bundle.getString(Reporter.EFFORT_KEY) + " ")
-        this.sink.italic()
-        this.sink.text(this.effort.getName())
-        this.sink.italic_()
-        this.sink.paragraph_()
-        this.sink.section1_()
-
+      ++this.bugCount
+      this.notifyObservers(bugInstance)
     }
 
-    /**
-     * Print the bug collection to a line in the table
-     *
-     * @param bugInstance
-     *            the bug to print
-     */
-    protected void printBug(BugInstance bugInstance)
+  }
+
+  /**
+   * Gets the report title.
+   *
+   * @return The report title.
+   *
+   */
+  protected String getReportTitle()
+  {
+    return this.bundle.getString(Reporter.REPORT_TITLE_KEY)
+  }
+
+  /**
+   * Initialised a bug report section in the report for a particular class.
+   */
+  protected void openClassReportSection()
+  {
+    String columnBugText = this.bundle.getString(Reporter.COLUMN_BUG_KEY)
+    String columnBugCategory = this.bundle.getString(Reporter.COLUMN_CATEGORY_KEY)
+    String columnDescriptionLink = this.bundle.getString(Reporter.COLUMN_DETAILS_KEY)
+    String columnLineText = this.bundle.getString(Reporter.COLUMN_LINE_KEY)
+    String priorityText = this.bundle.getString(Reporter.COLUMN_PRIORITY_KEY)
+
+    this.mavenLog.debug("Opening Class Report Section")
+
+    this.sink.anchor(this.currentClassName)
+    this.sink.anchor_()
+
+    this.sink.section2()
+    this.sink.sectionTitle2()
+    this.sink.text(this.currentClassName)
+    this.sink.sectionTitle2_()
+    this.sink.table()
+    this.sink.tableRow()
+
+    // bug
+    this.sink.tableHeaderCell()
+    this.sink.text(columnBugText)
+    this.sink.tableHeaderCell_()
+
+    // category
+    this.sink.tableHeaderCell()
+    this.sink.text(columnBugCategory)
+    this.sink.tableHeaderCell_()
+
+    // description link
+    this.sink.tableHeaderCell()
+    this.sink.text(columnDescriptionLink)
+    this.sink.tableHeaderCell_()
+
+    // line
+    this.sink.tableHeaderCell()
+    this.sink.text(columnLineText)
+    this.sink.tableHeaderCell_()
+
+    // priority
+    this.sink.tableHeaderCell()
+    this.sink.text(priorityText)
+    this.sink.tableHeaderCell_()
+        
+    this.sink.tableRow_()
+  }
+
+  /**
+   * Return the value to display. If FindBugs does not provide a line number, a default message is returned. The line
+   * number otherwise.
+   *
+   * @param line
+   *            The line to get the value from.
+   * @return The line number the bug appears or a statement that there is no source line available.
+   *
+   */
+  protected String valueForLine(SourceLineAnnotation line)
+  {
+    String value
+
+    if ( line )
     {
-        SourceLineAnnotation line = bugInstance.getPrimarySourceLineAnnotation()
-        BugPattern pattern = bugInstance.getBugPattern()
-        String lineNumber = this.valueForLine(line)
-        String category = pattern.getCategory()
-        String type = pattern.getType()
-        String priority = bugInstance.getPriorityString()
+      int startLine = line.getStartLine()
+      int endLine = line.getEndLine()
 
-        this.mavenLog.debug("Bug line = " + line.getClassName())
-        this.mavenLog.debug("Bug pattern = " + pattern.getShortDescription())
-        this.mavenLog.debug("Bug line Number = " + lineNumber)
-        this.mavenLog.debug("Bug Category = " + category)
-        this.mavenLog.debug("Bug Type = " + type)
-        this.mavenLog.debug(" ")
-
-        if ( !this.mIsCurrentClassReportOpened )
+      if ( startLine == endLine )
+      {
+        if ( startLine == -1 )
         {
-            this.openClassReportSection()
-            this.mIsCurrentClassReportOpened = true
-        }
-
-        this.sink.tableRow()
-
-        // bug
-        this.sink.tableCell()
-        this.sink.text(bugInstance.getMessageWithoutPrefix())
-        this.sink.tableCell_()
-
-        // category
-        this.sink.tableCell()
-        this.sink.text(category)
-        this.sink.tableCell_()
-
-        // description link
-        this.sink.tableCell()
-        this.sink.link(this.bundle.getString(Reporter.DETAILSLINK_KEY) + "#" + type)
-        this.sink.text(type)
-        this.sink.link_()
-        this.sink.tableCell_()
-
-        // line
-        this.sink.tableCell()
-        if ( this.isJXRReportEnabled )
-        {
-            this.sink.rawText(assembleJXRHyperlink(line, lineNumber))
+          value = this.bundle.getString(Reporter.NOLINE_KEY)
         } else
         {
-            this.sink.text(lineNumber)
+          value = startLine.toString()
+        }
+      } else
+      {
+        value = startLine.toString() + "-" + endLine.toString()
+      }
+    } else
+    {
+      value = this.bundle.getString(Reporter.NOLINE_KEY)
+    }
+
+    return value
+  }
+
+  /**
+   * Print the Summary Section.
+   */
+  protected void printSummary()
+  {
+    this.sink.section1()
+
+    // the summary section
+    this.sink.sectionTitle1()
+    this.sink.text(this.bundle.getString(Reporter.SUMMARY_KEY))
+    this.sink.sectionTitle1_()
+
+    this.sink.table()
+    this.sink.tableRow()
+
+    // classes
+    this.sink.tableHeaderCell()
+    this.sink.text(this.bundle.getString(Reporter.COLUMN_CLASSES_KEY))
+    this.sink.tableHeaderCell_()
+
+    // bugs
+    this.sink.tableHeaderCell()
+    this.sink.text(this.bundle.getString(Reporter.COLUMN_BUGS_KEY))
+    this.sink.tableHeaderCell_()
+
+    // Errors
+    this.sink.tableHeaderCell()
+    this.sink.text(this.bundle.getString(Reporter.COLUMN_ERRORS_KEY))
+    this.sink.tableHeaderCell_()
+
+    // Missing Classes
+    this.sink.tableHeaderCell()
+    this.sink.text(this.bundle.getString(Reporter.COLUMN_MISSINGCLASSES_KEY))
+    this.sink.tableHeaderCell_()
+
+    this.sink.tableRow_()
+
+    this.sink.tableRow()
+
+    // files
+    this.sink.tableCell()
+    this.sink.text(this.fileCount.toString())
+    this.sink.tableCell_()
+
+    // bug
+    this.sink.tableCell()
+    this.sink.text(this.bugCount.toString())
+    this.sink.tableCell_()
+
+    // Errors
+    this.sink.tableCell()
+    this.sink.text(this.errorCount.toString())
+    this.sink.tableCell_()
+
+    // Missing Classes
+    this.sink.tableCell()
+    this.sink.text(this.missingClassCount.toString())
+    this.sink.tableCell_()
+
+    this.sink.tableRow_()
+    this.sink.table_()
+
+    this.sink.section1_()
+  }
+
+  /**
+   * Print the File Summary Section.
+   */
+  protected void printFilesSummary()
+  {
+    this.sink.section1()
+
+    // the Files section
+    this.sink.sectionTitle1()
+    this.sink.text(this.bundle.getString(Reporter.FILES_KEY))
+    this.sink.sectionTitle1_()
+
+    /**
+     * Class Summary
+     */
+
+    int classBugs = 0
+
+    this.sink.table()
+    this.sink.tableRow()
+
+    // files
+    this.sink.tableHeaderCell()
+    this.sink.text(this.bundle.getString(Reporter.COLUMN_CLASS_KEY))
+    this.sink.tableHeaderCell_()
+
+    // bugs
+    this.sink.tableHeaderCell()
+    this.sink.text(this.bundle.getString(Reporter.COLUMN_BUGS_KEY))
+    this.sink.tableHeaderCell_()
+
+    this.sink.tableRow_()
+
+    this.bugCollection.each() {bugInstance ->
+
+      this.mavenLog.debug("Annotation Class is " + bugInstance.getPrimarySourceLineAnnotation().getClassName())
+      this.mavenLog.debug("Class is " + this.currentClassName)
+      this.mavenLog.debug(" ")
+
+      if ( bugInstance.getPrimarySourceLineAnnotation().getClassName().equals(this.currentClassName) )
+      {
+        ++classBugs
+      } else
+      {
+        if ( this.currentClassName.length() > 0 )
+        {
+          this.printFilesSummaryLine(classBugs)
         }
 
-        this.sink.tableCell_()
-        
-        // priority
-        this.sink.tableCell()
-        this.sink.text(priority)
-        this.sink.tableCell_()
-        
-        this.sink.tableRow_()
+        classBugs = 1
+        this.currentClassName = bugInstance.getPrimarySourceLineAnnotation().getClassName()
+      }
     }
 
-    /**
-     * Assembles the hyperlink to point to the source code.
-     *
-     * @param line
-     *            The line number object with the bug.
-     * @param lineNumber
-     *            The line number to show in the hyperlink.
-     * @return The hyperlink which points to the code.
-     *
-     */
-    protected String assembleJXRHyperlink(SourceLineAnnotation line, String lineNumber)
-    {
-        String hyperlink
-        String prefix = this.bundle.getString(Reporter.JXR_PATHPREFIX_KEY)
-        String path =
-        prefix + Reporter.URL_SEPARATOR + this.currentClassName.replaceAll("[.]", "/").replaceAll("[\$].*", "")
+    this.printFilesSummaryLine(classBugs)
 
-//        if ( line == null )
-        if ( !line )
-        {
-            hyperlink = "<a href=\"" + path + ".html\">" + lineNumber + "</a>"
-        } else
-        {
-            hyperlink = "<a href=\"" + path + ".html#" + line.getStartLine() + "\">" + lineNumber + "</a>"
-        }
+    this.sink.table_()
 
-        return hyperlink
-    }
+    this.sink.section1_()
+  }
 
-    /**
-     * Closes the class report section.
-     */
-    protected void closeClassReportSection()
-    {
-        this.mavenLog.debug("Closing report Section")
-        this.sink.table_()
-        this.sink.section2_()
-    }
+  protected void printFilesSummaryLine(int classBugs)
+  {
+    this.sink.tableRow()
 
-    /**
-     * @param bugInstance
-     *            The bug to report
-     * @see edu.umd.cs.findbugs.AbstractBugReporter #doReportBug(edu.umd.cs.findbugs.BugInstance)
-     */
-    protected void doReportBug(BugInstance bugInstance)
-    {
-        this.mavenLog.debug("  Found a bug: " + bugInstance.getMessage())
-        if ( this.bugCollection.add(bugInstance) )
-        {
-            ++this.bugCount
-            this.notifyObservers(bugInstance)
-        }
+    // class name
+    this.sink.tableCell()
+    this.sink.link("#" + this.currentClassName)
+    this.sink.text(this.currentClassName)
+    this.sink.link_()
+    this.sink.tableCell_()
 
-    }
+    // class bug total count
+    this.sink.tableCell()
+    this.sink.text(classBugs.toString())
+    this.sink.tableCell_()
 
-    /**
-     * Gets the report title.
-     *
-     * @return The report title.
-     *
-     */
-    protected String getReportTitle()
-    {
-        return this.bundle.getString(Reporter.REPORT_TITLE_KEY)
-    }
-
-    /**
-     * Initialised a bug report section in the report for a particular class.
-     */
-    protected void openClassReportSection()
-    {
-        String columnBugText = this.bundle.getString(Reporter.COLUMN_BUG_KEY)
-        String columnBugCategory = this.bundle.getString(Reporter.COLUMN_CATEGORY_KEY)
-        String columnDescriptionLink = this.bundle.getString(Reporter.COLUMN_DETAILS_KEY)
-        String columnLineText = this.bundle.getString(Reporter.COLUMN_LINE_KEY)
-        String priorityText = this.bundle.getString(Reporter.COLUMN_PRIORITY_KEY)
-
-        this.mavenLog.debug("Opening Class Report Section")
-
-        this.sink.anchor(this.currentClassName)
-        this.sink.anchor_()
-
-        this.sink.section2()
-        this.sink.sectionTitle2()
-        this.sink.text(this.currentClassName)
-        this.sink.sectionTitle2_()
-        this.sink.table()
-        this.sink.tableRow()
-
-        // bug
-        this.sink.tableHeaderCell()
-        this.sink.text(columnBugText)
-        this.sink.tableHeaderCell_()
-
-        // category
-        this.sink.tableHeaderCell()
-        this.sink.text(columnBugCategory)
-        this.sink.tableHeaderCell_()
-
-        // description link
-        this.sink.tableHeaderCell()
-        this.sink.text(columnDescriptionLink)
-        this.sink.tableHeaderCell_()
-
-        // line
-        this.sink.tableHeaderCell()
-        this.sink.text(columnLineText)
-        this.sink.tableHeaderCell_()
-
-        // priority
-        this.sink.tableHeaderCell()
-        this.sink.text(priorityText)
-        this.sink.tableHeaderCell_()
-        
-        this.sink.tableRow_()
-    }
-
-    /**
-     * Return the value to display. If FindBugs does not provide a line number, a default message is returned. The line
-     * number otherwise.
-     *
-     * @param line
-     *            The line to get the value from.
-     * @return The line number the bug appears or a statement that there is no source line available.
-     *
-     */
-    protected String valueForLine(SourceLineAnnotation line)
-    {
-        String value
-
-        if ( line )
-        {
-            int startLine = line.getStartLine()
-            int endLine = line.getEndLine()
-
-            if ( startLine == endLine )
-            {
-                if ( startLine == -1 )
-                {
-                    value = this.bundle.getString(Reporter.NOLINE_KEY)
-                } else
-                {
-                    value = startLine.toString()
-                }
-            } else
-            {
-                value = startLine.toString() + "-" + endLine.toString()
-            }
-        } else
-        {
-            value = this.bundle.getString(Reporter.NOLINE_KEY)
-        }
-
-        return value
-    }
-
-    /**
-     * Print the Summary Section.
-     */
-    protected void printSummary()
-    {
-        this.sink.section1()
-
-        // the summary section
-        this.sink.sectionTitle1()
-        this.sink.text(this.bundle.getString(Reporter.SUMMARY_KEY))
-        this.sink.sectionTitle1_()
-
-        this.sink.table()
-        this.sink.tableRow()
-
-        // classes
-        this.sink.tableHeaderCell()
-        this.sink.text(this.bundle.getString(Reporter.COLUMN_CLASSES_KEY))
-        this.sink.tableHeaderCell_()
-
-        // bugs
-        this.sink.tableHeaderCell()
-        this.sink.text(this.bundle.getString(Reporter.COLUMN_BUGS_KEY))
-        this.sink.tableHeaderCell_()
-
-        // Errors
-        this.sink.tableHeaderCell()
-        this.sink.text(this.bundle.getString(Reporter.COLUMN_ERRORS_KEY))
-        this.sink.tableHeaderCell_()
-
-        // Missing Classes
-        this.sink.tableHeaderCell()
-        this.sink.text(this.bundle.getString(Reporter.COLUMN_MISSINGCLASSES_KEY))
-        this.sink.tableHeaderCell_()
-
-        this.sink.tableRow_()
-
-        this.sink.tableRow()
-
-        // files
-        this.sink.tableCell()
-        this.sink.text(this.fileCount.toString())
-        this.sink.tableCell_()
-
-        // bug
-        this.sink.tableCell()
-        this.sink.text(this.bugCount.toString())
-        this.sink.tableCell_()
-
-        // Errors
-        this.sink.tableCell()
-        this.sink.text(this.errorCount.toString())
-        this.sink.tableCell_()
-
-        // Missing Classes
-        this.sink.tableCell()
-        this.sink.text(this.missingClassCount.toString())
-        this.sink.tableCell_()
-
-        this.sink.tableRow_()
-        this.sink.table_()
-
-        this.sink.section1_()
-    }
-
-    /**
-     * Print the File Summary Section.
-     */
-    protected void printFilesSummary()
-    {
-        this.sink.section1()
-
-        // the Files section
-        this.sink.sectionTitle1()
-        this.sink.text(this.bundle.getString(Reporter.FILES_KEY))
-        this.sink.sectionTitle1_()
-
-        /**
-         * Class Summary
-         */
-
-        int classBugs = 0
-
-        this.sink.table()
-        this.sink.tableRow()
-
-        // files
-        this.sink.tableHeaderCell()
-        this.sink.text(this.bundle.getString(Reporter.COLUMN_CLASS_KEY))
-        this.sink.tableHeaderCell_()
-
-        // bugs
-        this.sink.tableHeaderCell()
-        this.sink.text(this.bundle.getString(Reporter.COLUMN_BUGS_KEY))
-        this.sink.tableHeaderCell_()
-
-        this.sink.tableRow_()
-
-        this.bugCollection.each() {bugInstance ->
-
-            this.mavenLog.debug("Annotation Class is " + bugInstance.getPrimarySourceLineAnnotation().getClassName())
-            this.mavenLog.debug("Class is " + this.currentClassName)
-            this.mavenLog.debug(" ")
-
-            if ( bugInstance.getPrimarySourceLineAnnotation().getClassName().equals(this.currentClassName) )
-            {
-                ++classBugs
-            } else
-            {
-                if ( this.currentClassName.length() > 0 )
-                {
-                    this.printFilesSummaryLine(classBugs)
-                }
-
-                classBugs = 1
-                this.currentClassName = bugInstance.getPrimarySourceLineAnnotation().getClassName()
-            }
-        }
-
-        this.printFilesSummaryLine(classBugs)
-
-        this.sink.table_()
-
-        this.sink.section1_()
-    }
-
-    protected void printFilesSummaryLine(int classBugs)
-    {
-        this.sink.tableRow()
-
-        // class name
-        this.sink.tableCell()
-        this.sink.link("#" + this.currentClassName)
-        this.sink.text(this.currentClassName)
-        this.sink.link_()
-        this.sink.tableCell_()
-
-        // class bug total count
-        this.sink.tableCell()
-        this.sink.text(classBugs.toString())
-        this.sink.tableCell_()
-
-        this.sink.tableRow_()
-    }
+    this.sink.tableRow_()
+  }
 }
