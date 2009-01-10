@@ -26,6 +26,7 @@ FindBugs Maven Plugin
 
  See a {{{findbugs.html}sample report}}.
 
+ To see more documentation about FindBugs' options, please see the {{{http://findbugs.sourceforge.net/manual/index.html}FindBugs Manual}}.
 
 *Please Note
  

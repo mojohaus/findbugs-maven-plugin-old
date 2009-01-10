@@ -50,10 +50,10 @@ import edu.umd.cs.findbugs.filter.FilterException
 /**
  * Generates a FindBugs Report when the site plugin is run.
  * The HTML report is generated for site commands only.
- * The optional report formats are generated for both the site commands.
+ * To see more documentation about FindBugs' options, please see the
+ * <a href="http://findbugs.sourceforge.net/manual/index.html">FindBugs Manual.</a>
  * 
  * @goal findbugs
- * @description Generates a FindBugs Report when the site plugin is run.
  * @execute phase="compile"
  * @requiresDependencyResolution compile
  * @requiresProject
@@ -375,7 +375,7 @@ class FindBugsMojo extends AbstractMavenReport
   BugReporter bugReporter
 
   /**
-   * Restrict analysis to find bugs to given comma-separated list of classes and packages.
+   * Restrict analysis to the given comma-separated list of classes and packages.
    *
    * @parameter
    * @since 1.1

@@ -38,7 +38,7 @@ Usage
  The pluginList option specifies a comma-separated list of optional BugDetector
  Jar files to add.
 
- The onlyAnalyze option restricts analysis to find bugs to given comma-separated
+ The onlyAnalyze option restricts analysis to the given comma-separated
  list of classes and packages.
  
  Please look up the
