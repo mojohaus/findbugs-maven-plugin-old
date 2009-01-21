@@ -244,9 +244,16 @@ class FindbugsViolationCheckMojo extends GroovyMojo
   void execute()
   {
     Locale locale = Locale.getDefault()
+    List sourceFiles
 
     log.info("Excecuting findbugs:check")
-    if ( !skip )
+
+    if ( this.classFilesDirectory.exists() && this.classFilesDirectory.isDirectory() )
+    {
+      sourceFiles = FileUtils.getFiles(classFilesDirectory, FindbugsViolationCheckMojo.JAVA_REGEX_PATTERN, null)
+    }
+
+    if ( !skip && sourceFiles )
     {
       bundle = ResourceBundle.getBundle( BUNDLE_NAME, locale )
 
@@ -262,14 +269,9 @@ class FindbugsViolationCheckMojo extends GroovyMojo
         findBugsProject.projectName = "${project.name}"
 
         //  Adds the source files to the find bugs project.
-        if ( this.classFilesDirectory.exists() && this.classFilesDirectory.isDirectory() )
-        {
-          List sourceFiles = FileUtils.getFiles(classFilesDirectory, FindbugsViolationCheckMojo.JAVA_REGEX_PATTERN, null)
-
-          sourceFiles.each() {sourceFile ->
-            String filePath = sourceFile.getAbsolutePath()
-            findBugsProject.addFile(filePath)
-          }
+        sourceFiles.each() {sourceFile ->
+          String filePath = sourceFile.getAbsolutePath()
+          findBugsProject.addFile(filePath)
         }
 
 
@@ -356,6 +358,10 @@ class FindbugsViolationCheckMojo extends GroovyMojo
         fail("failed with ${bugCount} bugs and ${errorCount} errors ")
       }
 
+    }
+    else
+    {
+      log.info( "Nothing for FindBugs to do here." )
     }
   }
 
