@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
   <modelVersion>4.0.0</modelVersion>
@@ -106,15 +107,15 @@
       <version>${doxia.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.findbugs</groupId>
+      <groupId>com.google.findbugs</groupId>
       <artifactId>findbugs</artifactId>
       <version>1.3.7</version>
     </dependency>
     <dependency>
-       <groupId>jgoodies</groupId>
-       <artifactId>plastic</artifactId>
-       <version>1.2.0</version>
-   </dependency>
+      <groupId>jgoodies</groupId>
+      <artifactId>plastic</artifactId>
+      <version>1.2.0</version>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.groovy.maven</groupId>
       <artifactId>gmaven-mojo</artifactId>
@@ -214,15 +215,19 @@
     <repository>
       <id>findbugs-sandbox</id>
       <name>findbugs-sandbox Development Repository</name>
-      <url>http://singularity.svn.sourceforge.net/svnroot/singularity/repos/repo/</url>
+      <url>http://findbugs.googlecode.com/svn/repos/rc-repository/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>Maven Overview Plugin - Snapshot Repository</id>
-      <url>
-        http://maven-overview-plugin.googlecode.com/svn/snapshot-repository
-      </url>
+      <url>http://maven-overview-plugin.googlecode.com/svn/snapshot-repository</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -232,9 +237,7 @@
     </pluginRepository>
     <pluginRepository>
       <id>Maven Overview Plugin - Release Repository</id>
-      <url>
-        http://maven-overview-plugin.googlecode.com/svn/release-repository
-      </url>
+      <url>http://maven-overview-plugin.googlecode.com/svn/release-repository</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
