@@ -107,7 +107,7 @@
       <version>${doxia.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.findbugs</groupId>
+      <groupId>com.google.code.findbugs</groupId>
       <artifactId>findbugs</artifactId>
       <version>1.3.7</version>
     </dependency>
@@ -215,12 +215,12 @@
     <repository>
       <id>findbugs-sandbox</id>
       <name>findbugs-sandbox Development Repository</name>
-      <url>http://findbugs.googlecode.com/svn/repos/rc-repository/</url>
+      <url>http://findbugs.googlecode.com/svn/repos/release-repository/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
       <releases>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </releases>
     </repository>
   </repositories>

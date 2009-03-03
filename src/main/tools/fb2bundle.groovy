@@ -26,7 +26,7 @@ if (System.getProperty("os.name").toLowerCase().contains("windows")) cmdPrefix =
 def modules = ["findbugs", "annotations", "findbugs-ant", "bcel", "jsr305", "jFormatString" ]
 
 modules.each(){ module ->
-    cmd = cmdPrefix + """mvn repository:bundle-pack -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=com.google.findbugs -DartifactId=${module} -Dversion=${findbugsVersion}"""
+    cmd = cmdPrefix + """mvn repository:bundle-pack -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=com.google.code.findbugs -DartifactId=${module} -Dversion=${findbugsVersion}"""
     proc = cmd.execute()
     println proc.text
 }
