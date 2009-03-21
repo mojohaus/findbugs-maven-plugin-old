@@ -169,7 +169,7 @@ class FindBugsMojo extends AbstractMavenReport
 
 
   /**
-   * Turn on and off xml output of the Findbugs report.
+   * Set whether textual messages should be added to any generated XML of the Findbugs native XML report.
    *
    * @parameter default-value="false"
    * @since 1.2.0
