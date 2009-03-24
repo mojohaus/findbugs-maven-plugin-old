@@ -131,7 +131,7 @@ class FindBugsMojo extends AbstractMavenReport
    * @required
    */
 
-  String outputDirectory
+  File outputDirectory
 
   /**
    * Turn on and off xml output of the Findbugs report.
