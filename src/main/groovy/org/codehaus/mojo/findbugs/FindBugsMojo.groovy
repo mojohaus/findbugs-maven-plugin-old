@@ -906,7 +906,7 @@ class FindBugsMojo extends AbstractMavenReport
    */
   protected String getOutputDirectory()
   {
-    return new File( outputDirectory ).mkdirs()
+    return outputDirectory.getAbsolutePath()
   }
 
   /**

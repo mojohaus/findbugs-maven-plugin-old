@@ -16,13 +16,15 @@ def javaHome = System.getenv("JAVA_HOME")
 File logFile
 def buildPlugin = false
 def mvnPhase = ""
+def verbose = false
 
-def cli = new CliBuilder(usage:'versionTest -m maven.top.directory -p path  <-l logfile> <-b>')
+def cli = new CliBuilder(usage:'versionTest -m maven.top.directory -p path  <-l logfile> <-b> <-v>')
 cli.h(longOpt: 'help', 'usage information')
 cli.m(argName: 'maven.top.directory',  longOpt: 'maven', required: true, args: 1, type:GString, 'Maven top directory containing version of Mven for test')
 cli.p(argName: 'path',  longOpt: 'path', required: true, args: 1, type:GString, 'Path for System')
 cli.l(argName: 'log',  longOpt: 'logFile', required: false, args: 1, type:GString, 'Optional log file')
 cli.b(argName: 'build',  longOpt: 'build', required: false, args: 0, type:GString, 'build every time')
+cli.v(argName: 'verbose',  longOpt: 'verbose', required: false, args: 0, type:GString, 'Run Maven in verbose mode')
 
 
 def opt = cli.parse(args)
@@ -53,11 +55,14 @@ println mavenDirs
 
 String[] ENVtoArray() { ENV.collect { k, v -> "$k=$v" } }
 
-
 if (buildPlugin) {
   mvnPhase = "clean install"
 } else {
   mvnPhase = "shitty:clean shitty:test"
+}
+
+if (verbose) {
+  mvnPhase = "-v " + mvnPhase
 }
 
 mavenDirs.each(){ mavenDir ->
