@@ -8,7 +8,7 @@
   <body>
     <release version="2.0.1-SNAPSHOT" date="in SVN" description="Updates for Findbugs 2.0.1-SNAPSHOT">
     </release>
-    <release version="2.0" date="in SVN" description="Updates for Findbugs 2.0" >
+    <release version="2.0" date="2009-03-29" description="Updates for Findbugs 2.0" >
       <action dev="gl" type="update" issue="MFINDBUGS-66">
         Update to Findbugs 1.3.7
       </action>
