@@ -6,7 +6,9 @@
     </author>
   </properties>
   <body>
-    <release version="2.0-SNAPSHOT" date="in SVN">
+    <release version="2.0.1-SNAPSHOT" date="in SVN" description="Updates for Findbugs 2.0.1-SNAPSHOT">
+    </release>
+    <release version="2.0" date="in SVN" description="Updates for Findbugs 2.0" >
       <action dev="gl" type="update" issue="MFINDBUGS-66">
         Update to Findbugs 1.3.7
       </action>
@@ -48,12 +50,7 @@
         Specifying a pluginList configuration value throws an exception
       </action>
     </release>
-    <release version="1.2.1-SNAPSHOT" date="in SVN">
-      <action dev="gl" type="fix" issue="MFINDBUGS-54">
-        Specifying a pluginList configuration value throws an exception
-      </action>
-    </release>
-    <release version="1.2.0" date="2008-03-27" description="Update for Findbugs 1.2.0">
+    <release version="1.2" date="2008-03-27" description="Update for Findbugs 1.2.0">
       <action dev="gl" type="fix" issue="MFINDBUGS-50">
         Fix file encoding used to generate xdoc report to use UTF-8
       </action>
