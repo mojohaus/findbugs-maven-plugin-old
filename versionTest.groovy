@@ -7,9 +7,11 @@
  * groovy versionTest -m /opt -p /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin
  * groovy versionTest -m /opt -p /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin -b
  * groovy versionTest -m /opt -p /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin -l NoBuildTestResults.txt
+ * groovy versionTest -m /opt -p /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin -l NoBuildTestResults.txt -f
  * groovy versionTest -m /opt -p /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin -l BuildTestResults.txt -b
+ * groovy versionTest -m /opt -p /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin -l BuildTestResults.txt -b -f
  *
-*/
+ */
 
 
 def javaHome = System.getenv("JAVA_HOME")
@@ -17,14 +19,17 @@ File logFile
 def buildPlugin = false
 def mvnPhase = ""
 def verbose = false
+def retVal
+def stopFail = false
 
-def cli = new CliBuilder(usage:'versionTest -m maven.top.directory -p path  <-l logfile> <-b> <-v>')
+def cli = new CliBuilder(usage:'versionTest -m maven.top.directory -p path  <-l logfile> <-b> <-v> <-f>')
 cli.h(longOpt: 'help', 'usage information')
 cli.m(argName: 'maven.top.directory',  longOpt: 'maven', required: true, args: 1, type:GString, 'Maven top directory containing version of Mven for test')
 cli.p(argName: 'path',  longOpt: 'path', required: true, args: 1, type:GString, 'Path for System')
 cli.l(argName: 'log',  longOpt: 'logFile', required: false, args: 1, type:GString, 'Optional log file')
 cli.b(argName: 'build',  longOpt: 'build', required: false, args: 0, type:GString, 'build every time')
 cli.v(argName: 'verbose',  longOpt: 'verbose', required: false, args: 0, type:GString, 'Run Maven in verbose mode')
+cli.f(argName: 'fail',  longOpt: 'fail', required: false, args: 0, type:GString, 'stop test if any fail')
 
 
 def opt = cli.parse(args)
@@ -34,9 +39,10 @@ if (opt.m) mavenTopDir = opt.m
 if (opt.p) executePath = opt.p
 if (opt.l) logFile = new File(opt.l)
 if (opt.b) buildPlugin = true
+if (opt.f) stopFail = true
 
 if (logFile) {
- logFile.write "\n"
+  logFile.write "\n"
 }
 
 
@@ -65,29 +71,39 @@ if (verbose) {
   mvnPhase = "-v " + mvnPhase
 }
 
-mavenDirs.each(){ mavenDir ->
-  ENV = [JAVA_HOME: javaHome]
-  ENV.M2_HOME = mavenDir.getAbsolutePath()
-  ENV.PATH = executePath + File.pathSeparator + "${mavenDir}/bin"
-  ENVtoArray()
+try {
+  mavenDirs.each(){ mavenDir ->
+    ENV = [JAVA_HOME: javaHome]
+    ENV.M2_HOME = mavenDir.getAbsolutePath()
+    ENV.PATH = executePath + File.pathSeparator + "${mavenDir}/bin"
+    ENVtoArray()
   
-  println "****************************************"
-  proc = "mvn -version".execute(ENVtoArray(), null)
-  proc.waitFor()
-  procText = proc.text
-  println procText
-  println "****************************************"
+    println "****************************************"
+    proc = "mvn -version".execute(ENVtoArray(), null)
+    proc.waitFor()
+    procText = proc.text
+    println procText
+    println "****************************************"
 
-  if (logFile) {
-    logFile << procText
+    if (logFile) {
+      logFile << procText
+    }
+
+    proc = "${mavenDir}/bin/mvn -Dshit=true ${mvnPhase}".execute(ENVtoArray(), null)
+    retVal = proc.waitFor()
+    procText = proc.text
+    println procText
+
+
+    if (logFile) {
+      logFile << procText
+    }
+
+    if (stopFail && retVal > 0 ) {
+      println "Process Failed"
+      throw new Exception("Break")
+    }
   }
+} catch (Exception e) { } // just drop the exception
 
-  proc = "${mavenDir}/bin/mvn -Dshit=true ${mvnPhase}".execute(ENVtoArray(), null)
-  proc.waitFor()
-  procText = proc.text
-  println procText
 
-  if (logFile) {
-    logFile << procText
-  }
-}

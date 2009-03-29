@@ -1,1 +1,1 @@
-clean compiler:compile compiler:testCompile org.apache.maven.plugins:maven-site-plugin:2.0-beta-3:site
+clean compiler:compile compiler:testCompile site
