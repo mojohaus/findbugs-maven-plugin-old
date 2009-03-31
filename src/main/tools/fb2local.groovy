@@ -1,6 +1,7 @@
 #!groovy
 
 def findbugsHome = System.getenv("FINDBUGS_HOME")
+def antBuilder = new AntBuilder()
 
 def cli = new CliBuilder(usage:'fb2local -f findbugs.home -version version')
 cli.h(longOpt: 'help', 'usage information')
@@ -26,7 +27,17 @@ if (System.getProperty("os.name").toLowerCase().contains("windows")) cmdPrefix =
 def modules = ["findbugs", "annotations", "findbugs-ant", "bcel", "jsr305", "jFormatString" ]
 
 modules.each(){ module ->
-    cmd = cmdPrefix + """mvn install:install-file -DpomFile=${module}.pom -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=com.google.code.findbugs -DartifactId=${module} -Dversion=${findbugsVersion} -Dpackaging=jar"""
-    proc = cmd.execute()
-    println proc.text
+  antBuilder.copy(file: new File("${module}.pom"), toFile: new File("pom.xml") ) {
+    filterset() {
+      filter(token: "findbugs.version", value: "${findbugsVersion}")
+    }
+  }
+
+  cmd = cmdPrefix + """mvn install:install-file -DpomFile=pom.xml -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=com.google.code.findbugs -DartifactId=${module} -Dversion=${findbugsVersion} -Dpackaging=jar"""
+  proc = cmd.execute()
+  println proc.text
 }
+
+antBuilder.delete(file: "pom.xml")
+
+

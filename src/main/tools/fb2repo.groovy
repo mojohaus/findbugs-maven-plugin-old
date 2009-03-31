@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
 def findbugsHome = System.getenv("FINDBUGS_HOME")
+def antBuilder = new AntBuilder()
 
 def cli = new CliBuilder(usage:'fb2repo -f findbugs.home -version version -u repositoryURL')
 cli.h(longOpt: 'help', 'usage information')
@@ -28,8 +29,15 @@ if (System.getProperty("os.name").toLowerCase().contains("windows")) cmdPrefix =
 def modules = ["findbugs", "annotations", "findbugs-ant", "bcel", "jsr305", "jFormatString" ]
 
 modules.each(){ module ->
-    cmd = cmdPrefix + """mvn deploy:deploy-file -DpomFile=${module}.pom -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=com.google.code.findbugs -DartifactId=${module} -Dversion=${findbugsVersion} -Durl=${repoUrl} -Dpackaging=jar"""
+    antBuilder.copy(file: new File("${module}.pom"), toFile: new File("pom.xml") ) {
+        filterset() {
+            filter(token: "findbugs.version", value: "${findbugsVersion}")
+        }
+    }
+
+    cmd = cmdPrefix + """mvn deploy:deploy-file -DpomFile=pom.xml -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=com.google.code.findbugs -DartifactId=${module} -Dversion=${findbugsVersion} -Durl=${repoUrl} -Dpackaging=jar"""
     proc = cmd.execute()
     println proc.text
 }
 
+antBuilder.delete(file: "pom.xml")
