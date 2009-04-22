@@ -42,6 +42,7 @@ Usage
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
       </plugin>
     </plugins>
   </reporting>
@@ -73,6 +74,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <xmlOutput>true</xmlOutput>
           <!-- Optional derectory to put findbugs xdoc xml report -->
@@ -109,6 +111,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <!-- Optional directory to put findbugs xml report -->
@@ -146,6 +149,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
           <includeFilterFile>findbugs-include.xml</includeFilterFile>
@@ -183,6 +187,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
           <includeFilterFile>findbugs-include.xml</includeFilterFile>
@@ -217,6 +222,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <visitors>FindDeadLocalStores,UnreadFields</visitors>
         </configuration>
@@ -248,6 +254,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <omitVisitors>FindDeadLocalStores,UnreadFields</omitVisitors>
         </configuration>
@@ -279,6 +286,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
          <onlyAnalyze>org.codehaus.mojo.findbugs.*</onlyAnalyze>
         </configuration>
@@ -311,6 +319,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <pluginList>myDetectors.jar, yourDetedtors.jar</pluginList>
         </configuration>
@@ -343,6 +352,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.0.1</version>
         <configuration>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <!-- Optional directory to put findbugs xml report -->
