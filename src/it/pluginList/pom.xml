@@ -33,23 +33,12 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>testing</version>
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
           <pluginList>/opt/findbugs/fb-contrib-3.4.2.jar</pluginList>
-          <!--
-              <findbugsXmlOutput>true</findbugsXmlOutput>
-              <xmlOutput>true</xmlOutput>
-              <onlyAnalyze>BC_Unconfirmed_Cast</onlyAnalyze>
-              <pluginList>/Applications/Findbugs/fb-contrib-3.4.2.jar</pluginList>
-              <excludeFilterFile>~/SourceCode/findbugs/findbugsTestCases/lib-filter.xml</excludeFilterFile>
-              <excludeFilterFile>whizbang/lib-filter.xml</excludeFilterFile>
-              <includeFilterFile>~/SourceCode/findbugs/findbugsTestCases/lib-filter.xml</includeFilterFile>
-              <includeFilterFile>whizbang/lib-filter.xml</includeFilterFile>
-            -->
         </configuration>
       </plugin>
     </plugins>
