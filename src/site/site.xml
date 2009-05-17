@@ -1,4 +1,4 @@
-<project>
+<project name="Maven FindBugs Plugin">
   <body>
     <links>
       <item name="Findbugs" href="http://findbugs.sourceforge.net/"/>

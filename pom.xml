@@ -346,4 +346,11 @@
       </build>
     </profile>
   </profiles>
+  <distributionManagement>
+    <site>
+      <id>codehaus.org</id>
+      <name>Mojo Website</name>
+      <url>dav:https://dav.codehaus.org/mojo/findbugs-maven-plugin/${project.version}</url>
+    </site>
+  </distributionManagement>
 </project>
