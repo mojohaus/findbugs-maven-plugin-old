@@ -38,6 +38,6 @@ modules.each(){ module ->
     cmd = cmdPrefix + """mvn deploy:deploy-file -DpomFile=pom.xml -Dfile=${findbugsHome}/lib/${module}.jar -DgroupId=com.google.code.findbugs -DartifactId=${module} -Dversion=${findbugsVersion} -Durl=${repoUrl} -Dpackaging=jar"""
     proc = cmd.execute()
     println proc.text
+    antBuilder.delete(file: "pom.xml")
 }
 
-antBuilder.delete(file: "pom.xml")
