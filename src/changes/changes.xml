@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.1-SNAPSHOT" date="in SVN" description="Updates for Findbugs 2.1-SNAPSHOT">
+      <action dev="gl" type="update">
+        Update shitty plugin to 1.0-alpha-3
+      </action>
     </release>
     <release version="2.0.1" date="2009-04-21" description="Updates for Findbugs 2.0.1">
       <action dev="gl" type="update">
