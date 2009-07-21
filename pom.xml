@@ -1,4 +1,4 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -23,15 +23,12 @@
   <prerequisites>
     <maven>2.0.7</maven>
   </prerequisites>
-  <description>
-    This Plug-In generates reports based on the FindBugs Library
-  </description>
+  <description>This Plug-In generates reports based on the FindBugs Library</description>
   <developers>
     <developer>
       <id>cr</id>
       <name>Cyrill Ruettimann</name>
       <email>mypublicaddress@mac.com</email>
-      <organization />
       <roles>
         <role>Documentation</role>
         <role>Java Developer</role>
@@ -43,7 +40,6 @@
       <name>Garvin LeClaire</name>
       <email>gleclaire@codehaus.org</email>
       <url>http://gdleclaire.blogspot.com</url>
-      <organization />
       <roles>
         <role>Documentation</role>
         <role>Java Developer</role>
@@ -106,13 +102,18 @@
       <version>2.0.5</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.doxia</groupId>
-      <artifactId>doxia-core</artifactId>
-      <version>${doxia.version}</version>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-doxia-tools</artifactId>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>findbugs</artifactId>
+      <version>1.3.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>findbugs-ant</artifactId>
       <version>1.3.8</version>
     </dependency>
     <dependency>
@@ -214,10 +215,26 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
     </plugins>
   </build>
   <reporting>
     <plugins>
+      <plugin>
+        <groupId>org.codenarc</groupId>
+        <artifactId>codenarc-maven-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <configuration>
+          <debug>true</debug>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -338,24 +355,23 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <echo message="Hi there"/>
-                    <property name="compile_classpath" refid="maven.compile.classpath"/>
-                    <property name="runtime_classpath" refid="maven.runtime.classpath"/>
-                    <property name="test_classpath" refid="maven.test.classpath"/>
-                    <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+                    <property name="compile_classpath" refid="maven.compile.classpath" />
+                    <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                    <property name="test_classpath" refid="maven.test.classpath" />
+                    <property name="plugin_classpath" refid="maven.plugin.classpath" />
 
                     <path id="tests.path">
-                      <path refid="maven.plugin.classpath"/>
-                      <pathelement location="t${basedir}/log4j.properties"/>
+                      <path refid="maven.plugin.classpath" />
+                      <pathelement location="t${basedir}/log4j.properties" />
                     </path>
 
-                    <taskdef name="codenarc" classname="org.codenarc.ant.CodeNarcTask" classpathref="tests.path"/>
-                    <echo message="Hi there5"/>
+                    <taskdef name="codenarc" classname="org.codenarc.ant.CodeNarcTask" classpathref="tests.path" />
+                    <echo message="Hi there5" />
 
                     <codenarc ruleSetFiles="rulesets/basic.xml,rulesets/exceptions.xml,rulesets/imports.xml">
-                      <report type="html" toFile="${project.build.directory}/site/CodeNarcAntReport.html"/>
+                      <report type="html" toFile="${project.build.directory}/site/CodeNarcAntReport.html" />
                       <fileset dir="${project.build.sourceDirectory}">
-                        <include name="**/*.groovy"/>
+                        <include name="**/*.groovy" />
                       </fileset>
                     </codenarc>
                   </tasks>

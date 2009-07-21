@@ -160,7 +160,6 @@ class FindBugsGui extends GroovyMojo
         arg(value: findbugsXml)
       }
 
-      sysproperty(key: "findbugs.jaws", value: "true")
 
       classpath()
       {

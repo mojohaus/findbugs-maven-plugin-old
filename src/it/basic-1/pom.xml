@@ -41,6 +41,7 @@
           <threshold>Low</threshold>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
+          <debug>true</debug>
         </configuration>
       </plugin>
     </plugins>
