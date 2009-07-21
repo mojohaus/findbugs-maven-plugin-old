@@ -208,13 +208,13 @@ class FindbugsReportGenerator implements FindBugsInfo
      * The threshold of bugs severity.
      *
      */
-    ThresholdParameter threshold
+    String threshold
 
     /**
      * The used effort for searching bugs.
      *
      */
-    EffortParameter effort
+    String effort
 
     /**
      * The name of the current class which is analysed by FindBugs.

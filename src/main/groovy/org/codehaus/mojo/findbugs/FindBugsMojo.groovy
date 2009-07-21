@@ -698,6 +698,10 @@ class FindBugsMojo extends AbstractMavenReport
 
 
         generator.setLog( log )
+        
+        generator.setThreshold( threshold )
+
+        generator.setEffort( effort )
 
         generator.setFindbugsResults( new XmlSlurper().parse( outputFile ) )
 
@@ -705,6 +709,34 @@ class FindBugsMojo extends AbstractMavenReport
         generator.setOutputDirectory( new File( getOutputDirectory() ))
 
         generator.generateReport( )
+
+
+
+
+        if ( xmlOutput )
+        {
+            log.info( "  Using the xdoc format" )
+
+            if ( !xmlOutputDirectory.exists() )
+            {
+                if ( !xmlOutputDirectory.mkdirs() )
+                {
+                    fail( "Cannot create xml output directory" )
+                }
+            }
+
+            XDocsReporter xDocsReporter = new XDocsReporter( bundle, project.getBasedir(), siteTool )
+            xDocsReporter.setOutputWriter( new OutputStreamWriter( new FileOutputStream( new File( "${xmlOutputDirectory}/findbugs.xml" ) ), "UTF-8" ) )
+            xDocsReporter.setBundle( bundle )
+            xDocsReporter.setLog( log )
+            xDocsReporter.setThreshold( threshold )
+            xDocsReporter.setEffort( effort )
+            xDocsReporter.setFindbugsResults( new XmlSlurper().parse( outputFile ) )
+            xDocsReporter.setCompileSourceRoots( this.compileSourceRoots )
+
+            xDocsReporter.generateReport( )
+        }
+
 
     }
 
@@ -792,39 +824,6 @@ class FindBugsMojo extends AbstractMavenReport
     protected void initialiseFindBugs( Locale locale )
     {
         /*
-        if ( findbugsXmlOutput )
-        {
-        XMLBugReporter xmlBugReporter = new XMLBugReporter( findBugsProject )
-        xmlBugReporter.setAddMessages( findbugsXmlWithMessages )
-        textUiBugReporter = xmlBugReporter
-        textUiBugReporter.setOutputStream( new PrintStream( new FileOutputStream( "${findbugsXmlOutputDirectory}/findbugsXml.xml" ), true, "${xmlEncoding}"  ) )
-        textUiBugReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )
-
-        bugReporter = textUiBugReporter
-        findBugs.setBugReporter( bugReporter )
-        }
-
-        if ( xmlOutput )
-        {
-        log.info( "  Using the xdoc format" )
-
-        if ( !xmlOutputDirectory.exists() )
-        {
-        if ( !xmlOutputDirectory.mkdirs() )
-        {
-        fail( "Cannot create xml output directory" )
-        }
-        }
-
-        XDocsReporter xDocsReporter = new XDocsReporter( this.getProject() )
-        xDocsReporter.setOutputWriter( new OutputStreamWriter( new FileOutputStream( new File( "${xmlOutputDirectory}/findbugs.xml" ) ), "UTF-8" ) )
-        xDocsReporter.setResourceBundle( bundle )
-        xDocsReporter.setLog( log )
-        xDocsReporter.setEffort( getEffortParameter() )
-        xDocsReporter.threshold = getThresholdParameter()
-        xDocsReporter.setPriorityThreshold( this.getThresholdParameter().getValue() )   //TODO: combine the two in XDocsReporter
-        findBugs.setBugReporter( xDocsReporter )
-        }
          */
 
         addFiltersToFindBugs( findBugs )

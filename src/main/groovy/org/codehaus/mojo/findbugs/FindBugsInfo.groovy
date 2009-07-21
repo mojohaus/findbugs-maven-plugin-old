@@ -36,6 +36,6 @@ interface FindBugsInfo
  
     def findbugsEfforts = [Max: "max", Min:"min", Default:"default"]
 
-    def findbugsThresholds = [High: "high", Exp: "experimental",  Low: "low", Medium:"medium"]
+    def findbugsThresholds = [High: "high", Exp: "experimental",  Low: "low", Medium: "medium", Default: "default"]
 
  }
