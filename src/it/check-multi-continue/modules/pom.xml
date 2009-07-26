@@ -71,7 +71,6 @@
           <threshold>Low</threshold>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
-          <includeFilterFile>whizbang/lib-filter.xml</includeFilterFile>
           <failOnError>false</failOnError>
         </configuration>
       </plugin>

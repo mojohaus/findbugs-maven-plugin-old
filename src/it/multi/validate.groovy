@@ -30,7 +30,11 @@ assert new File(basedir, "modules/${module}/target/findbugsXml.xml").exists()
 
 
 
-def path = new XmlSlurper().parse(new File(basedir, "modules/${module}/target/site/findbugs.html"))
+def xmlSlurper = new XmlSlurper()
+xmlSlurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+xmlSlurper.setFeature("http://xml.org/sax/features/namespaces", false)
+
+def path = xmlSlurper.parse( new File(basedir, "modules/${module}/target/site/findbugs.html" ) )
 
 println '***************************'
 println "Checking HTML file"
@@ -92,8 +96,11 @@ assert new File(basedir, "modules/${module}/target/findbugs.xml").exists()
 assert new File(basedir, "modules/${module}/target/findbugsXml.xml").exists()
 
 
+xmlSlurper = new XmlSlurper()
+xmlSlurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+xmlSlurper.setFeature("http://xml.org/sax/features/namespaces", false)
 
-path = new XmlSlurper().parse(new File(basedir, "modules/${module}/target/site/findbugs.html"))
+path = xmlSlurper.parse( new File(basedir, "modules/${module}/target/site/findbugs.html" ) )
 
 println '***************************'
 println "Checking HTML file"

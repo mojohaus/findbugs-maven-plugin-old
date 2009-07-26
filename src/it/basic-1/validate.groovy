@@ -15,6 +15,7 @@
  */
 
 
+
 assert new File(basedir, 'target/site/index.html').exists()
 
 assert new File(basedir, 'target/site/findbugs.html').exists()
@@ -24,7 +25,11 @@ assert new File(basedir, 'target/findbugs.xml').exists()
 assert new File(basedir, 'target/findbugsXml.xml').exists()
 
 
-def path = new XmlSlurper().parse(new File(basedir, 'target/site/findbugs.html'))
+def xmlSlurper = new XmlSlurper()
+xmlSlurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+xmlSlurper.setFeature("http://xml.org/sax/features/namespaces", false)
+
+def path = xmlSlurper.parse( new File(basedir, 'target/site/findbugs.html') )
 
 println '***************************'
 println "Checking HTML file"

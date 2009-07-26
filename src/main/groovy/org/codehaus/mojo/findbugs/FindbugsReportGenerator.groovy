@@ -503,6 +503,8 @@ class FindbugsReportGenerator implements FindBugsInfo
         }
 
         sink.table_()
+
+                sink.section2_()
         log.info("")
 
     }
