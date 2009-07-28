@@ -657,7 +657,17 @@ class FindBugsMojo extends AbstractMavenReport
             }
 
 
-            classpath()
+            if ( includeFilterFile ) {
+                arg(value: "-include")
+                arg(value: getResourceFile( includeFilterFile ) )
+            }
+
+            if ( excludeFilterFile ) {
+                arg(value: "-exclude")
+                arg(value: getResourceFile( excludeFilterFile ) )
+            }
+
+           classpath()
             {
 
                 auxClasspathElements.each() { auxClasspathElement ->
@@ -914,6 +924,7 @@ class FindBugsMojo extends AbstractMavenReport
         return corePluginName
 
     }
+
     /**
      * Get the File reference for the Findbugs core plugin.
      *
@@ -928,5 +939,36 @@ class FindBugsMojo extends AbstractMavenReport
             artifact.getArtifactId() == PLUGIN_NAME
         }
         return corePluginPath.file
+    }
+
+
+    /**
+     * Get the File reference for a File passed in as a string reference.
+     *
+     * @param resource
+     *            The file for the resource manager to locate
+     * @return The File of the resource
+     *
+     */
+    protected File getResourceFile( String resource )
+    {
+
+        assert resource
+
+        String location = resource
+
+        if ( location.indexOf( '/' ) != -1 ) {
+            location = location.substring( location.lastIndexOf( '/' ) + 1 )
+        }
+
+        log.debug( "location of include file is " + location )
+
+
+        File resourceFile = resourceManager.getResourceAsFile( resource, location )
+
+        println "location of configFile file is " + resourceFile
+
+        return resourceFile
+
     }
 }
