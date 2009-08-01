@@ -35,11 +35,6 @@ println "BugInstance size is ${findbugsErrors}"
 
 assert findbugsErrors > 0
 
-def findbugsXmlErrors = allNodes.findAll {it.name() == 'BugInstance' }.size()
-println "BugInstance with includes size is ${findbugsXmlErrors}"
-
-assert findbugsErrors == findbugsXmlErrors
-
 //  check module 2
 
 module = "module-2"
@@ -57,8 +52,3 @@ findbugsErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
 println "BugInstance size is ${findbugsErrors}"
 
 assert findbugsErrors > 0
-
-findbugsXmlErrors = allNodes.findAll {it.name() == 'BugInstance' }.size()
-println "BugInstance with includes size is ${findbugsXmlErrors}"
-
-assert findbugsErrors == findbugsXmlErrors
