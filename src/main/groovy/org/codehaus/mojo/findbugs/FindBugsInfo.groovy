@@ -31,11 +31,16 @@ package org.codehaus.mojo.findbugs
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id: FindBugsMojo.groovy 9277 2009-03-25 02:59:25Z gleclaire $
  */
+
+
+
 interface FindBugsInfo
 {
  
+
+
     def findbugsEfforts = [Max: "max", Min:"min", Default:"default"]
 
     def findbugsThresholds = [High: "high", Exp: "experimental",  Low: "low", Medium: "medium", Default: "default"]
 
- }
+}

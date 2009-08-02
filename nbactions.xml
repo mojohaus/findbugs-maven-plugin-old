@@ -2,15 +2,36 @@
 <actions>
         <action>
             <actionName>test</actionName>
-            <packagings>
-                <packaging>*</packaging>
-            </packagings>
+            <properties>
+                <shit>true</shit>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-SingleTest</actionName>
+            <displayName>SingleTest</displayName>
             <goals>
-                <goal>install</goal>
+                <goal>shitty:test</goal>
             </goals>
             <properties>
                 <shit>true</shit>
-                
+                <tests>check*</tests>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-Test Clean</actionName>
+            <displayName>Test Clean</displayName>
+            <goals>
+                <goal>shitty:clean</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Complete</actionName>
+            <displayName>Complete</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+                <goal>site</goal>
+            </goals>
+        </action>
+        
     </actions>

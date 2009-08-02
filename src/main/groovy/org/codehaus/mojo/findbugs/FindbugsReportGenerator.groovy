@@ -42,7 +42,7 @@ import groovy.util.slurpersupport.GPathResult
  * FindBugs if a bug is found.
  *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id: Reporter.groovy 8594 2009-01-10 05:26:53Z gleclaire $
+ * @version $Id: FindbugsReportGenerator.groovy Z gleclaire $
  */
 class FindbugsReportGenerator implements FindBugsInfo
 {
@@ -403,9 +403,9 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         // information about FindBugs
         sink.paragraph()
-        sink.text(bundle.getString(Reporter.LINKTITLE_KEY) + " ")
-        sink.link(bundle.getString(Reporter.LINK_KEY))
-        sink.text(bundle.getString(Reporter.NAME_KEY))
+        sink.text(bundle.getString(LINKTITLE_KEY) + " ")
+        sink.link(bundle.getString(LINK_KEY))
+        sink.text(bundle.getString(NAME_KEY))
         sink.link_()
         sink.paragraph_()
 
@@ -417,14 +417,14 @@ class FindbugsReportGenerator implements FindBugsInfo
         sink.paragraph_()
 
         sink.paragraph()
-        sink.text(bundle.getString(Reporter.THRESHOLD_KEY) + " ")
+        sink.text(bundle.getString(THRESHOLD_KEY) + " ")
         sink.italic()
         sink.text( findbugsThresholds.get( threshold ) )
         sink.italic_()
         sink.paragraph_()
 
         sink.paragraph()
-        sink.text(bundle.getString(Reporter.EFFORT_KEY) + " ")
+        sink.text(bundle.getString(EFFORT_KEY) + " ")
         sink.italic()
         sink.text( findbugsEfforts.get( effort ) )
         sink.italic_()
@@ -474,7 +474,7 @@ class FindbugsReportGenerator implements FindBugsInfo
 
                 // description link
                 sink.tableCell()
-                sink.link(bundle.getString(Reporter.DETAILSLINK_KEY) + "#" + type)
+                sink.link(bundle.getString(DETAILSLINK_KEY) + "#" + type)
                 sink.text(type)
                 sink.link_()
                 sink.tableCell_()
@@ -538,7 +538,7 @@ class FindbugsReportGenerator implements FindBugsInfo
                 {
                     prefix = ".";
                 }
-                prefix = prefix + Reporter.URL_SEPARATOR + xrefLocation.getName() + Reporter.URL_SEPARATOR
+                prefix = prefix + URL_SEPARATOR + xrefLocation.getName() + URL_SEPARATOR
                 return
             }
         }
@@ -554,7 +554,7 @@ class FindbugsReportGenerator implements FindBugsInfo
                     {
                         prefix = ".";
                     }
-                    prefix = prefix + Reporter.URL_SEPARATOR + xrefTestLocation.getName() + Reporter.URL_SEPARATOR
+                    prefix = prefix + URL_SEPARATOR + xrefTestLocation.getName() + URL_SEPARATOR
                     return
                 }
             }
@@ -581,7 +581,7 @@ class FindbugsReportGenerator implements FindBugsInfo
      */
     protected String getReportTitle()
     {
-        return bundle.getString(Reporter.REPORT_TITLE_KEY)
+        return bundle.getString(REPORT_TITLE_KEY)
     }
 
     /**
@@ -589,11 +589,11 @@ class FindbugsReportGenerator implements FindBugsInfo
      */
     protected void openClassReportSection( String bugClass )
     {
-        String columnBugText = bundle.getString(Reporter.COLUMN_BUG_KEY)
-        String columnBugCategory = bundle.getString(Reporter.COLUMN_CATEGORY_KEY)
-        String columnDescriptionLink = bundle.getString(Reporter.COLUMN_DETAILS_KEY)
-        String columnLineText = bundle.getString(Reporter.COLUMN_LINE_KEY)
-        String priorityText = bundle.getString(Reporter.COLUMN_PRIORITY_KEY)
+        String columnBugText = bundle.getString(COLUMN_BUG_KEY)
+        String columnBugCategory = bundle.getString(COLUMN_CATEGORY_KEY)
+        String columnDescriptionLink = bundle.getString(COLUMN_DETAILS_KEY)
+        String columnLineText = bundle.getString(COLUMN_LINE_KEY)
+        String priorityText = bundle.getString(COLUMN_PRIORITY_KEY)
 
         log.info("openClassReportSection bugClass is ${bugClass}")
 
@@ -659,7 +659,7 @@ class FindbugsReportGenerator implements FindBugsInfo
             {
                 if ( startLine == -1 )
                 {
-                    value = bundle.getString(Reporter.NOLINE_KEY)
+                    value = bundle.getString(NOLINE_KEY)
                 } else
                 {
                     value = startLine.toString()
@@ -670,7 +670,7 @@ class FindbugsReportGenerator implements FindBugsInfo
             }
         } else
         {
-            value = bundle.getString(Reporter.NOLINE_KEY)
+            value = bundle.getString(NOLINE_KEY)
         }
 
         return value
@@ -685,7 +685,7 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         // the summary section
         sink.sectionTitle1()
-        sink.text(bundle.getString(Reporter.SUMMARY_KEY))
+        sink.text(bundle.getString(SUMMARY_KEY))
         sink.sectionTitle1_()
 
         sink.table()
@@ -693,22 +693,22 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         // classes
         sink.tableHeaderCell()
-        sink.text(bundle.getString(Reporter.COLUMN_CLASSES_KEY))
+        sink.text(bundle.getString(COLUMN_CLASSES_KEY))
         sink.tableHeaderCell_()
 
         // bugs
         sink.tableHeaderCell()
-        sink.text(bundle.getString(Reporter.COLUMN_BUGS_KEY))
+        sink.text(bundle.getString(COLUMN_BUGS_KEY))
         sink.tableHeaderCell_()
 
         // Errors
         sink.tableHeaderCell()
-        sink.text(bundle.getString(Reporter.COLUMN_ERRORS_KEY))
+        sink.text(bundle.getString(COLUMN_ERRORS_KEY))
         sink.tableHeaderCell_()
 
         // Missing Classes
         sink.tableHeaderCell()
-        sink.text(bundle.getString(Reporter.COLUMN_MISSINGCLASSES_KEY))
+        sink.text(bundle.getString(COLUMN_MISSINGCLASSES_KEY))
         sink.tableHeaderCell_()
 
         sink.tableRow_()
@@ -750,7 +750,7 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         // the Files section
         sink.sectionTitle1()
-        sink.text(bundle.getString(Reporter.FILES_KEY))
+        sink.text(bundle.getString(FILES_KEY))
         sink.sectionTitle1_()
 
         /**
@@ -762,12 +762,12 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         // files
         sink.tableHeaderCell()
-        sink.text(bundle.getString(Reporter.COLUMN_CLASS_KEY))
+        sink.text(bundle.getString(COLUMN_CLASS_KEY))
         sink.tableHeaderCell_()
 
         // bugs
         sink.tableHeaderCell()
-        sink.text(bundle.getString(Reporter.COLUMN_BUGS_KEY))
+        sink.text(bundle.getString(COLUMN_BUGS_KEY))
         sink.tableHeaderCell_()
 
         sink.tableRow_()
