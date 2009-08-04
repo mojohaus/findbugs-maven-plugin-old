@@ -1,4 +1,3 @@
-                                                                                           
 package org.codehaus.mojo.findbugs
 
 /*
@@ -26,21 +25,19 @@ package org.codehaus.mojo.findbugs
  * The HTML report is generated for site commands only.
  * To see more documentation about FindBugs' options, please see the
  * <a href="http://findbugs.sourceforge.net/manual/index.html">FindBugs Manual.</a>
- * 
- * 
+ *
+ *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id: FindBugsMojo.groovy 9277 2009-03-25 02:59:25Z gleclaire $
  */
 
 
 
-interface FindBugsInfo
-{
- 
+interface FindBugsInfo {
 
 
-    def findbugsEfforts = [Max: "max", Min:"min", Default:"default"]
+    def findbugsEfforts = [Max: "max", Min: "min", Default: "default"]
 
-    def findbugsThresholds = [High: "high", Exp: "experimental",  Low: "low", Medium: "medium", Default: "default"]
+    def findbugsThresholds = [High: "high", Exp: "experimental", Low: "low", Medium: "medium", Default: "default"]
 
 }

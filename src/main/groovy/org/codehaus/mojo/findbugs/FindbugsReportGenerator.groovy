@@ -19,23 +19,13 @@ package org.codehaus.mojo.findbugs
  * under the License.
  */
 
+import edu.umd.cs.findbugs.SortedBugCollection
+import edu.umd.cs.findbugs.SourceLineAnnotation
+import groovy.util.slurpersupport.GPathResult
 import org.apache.maven.doxia.sink.Sink
 import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.plugin.logging.Log
-
 import org.codehaus.plexus.util.PathTool
-
-import edu.umd.cs.findbugs.AnalysisError
-import edu.umd.cs.findbugs.BugInstance
-import edu.umd.cs.findbugs.BugPattern
-import edu.umd.cs.findbugs.BugReporter
-import edu.umd.cs.findbugs.SortedBugCollection
-import edu.umd.cs.findbugs.SourceLineAnnotation
-import edu.umd.cs.findbugs.TextUIBugReporter
-import edu.umd.cs.findbugs.classfile.ClassDescriptor
-
-import groovy.util.slurpersupport.GPathResult
-
 
 /**
  * The reporter controls the generation of the FindBugs report. It contains call back methods which gets called by
@@ -44,8 +34,7 @@ import groovy.util.slurpersupport.GPathResult
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id: FindbugsReportGenerator.groovy Z gleclaire $
  */
-class FindbugsReportGenerator implements FindBugsInfo
-{
+class FindbugsReportGenerator implements FindBugsInfo {
 
     /**
      * The key to get the value if the line number is not available.
@@ -76,7 +65,7 @@ class FindbugsReportGenerator implements FindBugsInfo
      *
      */
     static final String COLUMN_CATEGORY_KEY = "report.findbugs.column.category"
-    
+
     /**
      * The key to get the column title for the priority.
      *
@@ -337,7 +326,7 @@ class FindbugsReportGenerator implements FindBugsInfo
      * @param effort
      *            The used effort.
      */
-    FindbugsReportGenerator(Sink sink, ResourceBundle bundle, File basedir, SiteTool siteTool ) {
+    FindbugsReportGenerator(Sink sink, ResourceBundle bundle, File basedir, SiteTool siteTool) {
 
         assert sink
         assert bundle
@@ -365,17 +354,15 @@ class FindbugsReportGenerator implements FindBugsInfo
     /**
      * @see edu.umd.cs.findbugs.BugReporter#finish()
      */
-    void printBody()
-    {
+    void printBody() {
         log.debug("Finished searching for bugs!")
 
 
         bugClasses.each() {bugClass ->
-            log.info("finish bugClass is ${bugClass}")
+            log.debug("finish bugClass is ${bugClass}")
 
-            printBug( bugClass )
+            printBug(bugClass)
         }
-
 
         // close the report, write it
         sink.body_()
@@ -385,8 +372,7 @@ class FindbugsReportGenerator implements FindBugsInfo
     /**
      * Prints the top header sections of the report.
      */
-    private void doHeading()
-    {
+    private void doHeading() {
         sink.head()
         sink.title()
         sink.text(getReportTitle())
@@ -419,14 +405,14 @@ class FindbugsReportGenerator implements FindBugsInfo
         sink.paragraph()
         sink.text(bundle.getString(THRESHOLD_KEY) + " ")
         sink.italic()
-        sink.text( findbugsThresholds.get( threshold ) )
+        sink.text(findbugsThresholds.get(threshold))
         sink.italic_()
         sink.paragraph_()
 
         sink.paragraph()
         sink.text(bundle.getString(EFFORT_KEY) + " ")
         sink.italic()
-        sink.text( findbugsEfforts.get( effort ) )
+        sink.text(findbugsEfforts.get(effort))
         sink.italic_()
         sink.paragraph_()
         sink.section1_()
@@ -439,26 +425,25 @@ class FindbugsReportGenerator implements FindBugsInfo
      * @param bugInstance
      *            the bug to print
      */
-    protected void printBug(String bugClass)
-    {
+    protected void printBug(String bugClass) {
 
 
-        log.info("printBug bugClass is ${bugClass}")
+        log.debug("printBug bugClass is ${bugClass}")
 
         openClassReportSection(bugClass)
 
 
 
-        findbugsResults.BugInstance.each() { bugInstance ->
+        findbugsResults.BugInstance.each() {bugInstance ->
 
-            if  ( bugInstance.Class.@classname.text() ==  bugClass )  {
+            if ( bugInstance.Class.@classname.text() == bugClass ) {
 
                 def type = bugInstance.@type.text()
                 def category = bugInstance.@category.text()
                 def message = bugInstance.LongMessage.text()
                 def priority = bugInstance.@priority.text()
                 def line = bugInstance.SourceLine
-                log.info( message )
+                log.debug(message)
 
                 sink.tableRow()
 
@@ -482,30 +467,27 @@ class FindbugsReportGenerator implements FindBugsInfo
                 // line
                 sink.tableCell()
 
-                if ( isJXRReportEnabled )
-                {
-                    log.info( "isJXRReportEnabled is enabled" )
-                    sink.rawText(assembleJxrHyperlink( line ))
-                } else
-                {
-                    sink.text( line.@start.text() )
+                if ( isJXRReportEnabled ) {
+                    log.debug("isJXRReportEnabled is enabled")
+                    sink.rawText(assembleJxrHyperlink(line))
+                } else {
+                    sink.text(line.@start.text())
                 }
 
                 sink.tableCell_()
-        
+
                 // priority
                 sink.tableCell()
                 sink.text(priority)
                 sink.tableCell_()
-        
+
                 sink.tableRow_()
             }
         }
 
         sink.table_()
 
-                sink.section2_()
-        log.info("")
+        sink.section2_()
 
     }
 
@@ -519,23 +501,20 @@ class FindbugsReportGenerator implements FindBugsInfo
      * @return The hyperlink which points to the code.
      *
      */
-    protected String assembleJxrHyperlink(GPathResult line )
-    {
+    protected String assembleJxrHyperlink(GPathResult line) {
         String hyperlink
         String prefix
 
 
-        log.info( "Inside assembleJxrHyperlink" )
-        log.info( "outputDirectory is " + outputDirectory.getAbsolutePath() )
-        log.info( "xrefLocation is " + xrefLocation.getAbsolutePath() )
-        log.info( "xrefTestLocation is " + xrefTestLocation.getAbsolutePath() )
+        log.debug("Inside assembleJxrHyperlink")
+        log.debug("outputDirectory is " + outputDirectory.getAbsolutePath())
+        log.debug("xrefLocation is " + xrefLocation.getAbsolutePath())
+        log.debug("xrefTestLocation is " + xrefTestLocation.getAbsolutePath())
 
-        compileSourceRoots.each { compileSourceRoot ->
-            if (new File(compileSourceRoot + File.separator + line.@sourcepath.text()).exists() )
-            {
-                prefix = PathTool.getRelativePath( outputDirectory.getAbsolutePath(), xrefLocation.getAbsolutePath() );
-                if ( !prefix )
-                {
+        compileSourceRoots.each {compileSourceRoot ->
+            if ( new File(compileSourceRoot + File.separator + line.@sourcepath.text()).exists() ) {
+                prefix = PathTool.getRelativePath(outputDirectory.getAbsolutePath(), xrefLocation.getAbsolutePath());
+                if ( !prefix ) {
                     prefix = ".";
                 }
                 prefix = prefix + URL_SEPARATOR + xrefLocation.getName() + URL_SEPARATOR
@@ -544,14 +523,11 @@ class FindbugsReportGenerator implements FindBugsInfo
         }
 
 
-        if ( includeTests && !prefix )
-        {
-            testSourceRoots.each { testSourceRoot ->
-                if (new File(testSourceRoot + File.separator + line.@sourcepath.text()).exists() )
-                {
-                    prefix = PathTool.getRelativePath( outputDirectory.getAbsolutePath(), xrefTestLocation.getAbsolutePath() );
-                    if ( !prefix )
-                    {
+        if ( includeTests && !prefix ) {
+            testSourceRoots.each {testSourceRoot ->
+                if ( new File(testSourceRoot + File.separator + line.@sourcepath.text()).exists() ) {
+                    prefix = PathTool.getRelativePath(outputDirectory.getAbsolutePath(), xrefTestLocation.getAbsolutePath());
+                    if ( !prefix ) {
                         prefix = ".";
                     }
                     prefix = prefix + URL_SEPARATOR + xrefTestLocation.getName() + URL_SEPARATOR
@@ -562,11 +538,9 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         def path = prefix + line.@classname.text().replaceAll("[.]", "/").replaceAll("[\$].*", "")
 
-        if ( !line )
-        {
+        if ( !line ) {
             hyperlink = "<a href=\"" + path + ".html\">" + line.@start.text() + "</a>"
-        } else
-        {
+        } else {
             hyperlink = "<a href=\"" + path + ".html#" + line.@start.text() + "\">" + line.@start.text() + "</a>"
         }
 
@@ -579,23 +553,21 @@ class FindbugsReportGenerator implements FindBugsInfo
      * @return The report title.
      *
      */
-    protected String getReportTitle()
-    {
+    protected String getReportTitle() {
         return bundle.getString(REPORT_TITLE_KEY)
     }
 
     /**
      * Initialised a bug report section in the report for a particular class.
      */
-    protected void openClassReportSection( String bugClass )
-    {
+    protected void openClassReportSection(String bugClass) {
         String columnBugText = bundle.getString(COLUMN_BUG_KEY)
         String columnBugCategory = bundle.getString(COLUMN_CATEGORY_KEY)
         String columnDescriptionLink = bundle.getString(COLUMN_DETAILS_KEY)
         String columnLineText = bundle.getString(COLUMN_LINE_KEY)
         String priorityText = bundle.getString(COLUMN_PRIORITY_KEY)
 
-        log.info("openClassReportSection bugClass is ${bugClass}")
+        log.debug("openClassReportSection bugClass is ${bugClass}")
 
         log.debug("Opening Class Report Section")
 
@@ -633,7 +605,7 @@ class FindbugsReportGenerator implements FindBugsInfo
         sink.tableHeaderCell()
         sink.text(priorityText)
         sink.tableHeaderCell_()
-        
+
         sink.tableRow_()
     }
 
@@ -646,30 +618,23 @@ class FindbugsReportGenerator implements FindBugsInfo
      * @return The line number the bug appears or a statement that there is no source line available.
      *
      */
-    protected String valueForLine(SourceLineAnnotation line)
-    {
+    protected String valueForLine(SourceLineAnnotation line) {
         String value
 
-        if ( line )
-        {
+        if ( line ) {
             int startLine = line.getStartLine()
             int endLine = line.getEndLine()
 
-            if ( startLine == endLine )
-            {
-                if ( startLine == -1 )
-                {
+            if ( startLine == endLine ) {
+                if ( startLine == -1 ) {
                     value = bundle.getString(NOLINE_KEY)
-                } else
-                {
+                } else {
                     value = startLine.toString()
                 }
-            } else
-            {
+            } else {
                 value = startLine.toString() + "-" + endLine.toString()
             }
-        } else
-        {
+        } else {
             value = bundle.getString(NOLINE_KEY)
         }
 
@@ -679,8 +644,7 @@ class FindbugsReportGenerator implements FindBugsInfo
     /**
      * Print the Summary Section.
      */
-    protected void printSummary()
-    {
+    protected void printSummary() {
         sink.section1()
 
         // the summary section
@@ -717,22 +681,22 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         // files
         sink.tableCell()
-        sink.text( findbugsResults.FindBugsSummary.@total_classes.text() )
+        sink.text(findbugsResults.FindBugsSummary.@total_classes.text())
         sink.tableCell_()
 
         // bug
         sink.tableCell()
-        sink.text( findbugsResults.FindBugsSummary.@total_bugs.text() )
+        sink.text(findbugsResults.FindBugsSummary.@total_bugs.text())
         sink.tableCell_()
 
         // Errors
         sink.tableCell()
-        sink.text( findbugsResults.Errors.@errors.text() )
+        sink.text(findbugsResults.Errors.@errors.text())
         sink.tableCell_()
 
         // Missing Classes
         sink.tableCell()
-        sink.text( findbugsResults.Errors.@missingClasses.text() )
+        sink.text(findbugsResults.Errors.@missingClasses.text())
         sink.tableCell_()
 
         sink.tableRow_()
@@ -744,8 +708,7 @@ class FindbugsReportGenerator implements FindBugsInfo
     /**
      * Print the File Summary Section.
      */
-    protected void printFilesSummary()
-    {
+    protected void printFilesSummary() {
         sink.section1()
 
         // the Files section
@@ -772,24 +735,24 @@ class FindbugsReportGenerator implements FindBugsInfo
 
         sink.tableRow_()
 
-        findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() { classStats ->
+        findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
 
             def classStatsValue = classStats.'@class'.text()
             def classStatsBugCount = classStats.'@bugs'.text()
 
-            if (classStatsBugCount.toInteger() > 0 ) {
+            if ( classStatsBugCount.toInteger() > 0 ) {
                 sink.tableRow()
 
                 // class name
                 sink.tableCell()
-                sink.link("#" + classStatsValue )
-                sink.text( classStatsValue )
+                sink.link("#" + classStatsValue)
+                sink.text(classStatsValue)
                 sink.link_()
                 sink.tableCell_()
 
                 // class bug total count
                 sink.tableCell()
-                sink.text( classStatsBugCount )
+                sink.text(classStatsBugCount)
                 sink.tableCell_()
 
                 sink.tableRow_()
@@ -806,8 +769,7 @@ class FindbugsReportGenerator implements FindBugsInfo
         sink.section1_()
     }
 
-    public void generateReport( )
-    {
+    public void generateReport() {
         doHeading()
 
         printSummary()

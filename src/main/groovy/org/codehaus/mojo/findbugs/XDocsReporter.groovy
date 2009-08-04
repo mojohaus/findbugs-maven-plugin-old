@@ -19,14 +19,9 @@ package org.codehaus.mojo.findbugs
  * under the License.
  */
 
-
-import org.apache.maven.plugin.logging.Log
-import org.apache.maven.project.MavenProject
-
 import groovy.util.slurpersupport.GPathResult
-
 import org.apache.maven.doxia.tools.SiteTool
-
+import org.apache.maven.plugin.logging.Log
 
 /**
  * The reporter controls the generation of the FindBugs report. It contains call back methods which gets called by
@@ -35,8 +30,7 @@ import org.apache.maven.doxia.tools.SiteTool
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
-class XDocsReporter implements FindBugsInfo
-{
+class XDocsReporter implements FindBugsInfo {
 
     /**
      * The key to get the value if the line number is not available.
@@ -118,8 +112,7 @@ class XDocsReporter implements FindBugsInfo
      * @param realBugReporter
      *            the BugReporter to Delegate
      */
-    XDocsReporter( bundle, basedir , siteTool )
-    {
+    XDocsReporter(bundle, basedir, siteTool) {
         assert bundle
         assert basedir
         assert siteTool
@@ -140,10 +133,8 @@ class XDocsReporter implements FindBugsInfo
     /**
      * @return the sink
      */
-    FindbugsXdocSink getSink()
-    {
-        if ( !this.sink )
-        {
+    FindbugsXdocSink getSink() {
+        if ( !this.sink ) {
             this.sink = new FindbugsXdocSink(getOutputWriter())
 
             // Initialises the report.
@@ -158,24 +149,23 @@ class XDocsReporter implements FindBugsInfo
      * @param bugInstance
      *            the bug to print
      */
-    protected void printBug( String bugClass )
-    {
+    protected void printBug(String bugClass) {
 
         getSink().classTag(bugClass)
 
-        log.info("printBug bugClass is ${bugClass}")
+        log.debug("printBug bugClass is ${bugClass}")
 
 
-        findbugsResults.BugInstance.each() { bugInstance ->
+        findbugsResults.BugInstance.each() {bugInstance ->
 
-            if  ( bugInstance.Class.@classname.text() ==  bugClass )  {
+            if ( bugInstance.Class.@classname.text() == bugClass ) {
 
                 def type = bugInstance.@type.text()
                 def category = bugInstance.@category.text()
                 def message = bugInstance.LongMessage.text()
-                def priority = evaluateThresholdParameter( bugInstance.@priority.text())
+                def priority = evaluateThresholdParameter(bugInstance.@priority.text())
                 def line = bugInstance.SourceLine.@start.text()
-                log.info( message )
+                log.debug(message)
 
                 getSink().bugInstance(type, priority, category, message, line)
 
@@ -193,29 +183,27 @@ class XDocsReporter implements FindBugsInfo
      * @return The string valueof the Threshold object.
      *
      */
-    protected String evaluateThresholdParameter(String thresholdValue)
-    {
+    protected String evaluateThresholdParameter(String thresholdValue) {
         String thresholdName
 
-        switch ( thresholdValue )
-        {
+        switch ( thresholdValue ) {
             case "1":
-            thresholdName = "High"
-            break
+                thresholdName = "High"
+                break
             case "2":
-            thresholdName = "Normal"
-            break
+                thresholdName = "Normal"
+                break
             case "3":
-            thresholdName = "Low"
-            break
+                thresholdName = "Low"
+                break
             case "4":
-            thresholdName = "Exp"
-            break
+                thresholdName = "Exp"
+                break
             case "5":
-            thresholdName = "Ignore"
-            break
+                thresholdName = "Ignore"
+                break
             default:
-            thresholdName = "Invalid Priority"
+                thresholdName = "Invalid Priority"
         }
 
         return thresholdName
@@ -228,28 +216,26 @@ class XDocsReporter implements FindBugsInfo
      * @return The Findbugs Version used on the report.
      *
      */
-    protected String getFindBugsVersion()
-    {
+    protected String getFindBugsVersion() {
         return edu.umd.cs.findbugs.Version.RELEASE
     }
 
     /**
      * Closes the class report section.
      */
-    protected void printErrors()
-    {
-        log.info("Printing Errors")
+    protected void printErrors() {
+        log.debug("Printing Errors")
         getSink().errorTag()
 
-            findbugsResults.Error.analysisError.each() {analysisError ->
-                getSink().analysisErrorTag(analysisError.message.text())
-            }
+        findbugsResults.Error.analysisError.each() {analysisError ->
+            getSink().analysisErrorTag(analysisError.message.text())
+        }
 
-        log.info("Printing Missing classes")
+        log.debug("Printing Missing classes")
 
-            findbugsResults.Error.MissingClass.each() {missingClass ->
-                getSink().missingClassTag(missingClass.text)
-            }
+        findbugsResults.Error.MissingClass.each() {missingClass ->
+            getSink().missingClassTag(missingClass.text)
+        }
 
         getSink().errorTag_()
     }
@@ -257,13 +243,11 @@ class XDocsReporter implements FindBugsInfo
     /**
      * Output Source Directories.
      */
-    protected void printSource()
-    {
-        log.info("Printing Source Roots")
+    protected void printSource() {
+        log.debug("Printing Source Roots")
         getSink().ProjectTag()
 
-        if ( !compileSourceRoots.isEmpty() )
-        {
+        if ( !compileSourceRoots.isEmpty() ) {
             compileSourceRoots.each() {srcDir ->
                 getSink().srcDirTag(srcDir)
             }
@@ -273,40 +257,13 @@ class XDocsReporter implements FindBugsInfo
     }
 
     /**
-    protected String valueForLine(SourceLineAnnotation line)
-    {
-    String value
+     protected String valueForLine(SourceLineAnnotation line){String value
 
-    if ( line )
-    {
-    int startLine = line.getStartLine()
-    int endLine = line.getEndLine()
+     if ( line ){int startLine = line.getStartLine()
+     int endLine = line.getEndLine()
 
-    if ( startLine == endLine )
-    {
-    if ( startLine == -1 )
-    {
-    value = bundle.getString(XDocsReporter.NOLINE_KEY)
-    } else
-    {
-    value = startLine.toString()
-    }
-    } else
-    {
-    value = startLine.toString() + "-" + endLine.toString()
-    }
-    } else
-    {
-    value = bundle.getString(XDocsReporter.NOLINE_KEY)
-    }
-
-
-    return value
-    }
-     */
-
-    public void generateReport( )
-    {
+     if ( startLine == endLine ){if ( startLine == -1 ){value = bundle.getString(XDocsReporter.NOLINE_KEY)} else{value = startLine.toString()}} else{value = startLine.toString() + "-" + endLine.toString()}} else{value = bundle.getString(XDocsReporter.NOLINE_KEY)}return value}*/
+    public void generateReport() {
         doHeading()
         printBody()
 
@@ -323,36 +280,34 @@ class XDocsReporter implements FindBugsInfo
     /**
      * Prints the top header sections of the report.
      */
-    private void doHeading()
-    {
+    private void doHeading() {
         getSink().head()
         getSink().head_()
 
-        getSink().body(getFindBugsVersion(), findbugsThresholds.get( threshold ), findbugsEfforts.get( effort ))
+        getSink().body(getFindBugsVersion(), findbugsThresholds.get(threshold), findbugsEfforts.get(effort))
 
     }
 
     /**
      * Print th bug instance by file
      */
-    void printBody()
-    {
+    void printBody() {
         log.debug("Finished searching for bugs!")
 
-        findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() { classStats ->
+        findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
 
             def classStatsValue = classStats.'@class'.text()
             def classStatsBugCount = classStats.'@bugs'.text()
 
-            if (classStatsBugCount.toInteger() > 0 ) {
+            if ( classStatsBugCount.toInteger() > 0 ) {
                 bugClasses << classStatsValue
             }
         }
 
         bugClasses.each() {bugClass ->
-            log.info("finish bugClass is ${bugClass}")
+            log.debug("finish bugClass is ${bugClass}")
 
-            printBug( bugClass )
+            printBug(bugClass)
         }
 
 

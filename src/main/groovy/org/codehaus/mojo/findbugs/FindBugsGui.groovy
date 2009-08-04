@@ -20,15 +20,12 @@ package org.codehaus.mojo.findbugs
  */
 
 import org.apache.maven.project.MavenProject
-
 import org.codehaus.groovy.maven.mojo.GroovyMojo
-
-
 
 /**
  * Launch the Findbugs GUI.
  * It will use all the parameters in the POM fle.
- * 
+ *
  * @since 2.0
  * @goal gui
  *
@@ -41,143 +38,139 @@ import org.codehaus.groovy.maven.mojo.GroovyMojo
  * @version $Id: FindBugsGui.groovy gleclaire $
  */
 
-class FindBugsGui extends GroovyMojo
-{
-  /**
-   * The name of the property resource bundle (Filesystem).
-   *
-   */
-  static final String BUNDLE_NAME = "findbugs"
+class FindBugsGui extends GroovyMojo {
+    /**
+     * The name of the property resource bundle (Filesystem).
+     *
+     */
+    static final String BUNDLE_NAME = "findbugs"
 
-  /**
-   * The regex pattern to search for java class files.
-   *
-   */
-  static final String JAVA_REGEX_PATTERN = "**/*.class"
-
-
-  /**
-   * locale to use for Resource bundle.
-   *
-   *
-   */
-  static Locale locale = Locale.ENGLISH
-
-  /**
-   * Directory containing the class files for FindBugs to analyze.
-   *
-   * @parameter default-value="${project.build.outputDirectory}"
-   * @required
-   */
-  File classFilesDirectory
-
-  /**
-   * turn on Findbugs debugging
-   *
-   * @parameter default-value="false"
-   */
-  Boolean debug
-
-  /**
-   * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
-   *
-   * @parameter expression="${plugin.artifacts}"
-   * @required
-   * @readonly
-   */
-  ArrayList pluginArtifacts
-
-  /**
-   * Effort of the bug finders. Valid values are Min, Default and Max.
-   *
-   * @parameter default-value="Default"
-   *
-   */
-  String effort
+    /**
+     * The regex pattern to search for java class files.
+     *
+     */
+    static final String JAVA_REGEX_PATTERN = "**/*.class"
 
 
-  /**
-   * The plugin list to include in the report. This is a comma-delimited list.
-   *
-   * @parameter
-   *
-   */
-  String pluginList
+    /**
+     * locale to use for Resource bundle.
+     *
+     *
+     */
+    static Locale locale = Locale.ENGLISH
 
-  /**
-   * Maven Project
-   *
-   * @parameter expression="${project}"
-   * @required
-   * @readonly
-   */
-  MavenProject project
+    /**
+     * Directory containing the class files for FindBugs to analyze.
+     *
+     * @parameter default-value="${project.build.outputDirectory}"
+     * @required
+     */
+    File classFilesDirectory
 
-  /**
-   * Resource bundle for a specific locale.
-   *
-   * @parameter
-   * @readonly
-   *
-   */
-  ResourceBundle bundle
+    /**
+     * turn on Findbugs debugging
+     *
+     * @parameter default-value="false"
+     */
+    Boolean debug
 
-  /**
-   * Specifies the directory where the findbugs native xml output will be generated.
-   *
-   * @parameter default-value="${project.build.directory}"
-   * @required
-   *
-   */
-  File findbugsXmlOutputDirectory
+    /**
+     * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
+     *
+     * @parameter expression="${plugin.artifacts}"
+     * @required
+     * @readonly
+     */
+    ArrayList pluginArtifacts
 
-
-  void execute()
-  {
-
-    def auxClasspathElements = project.compileClasspathElements
-
-    if ( debug )
-    {
-      log.info( "  Plugin Artifacts to be added ->" + pluginArtifacts.toString() )
-    }
+    /**
+     * Effort of the bug finders. Valid values are Min, Default and Max.
+     *
+     * @parameter default-value="Default"
+     *
+     */
+    String effort
 
 
+    /**
+     * The plugin list to include in the report. This is a comma-delimited list.
+     *
+     * @parameter
+     *
+     */
+    String pluginList
+
+    /**
+     * Maven Project
+     *
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    MavenProject project
+
+    /**
+     * Resource bundle for a specific locale.
+     *
+     * @parameter
+     * @readonly
+     *
+     */
+    ResourceBundle bundle
+
+    /**
+     * Specifies the directory where the findbugs native xml output will be generated.
+     *
+     * @parameter default-value="${project.build.directory}"
+     * @required
+     *
+     */
+    File findbugsXmlOutputDirectory
 
 
-    ant.project.setProperty('basedir', findbugsXmlOutputDirectory.getAbsolutePath() )
-    ant.project.setProperty('verbose', "true" )
+    void execute() {
 
+        def auxClasspathElements = project.compileClasspathElements
 
-    ant.java(classname: "edu.umd.cs.findbugs.LaunchAppropriateUI", fork: "true", failonerror: "true", clonevm: "true")
-    {
-
-      def findbugsXmlName = findbugsXmlOutputDirectory.toString() + "/findbugsXml.xml"
-      def findbugsXml = new File(findbugsXmlName)
-
-      if (findbugsXml.exists()) {
-        log.debug( "  Found an FindBugs XML at ->" + findbugsXml.toString() )
-        arg(value: findbugsXml)
-      }
-
-
-      classpath()
-      {
-
-        auxClasspathElements.each() { auxClasspathElement ->
-          log.debug( "  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString() )
-          pathelement(location: auxClasspathElement.toString() )
+        if ( debug ) {
+            log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
         }
 
-        pluginArtifacts.each() { pluginArtifact ->
-          if (debug)
-          {
-            log.debug( "  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString() )
-          }
 
-          pathelement(location: pluginArtifact.file )
-        }
-      }
+
+
+        ant.project.setProperty('basedir', findbugsXmlOutputDirectory.getAbsolutePath())
+        ant.project.setProperty('verbose', "true")
+
+
+        ant.java(classname: "edu.umd.cs.findbugs.LaunchAppropriateUI", fork: "true", failonerror: "true", clonevm: "true")
+                {
+
+                    def findbugsXmlName = findbugsXmlOutputDirectory.toString() + "/findbugsXml.xml"
+                    def findbugsXml = new File(findbugsXmlName)
+
+                    if ( findbugsXml.exists() ) {
+                        log.debug("  Found an FindBugs XML at ->" + findbugsXml.toString())
+                        arg(value: findbugsXml)
+                    }
+
+
+                    classpath()
+                            {
+
+                                auxClasspathElements.each() {auxClasspathElement ->
+                                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
+                                    pathelement(location: auxClasspathElement.toString())
+                                }
+
+                                pluginArtifacts.each() {pluginArtifact ->
+                                    if ( debug ) {
+                                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
+                                    }
+
+                                    pathelement(location: pluginArtifact.file)
+                                }
+                            }
+                }
     }
-  }
 }

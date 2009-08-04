@@ -20,7 +20,6 @@ package org.codehaus.mojo.findbugs;
  */
 
 import java.io.Writer
-
 import org.apache.maven.doxia.module.HtmlTools
 import org.apache.maven.doxia.sink.SinkAdapter
 import org.apache.maven.doxia.util.LineBreaker
@@ -31,34 +30,29 @@ import org.apache.maven.doxia.util.LineBreaker
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
-class FindbugsXdocSink extends SinkAdapter
-{
+class FindbugsXdocSink extends SinkAdapter {
 
     String xdocEncoding
     static final String EOL = System.getProperty("line.separator")
 
     LineBreaker out
 
-    FindbugsXdocSink(Writer out)
-    {
+    FindbugsXdocSink(Writer out) {
         this.out = new LineBreaker(out)
         this.xdocEncoding = out.getEncoding()
     }
 
-    void analysisErrorTag(String className)
-    {
+    void analysisErrorTag(String className) {
         this.markup("<AnalysisError>")
         this.markup(HtmlTools.escapeHTML(className))
         this.markup(" </AnalysisError>" + EOL)
     }
 
-    void body()
-    {
+    void body() {
         this.markup("<BugCollection>" + EOL)
     }
 
-    void body(String version, String threshold, String effort)
-    {
+    void body(String version, String threshold, String effort) {
         this.markup("<BugCollection");
         this.markup(" version=" + '"' + version + '"')
         this.markup(" threshold=" + '"' + threshold + '"')
@@ -67,14 +61,12 @@ class FindbugsXdocSink extends SinkAdapter
         this.markup(" >" + EOL);
     }
 
-    void body_()
-    {
+    void body_() {
         this.markup("</BugCollection>" + EOL)
         this.out.flush();
     }
 
-    void bugInstance(String type, String priority, String category, String message, String lineNumber)
-    {
+    void bugInstance(String type, String priority, String category, String message, String lineNumber) {
         this.markup("<BugInstance");
         this.markup(" type=" + '"' + HtmlTools.escapeHTML(type) + '"')
         this.markup(" priority=" + '"' + HtmlTools.escapeHTML(priority) + '"')
@@ -84,67 +76,55 @@ class FindbugsXdocSink extends SinkAdapter
         this.markup(" />" + EOL)
     }
 
-    void classTag(String className)
-    {
+    void classTag(String className) {
         this.markup("<file");
         this.markup(" classname=" + '"' + HtmlTools.escapeHTML(className) + '"')
         this.markup(" >" + EOL)
     }
 
-    void classTag_()
-    {
+    void classTag_() {
         this.markup("</file>" + EOL)
     }
 
-    void close()
-    {
+    void close() {
         this.out.close()
     }
 
-    void errorTag()
-    {
+    void errorTag() {
         this.markup("<Errors>" + EOL)
     }
 
-    void errorTag_()
-    {
+    void errorTag_() {
         this.markup("</Errors>" + EOL)
     }
 
-    void flush()
-    {
+    void flush() {
         this.out.flush()
     }
 
-    void head()
-    {
+    void head() {
         this.markup("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + EOL)
     }
 
-    void missingClassTag(String className)
-    {
+    void missingClassTag(String className) {
         this.markup("<MissingClass>")
         this.markup(HtmlTools.escapeHTML(className))
         this.markup(" </MissingClass>" + EOL)
     }
 
-    protected void markup(String text)
-    {
+    protected void markup(String text) {
         this.out.write(text, true)
     }
 
-    void ProjectTag()
-    {
+    void ProjectTag() {
         this.markup("<Project>" + EOL)
     }
 
-    void ProjectTag_()
-    {
+    void ProjectTag_() {
         this.markup("</Project>" + EOL)
     }
 
-    void srcDirTag(String className)
-    {
+    void srcDirTag(String className) {
         this.markup("<SrcDir>")
         this.markup(HtmlTools.escapeHTML(className))
         this.markup("</SrcDir>" + EOL)
