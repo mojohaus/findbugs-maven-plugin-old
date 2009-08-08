@@ -146,6 +146,13 @@ class FindBugsGui extends GroovyMojo {
         ant.java(classname: "edu.umd.cs.findbugs.LaunchAppropriateUI", fork: "true", failonerror: "true", clonevm: "true")
                 {
 
+            def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
+
+            if ( encoding ) { effectiveEncoding = encoding }
+
+            log.info("File Encoding is " + effectiveEncoding)
+
+            sysproperty(key: "file.encoding" , value: effectiveEncoding)
                     def findbugsXmlName = findbugsXmlOutputDirectory.toString() + "/findbugsXml.xml"
                     def findbugsXml = new File(findbugsXmlName)
 

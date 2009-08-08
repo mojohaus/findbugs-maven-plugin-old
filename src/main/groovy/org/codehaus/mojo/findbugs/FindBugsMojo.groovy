@@ -654,7 +654,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             arg(value: getThresholdParameter())
 
             if ( debug ) {
-                arg(value: "-debug")
+             //   arg(value: "-debug")
                 arg(value: "-progress")
             }
 
