@@ -19,8 +19,6 @@ package org.codehaus.mojo.findbugs
  * under the License.
  */
 
-import edu.umd.cs.findbugs.SortedBugCollection
-import edu.umd.cs.findbugs.SourceLineAnnotation
 import groovy.util.slurpersupport.GPathResult
 import org.apache.maven.doxia.sink.Sink
 import org.apache.maven.doxia.tools.SiteTool
@@ -222,12 +220,6 @@ class FindbugsReportGenerator implements FindBugsInfo {
      *
      */
     boolean isJXRReportEnabled = false
-
-    /**
-     * The Collection of Bugs and Error collected during analysis.
-     *
-     */
-    SortedBugCollection bugCollection = new SortedBugCollection()
 
     /**
      * The running total of bugs reported.
@@ -607,38 +599,6 @@ class FindbugsReportGenerator implements FindBugsInfo {
         sink.tableHeaderCell_()
 
         sink.tableRow_()
-    }
-
-    /**
-     * Return the value to display. If FindBugs does not provide a line number, a default message is returned. The line
-     * number otherwise.
-     *
-     * @param line
-     *            The line to get the value from.
-     * @return The line number the bug appears or a statement that there is no source line available.
-     *
-     */
-    protected String valueForLine(SourceLineAnnotation line) {
-        String value
-
-        if ( line ) {
-            int startLine = line.getStartLine()
-            int endLine = line.getEndLine()
-
-            if ( startLine == endLine ) {
-                if ( startLine == -1 ) {
-                    value = bundle.getString(NOLINE_KEY)
-                } else {
-                    value = startLine.toString()
-                }
-            } else {
-                value = startLine.toString() + "-" + endLine.toString()
-            }
-        } else {
-            value = bundle.getString(NOLINE_KEY)
-        }
-
-        return value
     }
 
     /**

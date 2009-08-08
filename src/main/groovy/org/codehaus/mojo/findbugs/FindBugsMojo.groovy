@@ -246,6 +246,16 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     String xmlEncoding
 
     /**
+     * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
+     * is not set, the platform default encoding is used. <strong>Note:</strong> This parameter always overrides the
+     * property <code>charset</code> from Checkstyle's <code>TreeWalker</code> module.
+     *
+     * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
+     * @since 2.2
+     */
+    String encoding
+
+    /**
      * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
      *
      * @parameter
@@ -471,7 +481,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         executeFindbugs(locale, outputFile)
 
-
         FindbugsReportGenerator generator = new FindbugsReportGenerator(sink, getBundle(locale), this.project.getBasedir(), siteTool)
 
         boolean isJxrPluginEnabled = isJxrPluginEnabled()
@@ -623,80 +632,91 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         def ant = new AntBuilder()
 
         ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "true", timeout: "600000")
-                {
-                    arg(value: "-xml:withMessages")
+        {
 
-                    arg(value: "-projectName")
-                    arg(value: "${project.name}")
+            def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
-                    arg(value: "-output")
-                    arg(value: outputFile.getAbsolutePath())
+            if ( encoding ) { effectiveEncoding = encoding }
 
-                    arg(value: getEffortParameter())
-                    arg(value: getThresholdParameter())
+            log.info("File Encoding is " + effectiveEncoding)
 
-                    //if ( debug ) arg(value: "-debug")
-                    arg(value: "-progress")
+            sysproperty(key: "file.encoding" , value: effectiveEncoding)
+            
+            arg(value: "-xml:withMessages")
 
-                    if ( pluginList ) {
-                        arg(value: "-pluginList")
-                        arg(value: getPlugins())
-                    }
+            arg(value: "-projectName")
+            arg(value: "${project.name}")
 
+            arg(value: "-output")
+            arg(value: outputFile.getAbsolutePath())
 
-                    if ( visitors ) {
-                        arg(value: "-visitors")
-                        arg(value: visitors)
-                    }
+            arg(value: getEffortParameter())
+            arg(value: getThresholdParameter())
 
-                    if ( omitVisitors ) {
-                        arg(value: "-omitVisitors")
-                        arg(value: omitVisitors)
-                    }
+            if ( debug ) {
+                arg(value: "-debug")
+                arg(value: "-progress")
+            }
 
-                    if ( relaxed ) {
-                        arg(value: "-relaxed")
-                    }
+            if ( pluginList ) {
+                arg(value: "-pluginList")
+                arg(value: getPlugins())
+            }
 
 
-                    if ( onlyAnalyze ) {
-                        arg(value: "-onlyAnalyze")
-                        arg(value: onlyAnalyze)
-                    }
+            if ( visitors ) {
+                arg(value: "-visitors")
+                arg(value: visitors)
+            }
+
+            if ( omitVisitors ) {
+                arg(value: "-omitVisitors")
+                arg(value: omitVisitors)
+            }
+
+            if ( relaxed ) {
+                arg(value: "-relaxed")
+            }
 
 
-                    if ( includeFilterFile ) {
-                        arg(value: "-include")
-                        arg(value: getResourceFile(includeFilterFile))
-                    }
-
-                    if ( excludeFilterFile ) {
-                        arg(value: "-exclude")
-                        arg(value: getResourceFile(excludeFilterFile))
-                    }
-
-                    classpath()
-                            {
-
-                                auxClasspathElements.each() {auxClasspathElement ->
-                                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
-                                    pathelement(location: auxClasspathElement.toString())
-                                }
-
-                                pluginArtifacts.each() {pluginArtifact ->
-                                    if ( debug ) {
-                                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
-                                    }
-
-                                    pathelement(location: pluginArtifact.file)
-                                }
-                            }
-
-                    log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
-                    arg(value: classFilesDirectory.getAbsolutePath())
+            if ( onlyAnalyze ) {
+                arg(value: "-onlyAnalyze")
+                arg(value: onlyAnalyze)
+            }
 
 
+            if ( includeFilterFile ) {
+                arg(value: "-include")
+                arg(value: getResourceFile(includeFilterFile))
+            }
+
+            if ( excludeFilterFile ) {
+                arg(value: "-exclude")
+                arg(value: getResourceFile(excludeFilterFile))
+            }
+
+            classpath()
+            {
+
+                auxClasspathElements.each() {auxClasspathElement ->
+                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
+                    pathelement(location: auxClasspathElement.toString())
                 }
+
+                pluginArtifacts.each() {pluginArtifact ->
+                    if ( debug ) {
+                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
+                    }
+
+                    pathelement(location: pluginArtifact.file)
+                }
+            }
+
+            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
+            arg(value: classFilesDirectory.getAbsolutePath())
+
+
+        }
 
 
         def path = new XmlSlurper().parse(outputFile)
@@ -723,19 +743,19 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         switch ( threshold ) {
             case threshold = "High":
-                thresholdParameter = "-high"; break
+            thresholdParameter = "-high"; break
 
             case threshold = "Exp":
-                thresholdParameter = "-experimental"; break
+            thresholdParameter = "-experimental"; break
 
             case threshold = "Low":
-                thresholdParameter = "-low"; break
+            thresholdParameter = "-low"; break
 
             case threshold = "high":
-                thresholdParameter = "-high"; break
+            thresholdParameter = "-high"; break
 
             default:
-                thresholdParameter = "-medium"; break
+            thresholdParameter = "-medium"; break
         }
         return thresholdParameter
 
@@ -752,13 +772,13 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         switch ( effort ) {
             case effort = "Max":
-                effortParameter = "max"; break
+            effortParameter = "max"; break
 
             case effort = "Min":
-                effortParameter = "min"; break
+            effortParameter = "min"; break
 
             default:
-                effortParameter = "default"; break
+            effortParameter = "default"; break
         }
 
         return "-effort:" + effortParameter
@@ -776,18 +796,24 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         assert resource
 
-        String location = resource
+        String location = null
+        String artifact = resource
 
-        if ( location.indexOf('/') != -1 ) {
-            location = location.substring(location.lastIndexOf('/') + 1)
+        if ( resource.indexOf('/') != -1 ) {
+            artifact = resource.substring(resource.lastIndexOf('/') + 1)
         }
 
-        log.debug("location of include file is " + location)
+        if ( resource.indexOf('/') != -1 ) {
+            location = resource.substring(0, resource.lastIndexOf('/'))
+        }
 
+        log.info("resource is " + resource)
+        log.info("location is " + location)
+        log.info("artifact is " + artifact)
 
-        File resourceFile = resourceManager.getResourceAsFile(resource, location)
+        File resourceFile = resourceManager.getResourceAsFile(resource, artifact)
 
-        println "location of configFile file is " + resourceFile
+        log.info("location of configFile file is " + resourceFile)
 
         return resourceFile
 
