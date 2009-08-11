@@ -118,14 +118,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     File xmlOutputDirectory
 
     /**
-     * Turn on and off findbugs native xml output of the Findbugs report.
-     *
-     * @parameter default-value="false"
-     * @since 1.2.0
-     */
-    boolean findbugsXmlOutput
-
-    /**
      * Specifies the directory where the findbugs native xml output will be generated.
      *
      * @parameter default-value="${project.build.directory}"
@@ -492,10 +484,14 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
 
+         if (!findbugsXmlOutputDirectory.exists()) {
+            findbugsXmlOutputDirectory.mkdirs()
+        }
+
         File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
-        log.debug("outputFile is " + outputFile.getAbsolutePath())
-        log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
+        log.info("outputFile is " + outputFile.getAbsolutePath())
+        log.info("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
         executeFindbugs(locale, outputFile)
 

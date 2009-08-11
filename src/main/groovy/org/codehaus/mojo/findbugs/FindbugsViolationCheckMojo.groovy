@@ -428,6 +428,10 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
             log.info("Here goes...............Excecuting findbugs:check")
 
+            if (!findbugsXmlOutputDirectory.exists()) {
+                findbugsXmlOutputDirectory.mkdirs()
+            }
+
             File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsCheck.xml")
 
             executeFindbugs(locale, outputFile)
