@@ -127,6 +127,23 @@ class FindBugsGui extends GroovyMojo {
      */
     File findbugsXmlOutputDirectory
 
+    /**
+     * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
+     * is not set, the platform default encoding is used. <strong>Note:</strong> This parameter always overrides the
+     * property <code>charset</code> from Checkstyle's <code>TreeWalker</code> module.
+     *
+     * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
+     * @since 2.2
+     */
+    String encoding
+
+    /**
+     * Maximum Java heap size in megabytes  (default=512).
+     *
+     * @parameter default-value="512"
+     * @since 2.2
+     */
+    int maxHeap
 
     void execute() {
 
@@ -143,8 +160,8 @@ class FindBugsGui extends GroovyMojo {
         ant.project.setProperty('verbose', "true")
 
 
-        ant.java(classname: "edu.umd.cs.findbugs.LaunchAppropriateUI", fork: "true", failonerror: "true", clonevm: "true")
-                {
+        ant.java(classname: "edu.umd.cs.findbugs.LaunchAppropriateUI", fork: "true", failonerror: "true", clonevm: "true", maxmemory: "${maxHeap}m")
+        {
 
             def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
@@ -153,31 +170,31 @@ class FindBugsGui extends GroovyMojo {
             log.info("File Encoding is " + effectiveEncoding)
 
             sysproperty(key: "file.encoding" , value: effectiveEncoding)
-                    def findbugsXmlName = findbugsXmlOutputDirectory.toString() + "/findbugsXml.xml"
-                    def findbugsXml = new File(findbugsXmlName)
+            def findbugsXmlName = findbugsXmlOutputDirectory.toString() + "/findbugsXml.xml"
+            def findbugsXml = new File(findbugsXmlName)
 
-                    if ( findbugsXml.exists() ) {
-                        log.debug("  Found an FindBugs XML at ->" + findbugsXml.toString())
-                        arg(value: findbugsXml)
+            if ( findbugsXml.exists() ) {
+                log.debug("  Found an FindBugs XML at ->" + findbugsXml.toString())
+                arg(value: findbugsXml)
+            }
+
+
+            classpath()
+            {
+
+                auxClasspathElements.each() {auxClasspathElement ->
+                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
+                    pathelement(location: auxClasspathElement.toString())
+                }
+
+                pluginArtifacts.each() {pluginArtifact ->
+                    if ( debug ) {
+                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
                     }
 
-
-                    classpath()
-                            {
-
-                                auxClasspathElements.each() {auxClasspathElement ->
-                                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
-                                    pathelement(location: auxClasspathElement.toString())
-                                }
-
-                                pluginArtifacts.each() {pluginArtifact ->
-                                    if ( debug ) {
-                                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
-                                    }
-
-                                    pathelement(location: pluginArtifact.file)
-                                }
-                            }
+                    pathelement(location: pluginArtifact.file)
                 }
+            }
+        }
     }
 }

@@ -386,6 +386,24 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     boolean failOnError
 
+    /**
+     * Maximum Java heap size in megabytes  (default=512).
+     *
+     * @parameter default-value="512"
+     * @since 2.2
+     */
+    int maxHeap
+
+    /**
+     * Specifies the amount of time, in milliseconds, that FindBugs may run before
+     *  it is assumed to be hung and is terminated.
+     * The default is 600,000 milliseconds, which is ten minutes.
+     *
+     * @parameter default-value="600000"
+     * @since 2.2
+     */
+    int timeout
+
     int bugCount
     int errorCount
 
@@ -631,7 +649,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         def ant = new AntBuilder()
 
-        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "true", timeout: "600000")
+        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "true", timeout: "${timeout}", maxmemory: "${maxHeap}m")
         {
 
             def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )

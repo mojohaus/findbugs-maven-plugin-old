@@ -6,9 +6,15 @@
     </author>
   </properties>
   <body>
-    <release version="2.1-SNAPSHOT" date="in SVN" description="Updates for Findbugs 2.1-SNAPSHOT">
-      <action dev="gl" type="update">
-        Update shitty plugin to 1.0-alpha-3
+    <release version="2.2-SNAPSHOT" date="in SVN" description="Updates for Findbugs 2.2-SNAPSHOT">
+      <action dev="gl" type="update" issue="MFINDBUGS-46">
+        Add abilty set memory as an option
+      </action>
+      <action dev="gl" type="update" issue="MFINDBUGS-45">
+        Add timeout option
+      </action>
+      <action dev="gl" type="update" issue="MFINDBUGS-18">
+        Allow to fork a VM that runs findbugs
       </action>
     </release>
     <release version="2.0.1" date="2009-04-21" description="Updates for Findbugs 2.0.1">

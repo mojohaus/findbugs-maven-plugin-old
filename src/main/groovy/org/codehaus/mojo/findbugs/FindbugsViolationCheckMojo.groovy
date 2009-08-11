@@ -251,6 +251,16 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
     String xmlEncoding
 
     /**
+     * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
+     * is not set, the platform default encoding is used. <strong>Note:</strong> This parameter always overrides the
+     * property <code>charset</code> from Checkstyle's <code>TreeWalker</code> module.
+     *
+     * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
+     * @since 2.2
+     */
+    String encoding
+
+    /**
      * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
      *
      * @parameter
@@ -372,7 +382,6 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
      */
     protected SiteTool siteTool
 
-
     /**
      * Fail the build on an error.
      *
@@ -380,6 +389,24 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
      * @since 2.0
      */
     boolean failOnError
+
+    /**
+     * Maximum Java heap size in megabytes  (default=512).
+     *
+     * @parameter default-value="512"
+     * @since 2.2
+     */
+    int maxHeap
+
+    /**
+     * Specifies the amount of time, in milliseconds, that FindBugs may run before
+     *  it is assumed to be hung and is terminated.
+     * The default is 600,000 milliseconds, which is ten minutes.
+     *
+     * @parameter default-value="600000"
+     * @since 2.2
+     */
+    int timeout
 
     int bugCount
     int errorCount
@@ -461,81 +488,90 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
         def ant = new AntBuilder()
 
-        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "true", timeout: "600000")
-                {
-                    arg(value: "-xml:withMessages")
+        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "${failOnError}", clonevm: "true", timeout: "${timeout}", maxmemory: "${maxHeap}m")
+        {
 
-                    arg(value: "-projectName")
-                    arg(value: "${project.name}")
+            def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
-                    arg(value: "-output")
-                    arg(value: outputFile.getAbsolutePath())
+            if ( encoding ) { effectiveEncoding = encoding }
 
-                    arg(value: getEffortParameter())
-                    arg(value: getThresholdParameter())
+            log.info("File Encoding is " + effectiveEncoding)
 
-                    //if ( debug ) arg(value: "-debug")
-                    arg(value: "-progress")
+            sysproperty(key: "file.encoding" , value: effectiveEncoding)
 
-                    if ( pluginList ) {
-                        arg(value: "-pluginList")
-                        arg(value: getPlugins())
-                    }
+            arg(value: "-xml:withMessages")
 
+            arg(value: "-projectName")
+            arg(value: "${project.name}")
 
-                    if ( visitors ) {
-                        arg(value: "-visitors")
-                        arg(value: visitors)
-                    }
+            arg(value: "-output")
+            arg(value: outputFile.getAbsolutePath())
 
-                    if ( omitVisitors ) {
-                        arg(value: "-omitVisitors")
-                        arg(value: omitVisitors)
-                    }
+            arg(value: getEffortParameter())
+            arg(value: getThresholdParameter())
 
-                    if ( relaxed ) {
-                        arg(value: "-relaxed")
-                    }
+            //if ( debug ) arg(value: "-debug")
+            arg(value: "-progress")
+
+            if ( pluginList ) {
+                arg(value: "-pluginList")
+                arg(value: getPlugins())
+            }
 
 
-                    if ( onlyAnalyze ) {
-                        arg(value: "-onlyAnalyze")
-                        arg(value: onlyAnalyze)
-                    }
+            if ( visitors ) {
+                arg(value: "-visitors")
+                arg(value: visitors)
+            }
+
+            if ( omitVisitors ) {
+                arg(value: "-omitVisitors")
+                arg(value: omitVisitors)
+            }
+
+            if ( relaxed ) {
+                arg(value: "-relaxed")
+            }
 
 
-                    if ( includeFilterFile ) {
-                        arg(value: "-include")
-                        arg(value: getResourceFile(includeFilterFile))
-                    }
-
-                    if ( excludeFilterFile ) {
-                        arg(value: "-exclude")
-                        arg(value: getResourceFile(excludeFilterFile))
-                    }
-
-                    classpath()
-                            {
-
-                                auxClasspathElements.each() {auxClasspathElement ->
-                                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
-                                    pathelement(location: auxClasspathElement.toString())
-                                }
-
-                                pluginArtifacts.each() {pluginArtifact ->
-                                    if ( debug ) {
-                                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
-                                    }
-
-                                    pathelement(location: pluginArtifact.file)
-                                }
-                            }
-
-                    log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
-                    arg(value: classFilesDirectory.getAbsolutePath())
+            if ( onlyAnalyze ) {
+                arg(value: "-onlyAnalyze")
+                arg(value: onlyAnalyze)
+            }
 
 
+            if ( includeFilterFile ) {
+                arg(value: "-include")
+                arg(value: getResourceFile(includeFilterFile))
+            }
+
+            if ( excludeFilterFile ) {
+                arg(value: "-exclude")
+                arg(value: getResourceFile(excludeFilterFile))
+            }
+
+            classpath()
+            {
+
+                auxClasspathElements.each() {auxClasspathElement ->
+                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
+                    pathelement(location: auxClasspathElement.toString())
                 }
+
+                pluginArtifacts.each() {pluginArtifact ->
+                    if ( debug ) {
+                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
+                    }
+
+                    pathelement(location: pluginArtifact.file)
+                }
+            }
+
+            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
+            arg(value: classFilesDirectory.getAbsolutePath())
+
+
+        }
 
 
         def path = new XmlSlurper().parse(outputFile)
@@ -562,19 +598,19 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
         switch ( threshold ) {
             case threshold = "High":
-                thresholdParameter = "-high"; break
+            thresholdParameter = "-high"; break
 
             case threshold = "Exp":
-                thresholdParameter = "-experimental"; break
+            thresholdParameter = "-experimental"; break
 
             case threshold = "Low":
-                thresholdParameter = "-low"; break
+            thresholdParameter = "-low"; break
 
             case threshold = "high":
-                thresholdParameter = "-high"; break
+            thresholdParameter = "-high"; break
 
             default:
-                thresholdParameter = "-medium"; break
+            thresholdParameter = "-medium"; break
         }
         return thresholdParameter
 
@@ -591,13 +627,13 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
         switch ( effort ) {
             case effort = "Max":
-                effortParameter = "max"; break
+            effortParameter = "max"; break
 
             case effort = "Min":
-                effortParameter = "min"; break
+            effortParameter = "min"; break
 
             default:
-                effortParameter = "default"; break
+            effortParameter = "default"; break
         }
 
         return "-effort:" + effortParameter
