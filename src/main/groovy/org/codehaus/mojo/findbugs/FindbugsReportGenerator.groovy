@@ -294,6 +294,8 @@ class FindbugsReportGenerator implements FindBugsInfo {
      */
     SiteTool siteTool
 
+
+
     File basedir
 
     GPathResult findbugsResults
@@ -319,6 +321,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
      *            The used effort.
      */
     FindbugsReportGenerator(Sink sink, ResourceBundle bundle, File basedir, SiteTool siteTool) {
+
 
         assert sink
         assert bundle
@@ -347,7 +350,8 @@ class FindbugsReportGenerator implements FindBugsInfo {
      * @see edu.umd.cs.findbugs.BugReporter#finish()
      */
     void printBody() {
-        log.debug("Finished searching for bugs!")
+        log.info("Finished searching for bugs!...")
+        log.info("sink is " + sink)
 
 
         bugClasses.each() {bugClass ->
@@ -420,7 +424,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
     protected void printBug(String bugClass) {
 
 
-        log.debug("printBug bugClass is ${bugClass}")
+        log.info("printBug bugClass is ${bugClass}")
 
         openClassReportSection(bugClass)
 
@@ -435,7 +439,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
                 def message = bugInstance.LongMessage.text()
                 def priority = bugInstance.@priority.text()
                 def line = bugInstance.SourceLine
-                log.debug(message)
+                log.info(message)
 
                 sink.tableRow()
 
@@ -738,6 +742,8 @@ class FindbugsReportGenerator implements FindBugsInfo {
 
         printBody()
 
+        log.info("Closing up report....................")
+        
         sink.flush()
         sink.close()
     }

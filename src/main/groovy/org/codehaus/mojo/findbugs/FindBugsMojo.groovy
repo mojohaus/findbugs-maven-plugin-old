@@ -473,6 +473,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     void executeReport(Locale locale) {
 
+        log.info("****** Executing FindBugsMojo *******")
 
         resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
         resourceManager.addSearchPath("url", "")
@@ -485,7 +486,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
 
          if (!findbugsXmlOutputDirectory.exists()) {
-            findbugsXmlOutputDirectory.mkdirs()
+            if ( !findbugsXmlOutputDirectory.mkdirs() ) {
+                fail("Cannot create xml output directory")
+        }
         }
 
         File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
@@ -495,7 +498,21 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         executeFindbugs(locale, outputFile)
 
-        FindbugsReportGenerator generator = new FindbugsReportGenerator(sink, getBundle(locale), this.project.getBasedir(), siteTool)
+        if (!outputDirectory.exists()) {
+            if ( !outputDirectory.mkdirs() ) {
+                fail("Cannot create html output directory")
+            }
+        }
+
+        log.info("Generating HTML")
+        log.info("sink is " + sink)
+        log.info("getSink is " + getSink())
+
+        log.info("Bundle is " + getBundle(locale))
+        log.info("getBasedir is " + this.project.getBasedir())
+        log.info("siteTool is " + siteTool)
+
+        FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
 
         boolean isJxrPluginEnabled = isJxrPluginEnabled()
 
@@ -531,7 +548,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             if ( !xmlOutputDirectory.exists() ) {
                 if ( !xmlOutputDirectory.mkdirs() ) {
-                    fail("Cannot create xml output directory")
+                    fail("Cannot create xdoc output directory")
                 }
             }
 
@@ -560,6 +577,15 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     protected String getOutputDirectory() {
         return outputDirectory.getAbsolutePath()
+    }
+
+    /**
+     * @see org.apache.maven.reporting.AbstractMavenReport#setReportOutputDirectory(java.io.File)
+     */
+    void setReportOutputDirectory( File reportOutputDirectory )
+    {
+        super.setReportOutputDirectory( reportOutputDirectory )
+        this.outputDirectory = reportOutputDirectory
     }
 
     /**
@@ -622,6 +648,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     public void executeFindbugs(Locale locale, File outputFile) {
 
+        log.info("****** Executing FindBugsMojo *******")
 
         resourceManager.addSearchPath(FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath())
         resourceManager.addSearchPath("url", "")

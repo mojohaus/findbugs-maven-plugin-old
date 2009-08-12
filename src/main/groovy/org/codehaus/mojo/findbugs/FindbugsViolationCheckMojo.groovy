@@ -39,7 +39,7 @@ import org.codehaus.plexus.util.FileUtils
  * @since 2.0
  * @goal check
  * @phase verify
- *
+ * @execute goal="findbugs"
  * @requiresDependencyResolution compile
  * @requiresProject
  *
@@ -429,25 +429,25 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
             log.info("Here goes...............Excecuting findbugs:check")
 
             if (!findbugsXmlOutputDirectory.exists()) {
-                findbugsXmlOutputDirectory.mkdirs()
+                if ( !findbugsXmlOutputDirectory.mkdirs() ) {
+                    fail("Cannot create xml output directory")
+                }
             }
 
-            File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsCheck.xml")
 
-            executeFindbugs(locale, outputFile)
-
-            println '**********************************'
-            println "Checking Findbugs Native XML file"
-            println '**********************************'
+            File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
             def path = new XmlSlurper().parse(outputFile)
 
             def allNodes = path.depthFirst().collect { it }
-            def bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
+
+            bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
             log.debug("BugInstance size is ${bugCount}")
 
-            def errorCount = allNodes.findAll {it.name() == 'Error'}.size()
+            errorCount = allNodes.findAll {it.name() == 'Error'}.size()
             log.debug("Error size is ${errorCount}")
+
+
 
 
             if ( (bugCount || errorCount) && failOnError ) {
@@ -459,257 +459,5 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
             log.debug("Nothing for FindBugs to do here.")
         }
     }
-
-    /**
-     * Set up and run the Findbugs engine.
-     *
-     * @param locale
-     *            the locale the report should be generated for
-     *
-     */
-    public void executeFindbugs(Locale locale, File outputFile) {
-
-
-        resourceManager.addSearchPath(FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath())
-        resourceManager.addSearchPath("url", "")
-
-        resourceManager.setOutputDirectory(new File(project.getBuild().getDirectory()))
-
-        log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
-
-
-
-        def auxClasspathElements = project.compileClasspathElements
-
-        if ( debug ) {
-            log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
-        }
-
-        log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
-
-        log.debug("outputFile is " + outputFile.getAbsolutePath())
-        log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
-
-        def ant = new AntBuilder()
-
-        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "${failOnError}", clonevm: "true", timeout: "${timeout}", maxmemory: "${maxHeap}m")
-        {
-
-            def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
-
-            if ( encoding ) { effectiveEncoding = encoding }
-
-            log.info("File Encoding is " + effectiveEncoding)
-
-            sysproperty(key: "file.encoding" , value: effectiveEncoding)
-
-            arg(value: "-xml:withMessages")
-
-            arg(value: "-projectName")
-            arg(value: "${project.name}")
-
-            arg(value: "-output")
-            arg(value: outputFile.getAbsolutePath())
-
-            arg(value: getEffortParameter())
-            arg(value: getThresholdParameter())
-
-            //if ( debug ) arg(value: "-debug")
-            arg(value: "-progress")
-
-            if ( pluginList ) {
-                arg(value: "-pluginList")
-                arg(value: getPlugins())
-            }
-
-
-            if ( visitors ) {
-                arg(value: "-visitors")
-                arg(value: visitors)
-            }
-
-            if ( omitVisitors ) {
-                arg(value: "-omitVisitors")
-                arg(value: omitVisitors)
-            }
-
-            if ( relaxed ) {
-                arg(value: "-relaxed")
-            }
-
-
-            if ( onlyAnalyze ) {
-                arg(value: "-onlyAnalyze")
-                arg(value: onlyAnalyze)
-            }
-
-
-            if ( includeFilterFile ) {
-                arg(value: "-include")
-                arg(value: getResourceFile(includeFilterFile))
-            }
-
-            if ( excludeFilterFile ) {
-                arg(value: "-exclude")
-                arg(value: getResourceFile(excludeFilterFile))
-            }
-
-            classpath()
-            {
-
-                auxClasspathElements.each() {auxClasspathElement ->
-                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
-                    pathelement(location: auxClasspathElement.toString())
-                }
-
-                pluginArtifacts.each() {pluginArtifact ->
-                    if ( debug ) {
-                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
-                    }
-
-                    pathelement(location: pluginArtifact.file)
-                }
-            }
-
-            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
-            arg(value: classFilesDirectory.getAbsolutePath())
-
-
-        }
-
-
-        def path = new XmlSlurper().parse(outputFile)
-
-        def allNodes = path.depthFirst().collect { it }
-
-        bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
-        log.debug("BugInstance size is ${bugCount}")
-
-        errorCount = allNodes.findAll {it.name() == 'Error'}.size()
-        log.debug("Error size is ${errorCount}")
-
-    }
-
-    /**
-     * Returns the threshold parameter to use.
-     *
-     * @return A valid threshold parameter.
-     *
-     */
-    protected String getThresholdParameter() {
-
-        String thresholdParameter
-
-        switch ( threshold ) {
-            case threshold = "High":
-            thresholdParameter = "-high"; break
-
-            case threshold = "Exp":
-            thresholdParameter = "-experimental"; break
-
-            case threshold = "Low":
-            thresholdParameter = "-low"; break
-
-            case threshold = "high":
-            thresholdParameter = "-high"; break
-
-            default:
-            thresholdParameter = "-medium"; break
-        }
-        return thresholdParameter
-
-    }
-
-    /**
-     * Returns the effort parameter to use.
-     *
-     * @return A valid effort parameter.
-     *
-     */
-    protected String getEffortParameter() {
-        String effortParameter
-
-        switch ( effort ) {
-            case effort = "Max":
-            effortParameter = "max"; break
-
-            case effort = "Min":
-            effortParameter = "min"; break
-
-            default:
-            effortParameter = "default"; break
-        }
-
-        return "-effort:" + effortParameter
-    }
-
-    /**
-     * Get the File reference for a File passed in as a string reference.
-     *
-     * @param resource
-     *            The file for the resource manager to locate
-     * @return The File of the resource
-     *
-     */
-    protected File getResourceFile(String resource) {
-
-        assert resource
-
-        String location = resource
-
-        if ( location.indexOf('/') != -1 ) {
-            location = location.substring(location.lastIndexOf('/') + 1)
-        }
-
-        log.debug("location of include file is " + location)
-
-
-        File resourceFile = resourceManager.getResourceAsFile(resource, location)
-
-        println "location of configFile file is " + resourceFile
-
-        return resourceFile
-
-    }
-
-    /**
-     * Adds the specified plugins to findbugs. The coreplugin is always added first.
-     *
-     */
-    protected String getPlugins() {
-        URL[] pluginURL
-
-        def urlPlugins = ""
-
-        if ( pluginList ) {
-            log.debug("  Adding Plugins ")
-            String[] pluginJars = pluginList.split(",")
-
-            pluginJars.each() {pluginJar ->
-                def pluginFileName = pluginJar.trim()
-
-                if ( !pluginFileName.endsWith(".jar") ) {
-                    throw new IllegalArgumentException("Plugin File is not a Jar file: " + pluginFileName)
-                }
-
-                try {
-                    log.debug("  Processing Plugin: " + pluginFileName.toString())
-
-                    if ( urlPlugins ) {
-                        urlPlugins = urlPlugins + "," + new File(pluginFileName.toString()).toURL().toString()
-                    } else {
-                        urlPlugins = new File(pluginFileName.toString()).toURL().toString()
-                    }
-                }
-                catch (MalformedURLException exception) {
-                    fail("The addin plugin has an invalid URL", exception)
-                }
-            }
-        }
-
-
-        return urlPlugins
-    }
-
 
 }

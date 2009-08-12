@@ -36,6 +36,7 @@
           <effort>Max</effort>
           <threshold>Low</threshold>
           <failOnError>false</failOnError>
+          <xmlOutput>true</xmlOutput>
         </configuration>
       </plugin>
     </plugins>
