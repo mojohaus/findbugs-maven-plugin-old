@@ -35,6 +35,55 @@ package org.codehaus.mojo.findbugs
 
 interface FindBugsInfo {
 
+        /**
+     * The name of the Plug-In.
+     *
+     */
+    public static final String PLUGIN_NAME = "findbugs"
+
+    /**
+     * The name of the property resource bundle (Filesystem).
+     *
+     */
+    public static final String BUNDLE_NAME = "findbugs"
+
+    /**
+     * The key to get the name of the Plug-In from the bundle.
+     *
+     */
+    public static final String NAME_KEY = "report.findbugs.name"
+
+    /**
+     * The key to get the description of the Plug-In from the bundle.
+     *
+     */
+    public static final String DESCRIPTION_KEY = "report.findbugs.description"
+
+    /**
+     * The key to get the source directory message of the Plug-In from the bundle.
+     *
+     */
+    public static final String SOURCE_ROOT_KEY = "report.findbugs.sourceRoot"
+
+    /**
+     * The key to get the source directory message of the Plug-In from the bundle.
+     *
+     */
+    public static final String TEST_SOURCE_ROOT_KEY = "report.findbugs.testSourceRoot"
+
+    /**
+     * The key to get the java source message of the Plug-In from the bundle.
+     *
+     */
+    public static final String JAVA_SOURCES_KEY = "report.findbugs.javasources"
+
+    /**
+     * The regex pattern to search for java class files.
+     *
+     */
+    public static final String JAVA_REGEX_PATTERN = "**/*.class"
+
+
 
     def findbugsEfforts = [Max: "max", Min: "min", Default: "default"]
 

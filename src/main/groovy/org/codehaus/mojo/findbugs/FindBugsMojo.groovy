@@ -43,53 +43,6 @@ import org.codehaus.plexus.resource.loader.FileResourceLoader
  * @version $Id$
  */
 class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
-    /**
-     * The name of the Plug-In.
-     *
-     */
-    public static final String PLUGIN_NAME = "findbugs"
-
-    /**
-     * The name of the property resource bundle (Filesystem).
-     *
-     */
-    public static final String BUNDLE_NAME = "findbugs"
-
-    /**
-     * The key to get the name of the Plug-In from the bundle.
-     *
-     */
-    public static final String NAME_KEY = "report.findbugs.name"
-
-    /**
-     * The key to get the description of the Plug-In from the bundle.
-     *
-     */
-    public static final String DESCRIPTION_KEY = "report.findbugs.description"
-
-    /**
-     * The key to get the source directory message of the Plug-In from the bundle.
-     *
-     */
-    public static final String SOURCE_ROOT_KEY = "report.findbugs.sourceRoot"
-
-    /**
-     * The key to get the source directory message of the Plug-In from the bundle.
-     *
-     */
-    public static final String TEST_SOURCE_ROOT_KEY = "report.findbugs.testSourceRoot"
-
-    /**
-     * The key to get the java source message of the Plug-In from the bundle.
-     *
-     */
-    public static final String JAVA_SOURCES_KEY = "report.findbugs.javasources"
-
-    /**
-     * The regex pattern to search for java class files.
-     *
-     */
-    public static final String JAVA_REGEX_PATTERN = "**/*.class"
 
     /**
      * Location where generated html will be created.
@@ -473,97 +426,108 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     void executeReport(Locale locale) {
 
-        log.info("****** Executing FindBugsMojo *******")
-
-        resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
-        resourceManager.addSearchPath("url", "")
-
-        resourceManager.setOutputDirectory(new File(this.project.getBuild().getDirectory()))
-
-        log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
+        if ( !skip && classFilesDirectory.exists() ) {
 
 
-        log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
-
-         if (!findbugsXmlOutputDirectory.exists()) {
-            if ( !findbugsXmlOutputDirectory.mkdirs() ) {
-                fail("Cannot create xml output directory")
-        }
-        }
-
-        File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
-
-        log.info("outputFile is " + outputFile.getAbsolutePath())
-        log.info("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
-
-        executeFindbugs(locale, outputFile)
-
-        if (!outputDirectory.exists()) {
-            if ( !outputDirectory.mkdirs() ) {
-                fail("Cannot create html output directory")
-            }
-        }
-
-        log.info("Generating HTML")
-        log.info("sink is " + sink)
-        log.info("getSink is " + getSink())
-
-        log.info("Bundle is " + getBundle(locale))
-        log.info("getBasedir is " + this.project.getBasedir())
-        log.info("siteTool is " + siteTool)
-
-        FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
-
-        boolean isJxrPluginEnabled = isJxrPluginEnabled()
-
-        generator.setIsJXRReportEnabled(isJxrPluginEnabled)
-
-        if ( isJxrPluginEnabled ) {
-            generator.setCompileSourceRoots(this.compileSourceRoots)
-            generator.setTestSourceRoots(this.testSourceRoots)
-            generator.setXrefLocation(this.xrefLocation)
-            generator.setXrefTestLocation(this.xrefTestLocation)
-            generator.setIncludeTests(this.includeTests)
-        }
+            log.info("****** Executing FindBugsMojo *******")
 
 
-        generator.setLog(log)
+            resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
+            resourceManager.addSearchPath("url", "")
 
-        generator.setThreshold(threshold)
-
-        generator.setEffort(effort)
-
-        generator.setFindbugsResults(new XmlSlurper().parse(outputFile))
+            resourceManager.setOutputDirectory(new File(this.project.getBuild().getDirectory()))
 
 
-        generator.setOutputDirectory(new File(outputDirectory.getAbsolutePath()))
+            log.info("report Output Directory is " + getReportOutputDirectory())
+            log.info("Output Directory is " + outputDirectory)
 
-        generator.generateReport()
+            log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
 
 
+            log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
 
-
-        if ( xmlOutput ) {
-            log.debug("  Using the xdoc format")
-
-            if ( !xmlOutputDirectory.exists() ) {
-                if ( !xmlOutputDirectory.mkdirs() ) {
-                    fail("Cannot create xdoc output directory")
+            if (!findbugsXmlOutputDirectory.exists()) {
+                if ( !findbugsXmlOutputDirectory.mkdirs() ) {
+                    fail("Cannot create xml output directory")
                 }
             }
 
-            XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), this.project.getBasedir(), siteTool)
-            xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), "UTF-8"))
-            xDocsReporter.setBundle(getBundle(locale))
-            xDocsReporter.setLog(log)
-            xDocsReporter.setThreshold(threshold)
-            xDocsReporter.setEffort(effort)
-            xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
-            xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+            File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
-            xDocsReporter.generateReport()
+            log.info("XML outputFile is " + outputFile.getAbsolutePath())
+            log.info("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
+
+            executeFindbugs(locale, outputFile)
+
+            if (!outputDirectory.exists()) {
+                if ( !outputDirectory.mkdirs() ) {
+                    fail("Cannot create html output directory")
+                }
+            }
+
+            log.info("Generating HTML")
+
+            if (getSink()) {
+                log.info("sink is " + sink)
+                log.info("getSink is " + getSink())
+            }
+
+            log.info("Bundle is " + getBundle(locale))
+            log.info("getBasedir is " + this.project.getBasedir())
+            log.info("siteTool is " + siteTool)
+
+            FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
+
+            boolean isJxrPluginEnabled = isJxrPluginEnabled()
+
+            generator.setIsJXRReportEnabled(isJxrPluginEnabled)
+
+            if ( isJxrPluginEnabled ) {
+                generator.setCompileSourceRoots(this.compileSourceRoots)
+                generator.setTestSourceRoots(this.testSourceRoots)
+                generator.setXrefLocation(this.xrefLocation)
+                generator.setXrefTestLocation(this.xrefTestLocation)
+                generator.setIncludeTests(this.includeTests)
+            }
+
+
+            generator.setLog(log)
+
+            generator.setThreshold(threshold)
+
+            generator.setEffort(effort)
+
+            generator.setFindbugsResults(new XmlSlurper().parse(outputFile))
+
+
+            generator.setOutputDirectory(new File(outputDirectory.getAbsolutePath()))
+
+            generator.generateReport()
+
+
+
+
+            if ( xmlOutput ) {
+                log.debug("  Using the xdoc format")
+
+                if ( !xmlOutputDirectory.exists() ) {
+                    if ( !xmlOutputDirectory.mkdirs() ) {
+                        fail("Cannot create xdoc output directory")
+                    }
+                }
+
+                XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), this.project.getBasedir(), siteTool)
+                xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), "UTF-8"))
+                xDocsReporter.setBundle(getBundle(locale))
+                xDocsReporter.setLog(log)
+                xDocsReporter.setThreshold(threshold)
+                xDocsReporter.setEffort(effort)
+                xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
+                xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+
+                xDocsReporter.generateReport()
+            }
         }
-
 
     }
 
@@ -577,15 +541,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     protected String getOutputDirectory() {
         return outputDirectory.getAbsolutePath()
-    }
-
-    /**
-     * @see org.apache.maven.reporting.AbstractMavenReport#setReportOutputDirectory(java.io.File)
-     */
-    void setReportOutputDirectory( File reportOutputDirectory )
-    {
-        super.setReportOutputDirectory( reportOutputDirectory )
-        this.outputDirectory = reportOutputDirectory
     }
 
     /**
@@ -648,6 +603,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     public void executeFindbugs(Locale locale, File outputFile) {
 
+
+
+
         log.info("****** Executing FindBugsMojo *******")
 
         resourceManager.addSearchPath(FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath())
@@ -695,7 +653,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             arg(value: getThresholdParameter())
 
             if ( debug ) {
-             //   arg(value: "-debug")
+                //   arg(value: "-debug")
                 arg(value: "-progress")
             }
 
@@ -753,7 +711,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
                 }
             }
 
-            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
+            log.info("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
             arg(value: classFilesDirectory.getAbsolutePath())
 
 

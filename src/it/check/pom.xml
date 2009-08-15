@@ -35,7 +35,15 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
+          <xmlOutput>true</xmlOutput>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

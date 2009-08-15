@@ -24,8 +24,7 @@ import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.plugin.logging.Log
 
 /**
- * The reporter controls the generation of the FindBugs report. It contains call back methods which gets called by
- * FindBugs if a bug is found.
+ * The reporter controls the generation of the FindBugs report.
  *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$

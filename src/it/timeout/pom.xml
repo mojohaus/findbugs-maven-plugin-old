@@ -35,7 +35,7 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
-          <timeout>20000</timeout>
+          <timeout>10000</timeout>
         </configuration>
       </plugin>
     </plugins>

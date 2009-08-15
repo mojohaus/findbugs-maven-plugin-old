@@ -37,6 +37,13 @@
           <threshold>Low</threshold>
           <timeout>10000</timeout>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
