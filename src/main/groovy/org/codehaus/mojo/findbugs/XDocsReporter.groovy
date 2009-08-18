@@ -22,6 +22,9 @@ package org.codehaus.mojo.findbugs
 import groovy.util.slurpersupport.GPathResult
 import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.plugin.logging.Log
+import groovy.xml.StreamingMarkupBuilder
+import org.apache.maven.doxia.module.HtmlTools
+
 
 /**
  * The reporter controls the generation of the FindBugs report.
@@ -36,12 +39,6 @@ class XDocsReporter implements FindBugsInfo {
      *
      */
     static final String NOLINE_KEY = "report.findbugs.noline"
-
-    /**
-     * The sink to write the report to.
-     *
-     */
-    FindbugsXdocSink sink
 
     /**
      * The bundle to get the messages from.
@@ -122,57 +119,12 @@ class XDocsReporter implements FindBugsInfo {
 
         this.bugClasses = []
 
-        this.sink = null
         this.bundle = null
         this.log = null
         this.threshold = null
         this.effort = null
     }
 
-    /**
-     * @return the sink
-     */
-    FindbugsXdocSink getSink() {
-        if ( !this.sink ) {
-            this.sink = new FindbugsXdocSink(getOutputWriter())
-
-            // Initialises the report.
-        }
-        return this.sink
-    }
-
-
-    /**
-     * Print the bug collection to a line in the table
-     *
-     * @param bugInstance
-     *            the bug to print
-     */
-    protected void printBug(String bugClass) {
-
-        getSink().classTag(bugClass)
-
-        log.debug("printBug bugClass is ${bugClass}")
-
-
-        findbugsResults.BugInstance.each() {bugInstance ->
-
-            if ( bugInstance.Class.@classname.text() == bugClass ) {
-
-                def type = bugInstance.@type.text()
-                def category = bugInstance.@category.text()
-                def message = bugInstance.LongMessage.text()
-                def priority = evaluateThresholdParameter(bugInstance.@priority.text())
-                def line = bugInstance.SourceLine.@start.text()
-                log.debug(message)
-
-                getSink().bugInstance(type, priority, category, message, line)
-
-            }
-        }
-
-        getSink().classTag_()
-    }
 
     /**
      * Returns the threshold string value for the integer input.
@@ -187,22 +139,22 @@ class XDocsReporter implements FindBugsInfo {
 
         switch ( thresholdValue ) {
             case "1":
-                thresholdName = "High"
-                break
+            thresholdName = "High"
+            break
             case "2":
-                thresholdName = "Normal"
-                break
+            thresholdName = "Normal"
+            break
             case "3":
-                thresholdName = "Low"
-                break
+            thresholdName = "Low"
+            break
             case "4":
-                thresholdName = "Exp"
-                break
+            thresholdName = "Exp"
+            break
             case "5":
-                thresholdName = "Ignore"
-                break
+            thresholdName = "Ignore"
+            break
             default:
-                thresholdName = "Invalid Priority"
+            thresholdName = "Invalid Priority"
         }
 
         return thresholdName
@@ -219,97 +171,81 @@ class XDocsReporter implements FindBugsInfo {
         return edu.umd.cs.findbugs.Version.RELEASE
     }
 
-    /**
-     * Closes the class report section.
-     */
-    protected void printErrors() {
-        log.debug("Printing Errors")
-        getSink().errorTag()
 
-        findbugsResults.Error.analysisError.each() {analysisError ->
-            getSink().analysisErrorTag(analysisError.message.text())
-        }
-
-        log.debug("Printing Missing classes")
-
-        findbugsResults.Error.MissingClass.each() {missingClass ->
-            getSink().missingClassTag(missingClass.text)
-        }
-
-        getSink().errorTag_()
-    }
-
-    /**
-     * Output Source Directories.
-     */
-    protected void printSource() {
-        log.debug("Printing Source Roots")
-        getSink().ProjectTag()
-
-        if ( !compileSourceRoots.isEmpty() ) {
-            compileSourceRoots.each() {srcDir ->
-                getSink().srcDirTag(srcDir)
-            }
-        }
-
-        getSink().ProjectTag_()
-    }
-
-    /**
-     protected String valueForLine(SourceLineAnnotation line){String value
-
-     if ( line ){int startLine = line.getStartLine()
-     int endLine = line.getEndLine()
-
-     if ( startLine == endLine ){if ( startLine == -1 ){value = bundle.getString(XDocsReporter.NOLINE_KEY)} else{value = startLine.toString()}} else{value = startLine.toString() + "-" + endLine.toString()}} else{value = bundle.getString(XDocsReporter.NOLINE_KEY)}return value}*/
     public void generateReport() {
-        doHeading()
-        printBody()
 
-        printErrors()
+        def xmlBuilder = new StreamingMarkupBuilder()
+        xmlBuilder.encoding = "UTF-8"
 
-        printSource()
+        def xdoc = {
+            mkp.xmlDeclaration()
+            BugCollection(version: getFindBugsVersion(), threshold:findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) {
+                findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
 
-        getSink().body_()
-        getSink().flush()
-        getSink().close()
+                    def classStatsValue = classStats.'@class'.text()
+                    def classStatsBugCount = classStats.'@bugs'.text()
 
-    }
+                    if ( classStatsBugCount.toInteger() > 0 ) {
+                        bugClasses << classStatsValue
+                    }
+                }
 
-    /**
-     * Prints the top header sections of the report.
-     */
-    private void doHeading() {
-        getSink().head()
-        getSink().head_()
+                bugClasses.each() {bugClass ->
+                    log.debug("finish bugClass is ${bugClass}")
+                    file(classname: HtmlTools.escapeHTML(bugClass))
+                    findbugsResults.BugInstance.each() {bugInstance ->
 
-        getSink().body(getFindBugsVersion(), findbugsThresholds.get(threshold), findbugsEfforts.get(effort))
+                        if ( bugInstance.Class.@classname.text() == bugClass ) {
 
-    }
+                            def type = bugInstance.@type.text()
+                            def category = bugInstance.@category.text()
+                            def message = bugInstance.LongMessage.text()
+                            def priority = evaluateThresholdParameter(bugInstance.@priority.text())
+                            def line = bugInstance.SourceLine.@start.text()
+                            log.debug(message)
 
-    /**
-     * Print th bug instance by file
-     */
-    void printBody() {
-        log.debug("Finished searching for bugs!")
+                            BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: line)
 
-        findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
+                        }
+                    }
 
-            def classStatsValue = classStats.'@class'.text()
-            def classStatsBugCount = classStats.'@bugs'.text()
+                }
+                log.debug("Printing Errors")
+                Error() {
+                    findbugsResults.Error.analysisError.each() {analysisError ->
+                        AnalysisError(HtmlTools.escapeHTML(analysisError.message.text()))
+                    }
 
-            if ( classStatsBugCount.toInteger() > 0 ) {
-                bugClasses << classStatsValue
+                    log.debug("Printing Missing classes")
+
+                    findbugsResults.Error.MissingClass.each() {missingClass ->
+                        MissingClass(HtmlTools.escapeHTML(missingClass.text))
+                    }
+                }
+
+                Project() {
+                    log.debug("Printing Source Roots")
+
+                    if ( !compileSourceRoots.isEmpty() ) {
+                        compileSourceRoots.each() {srcDir ->
+                            SrcDir(srcDir)
+                        }
+                    }
+
+                }
             }
         }
+ 
+        //     printErrors()
+        //   printSource()
 
-        bugClasses.each() {bugClass ->
-            log.debug("finish bugClass is ${bugClass}")
+        outputWriter << xmlBuilder.bind(xdoc)
+        outputWriter.flush()
+        outputWriter.close()
 
-            printBug(bugClass)
-        }
-
+        System.out << xmlBuilder.bind(xdoc)
 
     }
+
 }
-     
+    
