@@ -20,10 +20,8 @@ package org.codehaus.mojo.findbugs
  */
 
 import groovy.util.slurpersupport.GPathResult
-import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.plugin.logging.Log
 import groovy.xml.StreamingMarkupBuilder
-import org.apache.maven.doxia.module.HtmlTools
 
 
 /**
@@ -65,33 +63,12 @@ class XDocsReporter implements FindBugsInfo {
     String effort
 
     /**
-     * The name of the current class which is analysed by FindBugs.
-     *
-     */
-    String currentClassName
-
-    /**
-     * Signals if the report for the current class is opened.
-     *
-     */
-    boolean isCurrentClassReportOpened = false
-
-    /**
      * The output Writer stream.
      *
      */
     Writer outputWriter
 
-    /**
-     * "org.apache.maven.doxia.tools.SiteTool"
-     *
-     */
-    SiteTool siteTool
-
-    File basedir
-
     GPathResult findbugsResults
-
 
     List bugClasses
 
@@ -101,28 +78,33 @@ class XDocsReporter implements FindBugsInfo {
      */
     List compileSourceRoots
 
+    String outputEncoding
+    
+
 
     /**
      * Default constructor.
      *
-     * @param realBugReporter
-     *            the BugReporter to Delegate
+     * @param bundle - The Resource Bundle to use
      */
-    XDocsReporter(bundle, basedir, siteTool) {
+    XDocsReporter(ResourceBundle bundle, Log log, String threshold, String effort, String outputEncoding) {
         assert bundle
-        assert basedir
-        assert siteTool
+        assert log
+        assert threshold
+        assert effort
+        assert outputEncoding
 
         this.bundle = bundle
-        this.basedir = basedir
-        this.siteTool = siteTool
+        this.log = log
+        this.threshold = threshold
+        this.effort = effort
+        this.outputEncoding = outputEncoding
 
+        this.outputWriter = null
+        this.findbugsResults = null
+
+        this.compileSourceRoots = []
         this.bugClasses = []
-
-        this.bundle = null
-        this.log = null
-        this.threshold = null
-        this.effort = null
     }
 
 
@@ -192,7 +174,7 @@ class XDocsReporter implements FindBugsInfo {
 
                 bugClasses.each() {bugClass ->
                     log.debug("finish bugClass is ${bugClass}")
-                    file(classname: HtmlTools.escapeHTML(bugClass))
+                    file(classname: URLEncoder.encode(bugClass, outputEncoding))
                     findbugsResults.BugInstance.each() {bugInstance ->
 
                         if ( bugInstance.Class.@classname.text() == bugClass ) {
@@ -213,13 +195,13 @@ class XDocsReporter implements FindBugsInfo {
                 log.debug("Printing Errors")
                 Error() {
                     findbugsResults.Error.analysisError.each() {analysisError ->
-                        AnalysisError(HtmlTools.escapeHTML(analysisError.message.text()))
+                        AnalysisError(URLEncoder.encode(analysisError.message.text(), outputEncoding))
                     }
 
                     log.debug("Printing Missing classes")
 
                     findbugsResults.Error.MissingClass.each() {missingClass ->
-                        MissingClass(HtmlTools.escapeHTML(missingClass.text))
+                        MissingClass(URLEncoder.encode(missingClass.text, outputEncoding))
                     }
                 }
 

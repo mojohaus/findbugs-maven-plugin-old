@@ -350,9 +350,8 @@ class FindbugsReportGenerator implements FindBugsInfo {
      * @see edu.umd.cs.findbugs.BugReporter#finish()
      */
     void printBody() {
-        log.info("Finished searching for bugs!...")
-        log.info("sink is " + sink)
-
+        log.debug("Finished searching for bugs!...")
+        log.debug("sink is " + sink)
 
         bugClasses.each() {bugClass ->
             log.debug("finish bugClass is ${bugClass}")
@@ -424,7 +423,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
     protected void printBug(String bugClass) {
 
 
-        log.info("printBug bugClass is ${bugClass}")
+        log.debug("printBug bugClass is ${bugClass}")
 
         openClassReportSection(bugClass)
 
@@ -439,7 +438,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
                 def message = bugInstance.LongMessage.text()
                 def priority = bugInstance.@priority.text()
                 def line = bugInstance.SourceLine
-                log.info(message)
+                log.debug(message)
 
                 sink.tableRow()
 
@@ -742,7 +741,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
 
         printBody()
 
-        log.info("Closing up report....................")
+        log.debug("Closing up report....................")
         
         sink.flush()
         sink.close()

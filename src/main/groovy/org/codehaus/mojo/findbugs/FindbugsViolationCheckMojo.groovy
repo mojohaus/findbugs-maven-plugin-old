@@ -21,12 +21,11 @@ package org.codehaus.mojo.findbugs
 
 import org.apache.maven.artifact.repository.DefaultArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
-import org.apache.maven.doxia.siterenderer.Renderer
+import org.codehaus.doxia.site.renderer.SiteRenderer
 import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.project.MavenProject
 import org.codehaus.groovy.maven.mojo.GroovyMojo
 import org.codehaus.plexus.resource.ResourceManager
-import org.codehaus.plexus.resource.loader.FileResourceLoader
 import org.codehaus.plexus.util.FileUtils
 
 /**
@@ -92,15 +91,14 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
      */
     File findbugsXmlOutputDirectory
 
-
     /**
      * Doxia Site Renderer.
      *
-     * @parameter expression="${component.org.apache.maven.doxia.siterenderer.Renderer}"
+     * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
      * @required
      * @readonly
      */
-    Renderer siteRenderer
+    SiteRenderer siteRenderer
 
     /**
      * Directory containing the class files for FindBugs to analyze.
@@ -205,13 +203,21 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
     /**
      * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
-     * is not set, the platform default encoding is used. <strong>Note:</strong> This parameter always overrides the
-     * property <code>charset</code> from Checkstyle's <code>TreeWalker</code> module.
+     * is not set, the platform default encoding is used.
      *
      * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
      * @since 2.2
      */
-    String encoding
+    String sourceEncoding
+
+    /**
+     * The file encoding to use when creating the HTML reports. If the property <code>project.reporting.outputEncoding</code>
+     * is not set, the platform default encoding is used.
+     *
+     * @parameter expression="${outputEncoding}" default-value="${project.reporting.outputEncoding}"
+     * @since 2.2
+     */
+    String outputEncoding
 
     /**
      * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
@@ -302,14 +308,6 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
     String onlyAnalyze
 
     /**
-     * The Flag letting us know if classes have been loaded already.
-     *
-     * @parameter
-     * @readonly
-     */
-    static boolean pluginLoaded = false
-
-    /**
      * Skip entire check.
      *
      * @parameter expression="${findbugs.skip}" default-value="false"
@@ -362,6 +360,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
     int timeout
 
     int bugCount
+    
     int errorCount
 
 

@@ -21,7 +21,7 @@ package org.codehaus.mojo.findbugs
 
 import org.apache.maven.artifact.repository.DefaultArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
-import org.apache.maven.doxia.siterenderer.Renderer
+import org.codehaus.doxia.site.renderer.SiteRenderer
 import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
@@ -79,15 +79,14 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     File findbugsXmlOutputDirectory
 
-
     /**
      * Doxia Site Renderer.
      *
-     * @parameter expression="${component.org.apache.maven.doxia.siterenderer.Renderer}"
+     * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
      * @required
      * @readonly
      */
-    Renderer siteRenderer
+    SiteRenderer siteRenderer
 
     /**
      * Directory containing the class files for FindBugs to analyze.
@@ -192,13 +191,21 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     /**
      * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
-     * is not set, the platform default encoding is used. <strong>Note:</strong> This parameter always overrides the
-     * property <code>charset</code> from Checkstyle's <code>TreeWalker</code> module.
+     * is not set, the platform default encoding is used.
      *
      * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
      * @since 2.2
      */
-    String encoding
+    String sourceEncoding
+
+    /**
+     * The file encoding to use when creating the HTML reports. If the property <code>project.reporting.outputEncoding</code>
+     * is not set, the platform default encoding is used.
+     *
+     * @parameter expression="${outputEncoding}" default-value="${project.reporting.outputEncoding}"
+     * @since 2.2
+     */
+    String outputEncoding
 
     /**
      * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
@@ -289,14 +296,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     String onlyAnalyze
 
     /**
-     * The Flag letting us know if classes have been loaded already.
-     *
-     * @parameter
-     * @readonly
-     */
-    static boolean pluginLoaded = false
-
-    /**
      * Skip entire check.
      *
      * @parameter expression="${findbugs.skip}" default-value="false"
@@ -364,6 +363,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         def canGenerate = false
 
+        log.info("Inside canGenerateReport.....")
+
         if ( !skip && classFilesDirectory.exists() ) {
 
             classFilesDirectory.eachFileRecurse {
@@ -426,10 +427,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     void executeReport(Locale locale) {
 
-        if ( !skip && classFilesDirectory.exists() ) {
+        if ( canGenerateReport() ) {
 
 
-            log.info("****** Executing FindBugsMojo *******")
+            log.debug("****** Executing FindBugsMojo *******")
 
 
             resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
@@ -465,16 +466,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
                 }
             }
 
-            log.info("Generating HTML")
+            log.debug("Generating Findbugs HTML")
 
-            if (getSink()) {
-                log.info("sink is " + sink)
-                log.info("getSink is " + getSink())
-            }
-
-            log.info("Bundle is " + getBundle(locale))
-            log.info("getBasedir is " + this.project.getBasedir())
-            log.info("siteTool is " + siteTool)
 
             FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
 
@@ -516,12 +509,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
                     }
                 }
 
-                XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), this.project.getBasedir(), siteTool)
-                xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), "UTF-8"))
-                xDocsReporter.setBundle(getBundle(locale))
-                xDocsReporter.setLog(log)
-                xDocsReporter.setThreshold(threshold)
-                xDocsReporter.setEffort(effort)
+                XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
+                xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
                 xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
                 xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
 
@@ -559,7 +548,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      * @return the Render used for generating the site.
      * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
      */
-    protected Renderer getSiteRenderer() {
+    protected SiteRenderer getSiteRenderer() {
         return this.siteRenderer
     }
 
@@ -604,9 +593,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     public void executeFindbugs(Locale locale, File outputFile) {
 
 
+        if (!outputEncoding) { outputEncoding = "UTF-8"}
 
-
-        log.info("****** Executing FindBugsMojo *******")
+        log.debug("****** Executing FindBugsMojo *******")
 
         resourceManager.addSearchPath(FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath())
         resourceManager.addSearchPath("url", "")
@@ -635,7 +624,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
-            if ( encoding ) { effectiveEncoding = encoding }
+            if ( sourceEncoding ) { effectiveEncoding = sourceEncoding }
 
             log.info("File Encoding is " + effectiveEncoding)
 
@@ -711,7 +700,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
                 }
             }
 
-            log.info("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
+            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
             arg(value: classFilesDirectory.getAbsolutePath())
 
 
@@ -856,6 +845,15 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         return urlPlugins
     }
+    
 
+    /**
+     * @see org.apache.maven.reporting.AbstractMavenReport#setReportOutputDirectory(java.io.File)
+     */
+    public void setReportOutputDirectory( File reportOutputDirectory )
+    {
+        super.setReportOutputDirectory( reportOutputDirectory );
+        this.outputDirectory = reportOutputDirectory;
+    }
 
 }
