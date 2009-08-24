@@ -7,6 +7,9 @@
   </properties>
   <body>
     <release version="2.2-SNAPSHOT" date="in SVN" description="Updates for Findbugs 2.2-SNAPSHOT">
+      <action dev="gl" type="update">
+        Update to Findbugs 1.3.9
+      </action>
       <action dev="gl" type="update" issue="MFINDBUGS-46">
         Add abilty set memory as an option
       </action>

@@ -363,7 +363,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         def canGenerate = false
 
-        log.info("Inside canGenerateReport.....")
+        log.debug("Inside canGenerateReport.....")
 
         if ( !skip && classFilesDirectory.exists() ) {
 
@@ -439,8 +439,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             resourceManager.setOutputDirectory(new File(this.project.getBuild().getDirectory()))
 
 
-            log.info("report Output Directory is " + getReportOutputDirectory())
-            log.info("Output Directory is " + outputDirectory)
+            log.debug("report Output Directory is " + getReportOutputDirectory())
+            log.debug("Output Directory is " + outputDirectory)
 
             log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
 
@@ -455,8 +455,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
-            log.info("XML outputFile is " + outputFile.getAbsolutePath())
-            log.info("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
+            log.debug("XML outputFile is " + outputFile.getAbsolutePath())
+            log.debug("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
             executeFindbugs(locale, outputFile)
 
@@ -626,7 +626,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             if ( sourceEncoding ) { effectiveEncoding = sourceEncoding }
 
-            log.info("File Encoding is " + effectiveEncoding)
+            log.debug("File Encoding is " + effectiveEncoding)
 
             sysproperty(key: "file.encoding" , value: effectiveEncoding)
             
@@ -795,13 +795,13 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             location = resource.substring(0, resource.lastIndexOf('/'))
         }
 
-        log.info("resource is " + resource)
-        log.info("location is " + location)
-        log.info("artifact is " + artifact)
+        log.debug("resource is " + resource)
+        log.debug("location is " + location)
+        log.debug("artifact is " + artifact)
 
         File resourceFile = resourceManager.getResourceAsFile(resource, artifact)
 
-        log.info("location of configFile file is " + resourceFile)
+        log.debug("location of configFile file is " + resourceFile)
 
         return resourceFile
 
@@ -852,8 +852,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     public void setReportOutputDirectory( File reportOutputDirectory )
     {
-        super.setReportOutputDirectory( reportOutputDirectory );
-        this.outputDirectory = reportOutputDirectory;
+        super.setReportOutputDirectory( reportOutputDirectory )
+        this.outputDirectory = reportOutputDirectory
     }
 
 }

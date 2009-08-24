@@ -368,7 +368,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
         Locale locale = Locale.getDefault()
         List sourceFiles
 
-        log.info("Excecuting findbugs:check")
+        log.debug("Excecuting findbugs:check")
 
         if ( this.classFilesDirectory.exists() && this.classFilesDirectory.isDirectory() ) {
             sourceFiles = FileUtils.getFiles(classFilesDirectory, JAVA_REGEX_PATTERN, null)
@@ -378,7 +378,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
             // this goes
 
-            log.info("Here goes...............Excecuting findbugs:check")
+            log.debug("Here goes...............Excecuting findbugs:check")
 
             if (!findbugsXmlOutputDirectory.exists()) {
                 if ( !findbugsXmlOutputDirectory.mkdirs() ) {
