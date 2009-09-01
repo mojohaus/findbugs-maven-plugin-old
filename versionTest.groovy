@@ -18,6 +18,7 @@ def javaHome = System.getenv("JAVA_HOME")
 File logFile
 def buildPlugin = false
 def mvnPhase = ""
+def mvnCleanPhase = ""
 def verbose = false
 def retVal
 def stopFail = false
@@ -62,9 +63,11 @@ println mavenDirs
 String[] ENVtoArray() { ENV.collect { k, v -> "$k=$v" } }
 
 if (buildPlugin) {
-  mvnPhase = "clean install"
+  mvnPhase = "-Dshit=true install"
+  mvnCleanPhase = "clean shitty:clean"
 } else {
-  mvnPhase = "shitty:clean shitty:test"
+  mvnPhase = "shitty:test"
+  mvnCleanPhase = "shitty:clean"
 }
 
 if (verbose) {
@@ -89,7 +92,19 @@ try {
       logFile << procText
     }
 
-    proc = "${mavenDir}/bin/mvn -Dshit=true ${mvnPhase}".execute(ENVtoArray(), null)
+    println "Executing cleaning => ${mavenDir}/bin/mvn -Dshit=true ${mvnCleanPhase}"
+    proc = "${mavenDir}/bin/mvn ${mvnCleanPhase}".execute(ENVtoArray(), null)
+    retVal = proc.waitFor()
+    procText = proc.text
+    println procText
+
+
+    if (logFile) {
+      logFile << procText
+    }
+
+    println "Executing => ${mavenDir}/bin/mvn -Dshit=true ${mvnPhase}"
+    proc = "${mavenDir}/bin/mvn ${mvnPhase}".execute(ENVtoArray(), null)
     retVal = proc.waitFor()
     procText = proc.text
     println procText

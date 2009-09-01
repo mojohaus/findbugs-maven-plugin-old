@@ -27,6 +27,7 @@ import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
 import org.codehaus.plexus.resource.ResourceManager
 import org.codehaus.plexus.resource.loader.FileResourceLoader
+import groovy.xml.StreamingMarkupBuilder
 
 /**
  * Generates a FindBugs Report when the site plugin is run.
@@ -592,6 +593,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
      */
     public void executeFindbugs(Locale locale, File outputFile) {
 
+        File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
+
 
         if (!outputEncoding) { outputEncoding = "UTF-8"}
 
@@ -617,6 +620,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         log.debug("outputFile is " + outputFile.getAbsolutePath())
         log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
+        log.debug("Temp File is " + tempFile.getAbsolutePath())
+
         def ant = new AntBuilder()
 
         ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "true", timeout: "${timeout}", maxmemory: "${maxHeap}m")
@@ -636,7 +641,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             arg(value: "${project.name}")
 
             arg(value: "-output")
-            arg(value: outputFile.getAbsolutePath())
+            arg(value: tempFile.getAbsolutePath())
 
             arg(value: getEffortParameter())
             arg(value: getThresholdParameter())
@@ -683,31 +688,46 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
                 arg(value: getResourceFile(excludeFilterFile))
             }
 
+
+            if (auxClasspathElements) {
+
+                def auxClasspath = ""
+
+                auxClasspathElements.each() {auxClasspathElement ->
+
+
+                    if ( project.build.outputDirectory != auxClasspathElement.toString()) {
+                        log.debug("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
+
+                        auxClasspath += auxClasspathElement.toString() + ":"
+
+                    }
+                }
+
+                log.debug("  AuxClasspath is ->" + auxClasspath)
+                arg(value: "-auxclasspath")
+                arg(value: auxClasspath)
+            }
+
             classpath()
             {
 
-                auxClasspathElements.each() {auxClasspathElement ->
-                    log.debug("  Trying to Add to AuxClasspath ->" + auxClasspathElement.toString())
-                    pathelement(location: auxClasspathElement.toString())
-                }
 
                 pluginArtifacts.each() {pluginArtifact ->
-                    if ( debug ) {
-                        log.debug("  Trying to Add to pluginArtifact ->" + pluginArtifact.file.toString())
-                    }
+                    log.debug("  Adding to pluginArtifact ->" + pluginArtifact.file.toString())
 
                     pathelement(location: pluginArtifact.file)
                 }
             }
 
-            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
+            log.info("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
             arg(value: classFilesDirectory.getAbsolutePath())
 
 
         }
 
 
-        def path = new XmlSlurper().parse(outputFile)
+        def path = new XmlSlurper().parse(tempFile)
 
         def allNodes = path.depthFirst().collect { it }
 
@@ -716,6 +736,28 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         errorCount = allNodes.findAll {it.name() == 'Error'}.size()
         log.debug("Error size is ${errorCount}")
+
+
+        def xmlProject = path.Project
+
+        compileSourceRoots.each() { compileSourceRoot ->
+            xmlProject.appendNode {
+                SrcDir(compileSourceRoot)
+            }
+        }
+
+
+        xmlProject.appendNode {
+            WrkDir(project.build.directory)
+        }
+
+        def xmlBuilder = new StreamingMarkupBuilder()
+
+        if (outputFile.exists()) outputFile.write "\n"
+        
+        outputFile << xmlBuilder.bind{ mkp.yield path }
+
+        tempFile.delete()
 
     }
 

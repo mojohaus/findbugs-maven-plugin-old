@@ -21,7 +21,7 @@
     </issueManagement>
     <inceptionYear>2005</inceptionYear>
     <prerequisites>
-        <maven>2.0.7</maven>
+        <maven>2.0.8</maven>
     </prerequisites>
     <description>This Plug-In generates reports based on the FindBugs Library</description>
     <developers>
@@ -131,16 +131,6 @@
             <version>1.5.1</version>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>findbugs-sandbox</id>
-            <name>findbugs-sandbox Development Repository</name>
-            <url>http://findbugs.googlecode.com/svn/repos/rc-repository/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
     <build>
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/main/groovy</sourceDirectory>
