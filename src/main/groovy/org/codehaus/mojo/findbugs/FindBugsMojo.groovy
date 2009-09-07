@@ -699,10 +699,12 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
                     if ( project.build.outputDirectory != auxClasspathElement.toString()) {
                         log.debug("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
 
-                        auxClasspath += auxClasspathElement.toString() + ":"
+                        auxClasspath += auxClasspathElement.toString() + File.pathSeparator
 
                     }
                 }
+
+                auxClasspath = '"' + auxClasspath + '"'
 
                 log.debug("  AuxClasspath is ->" + auxClasspath)
                 arg(value: "-auxclasspath")
@@ -720,7 +722,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
                 }
             }
 
-            log.info("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
+            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
             arg(value: classFilesDirectory.getAbsolutePath())
 
 

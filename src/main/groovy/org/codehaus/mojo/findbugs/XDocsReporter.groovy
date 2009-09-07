@@ -225,8 +225,6 @@ class XDocsReporter implements FindBugsInfo {
         outputWriter.flush()
         outputWriter.close()
 
-        System.out << xmlBuilder.bind(xdoc)
-
     }
 
 }
