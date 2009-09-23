@@ -58,6 +58,10 @@ new File(mavenTopDir).eachDir{ dir ->
   }
 }
 
+
+//mavenDirs.sort() {a,b -> a.name.padRight(12, '0').compareTo(b.name.padRight(12, '0')) }
+//quick and dirty sort
+mavenDirs.sort{it.name.substring(6).padLeft(6, '0')}
 println mavenDirs
 
 String[] ENVtoArray() { ENV.collect { k, v -> "$k=$v" } }

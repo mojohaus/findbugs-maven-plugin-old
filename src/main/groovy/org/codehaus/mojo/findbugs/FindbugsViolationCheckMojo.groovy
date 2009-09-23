@@ -79,6 +79,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
      *
      * @parameter default-value="false"
      * @since 1.2.0
+     * @deprecated
      */
     boolean findbugsXmlOutput
 

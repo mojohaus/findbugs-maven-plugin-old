@@ -72,6 +72,15 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     File xmlOutputDirectory
 
     /**
+     * Turn on and off findbugs native xml output of the Findbugs report.
+     *
+     * @parameter default-value="false"
+     * @since 1.2.0
+     * @deprecated
+     */
+    boolean findbugsXmlOutput
+
+    /**
      * Specifies the directory where the findbugs native xml output will be generated.
      *
      * @parameter default-value="${project.build.directory}"
