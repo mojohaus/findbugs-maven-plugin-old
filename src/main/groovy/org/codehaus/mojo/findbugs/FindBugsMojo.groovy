@@ -749,6 +749,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         log.debug("Error size is ${errorCount}")
 
 
+
         def xmlProject = path.Project
 
         compileSourceRoots.each() { compileSourceRoot ->
@@ -757,6 +758,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             }
         }
 
+        path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
 
         xmlProject.appendNode {
             WrkDir(project.build.directory)
