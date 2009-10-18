@@ -451,6 +451,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             log.debug("report Output Directory is " + getReportOutputDirectory())
             log.debug("Output Directory is " + outputDirectory)
+            log.debug("Classes Directory is " + classFilesDirectory)
 
             log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
 
@@ -656,7 +657,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             arg(value: getThresholdParameter())
 
             if ( debug ) {
-                //   arg(value: "-debug")
                 arg(value: "-progress")
             }
 
@@ -700,24 +700,30 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             if (auxClasspathElements) {
 
-                def auxClasspath = ""
+                log.debug("  AuxClasspath Elements ->" + auxClasspathElements)
 
-                auxClasspathElements.each() {auxClasspathElement ->
+                def auxClasspathList = auxClasspathElements.findAll{project.build.outputDirectory != it.toString()}
 
+                if (auxClasspathList.size() > 0) {
+                    def auxClasspath = ""
 
-                    if ( project.build.outputDirectory != auxClasspathElement.toString()) {
+                    log.debug("  Last AuxClasspath is ->" + auxClasspathList[auxClasspathList.size() - 1] )
+
+                    auxClasspathList.each() {auxClasspathElement ->
+
                         log.debug("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
 
-                        auxClasspath += auxClasspathElement.toString() + File.pathSeparator
+                        auxClasspath += auxClasspathElement.toString() + ((auxClasspathElement == auxClasspathList[auxClasspathList.size() - 1]) ? "" : File.pathSeparator)
+                    }
 
+                    if (auxClasspath) {
+                        //auxClasspath = '"' + auxClasspath + '"'
+
+                        log.info("  AuxClasspath is ->" + auxClasspath)
+                        arg(value: "-auxclasspath")
+                        arg(value: auxClasspath)
                     }
                 }
-
-                auxClasspath = '"' + auxClasspath + '"'
-
-                log.debug("  AuxClasspath is ->" + auxClasspath)
-                arg(value: "-auxclasspath")
-                arg(value: auxClasspath)
             }
 
             classpath()

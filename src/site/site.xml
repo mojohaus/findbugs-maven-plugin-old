@@ -6,7 +6,6 @@
     <body>
         <links>
             <item name="Findbugs" href="http://findbugs.sourceforge.net/"/>
-            <item name="2.0.1" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.0.1/index.html"  />
         </links>
         <menu name="Overview">
             <item name="Introduction" href="index.html"/>
@@ -21,7 +20,7 @@
             <item name="Multi-Module Configuration" href="examples/multi-module-config.html"/>
             <item name="Violation Checking Configuration" href="examples/violationChecking.html"/>
         </menu>
-        <menu name="Previous Version Documentation">
+        <menu name="Previous Versions">
             <item name="2.0.1" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.0.1/index.html"  />
         </menu>
     </body>

@@ -10,6 +10,7 @@
     <version>2.2-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>FindBugs Maven Plugin</name>
+    <url>http://mojo.codehaus.org/findbugs-maven-plugin</url>
     <scm>
         <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</connection>
         <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</developerConnection>
