@@ -363,6 +363,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     ResourceBundle bundle
 
+    private static final RESPONSE_FILE = "findbugs.response"
+    private static final EOL = "\n"
+
     /**
      * Checks whether prerequisites for generating this report are given.
      *
@@ -605,6 +608,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
 
+        File responseFile = new File("${project.build.directory}/" + RESPONSE_FILE)
 
         if (!outputEncoding) { outputEncoding = "UTF-8"}
 
@@ -642,12 +646,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             sysproperty(key: "file.encoding" , value: effectiveEncoding)
             
             arg(value: "-xml:withMessages")
-
-            arg(value: "-projectName")
-            arg(value: "${project.name}")
-
-            arg(value: "-output")
-            arg(value: tempFile.getAbsolutePath())
 
             arg(value: getEffortParameter())
             arg(value: getThresholdParameter())
@@ -694,6 +692,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             }
 
 
+            arg(value: "-output")
+            arg(value: tempFile.getAbsolutePath())
+
             def auxClasspath = ""
 
             pluginArtifacts.each() {pluginArtifact ->
@@ -729,7 +730,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             log.info("  AuxClasspath is ->" + auxClasspath)
             arg(value: "-auxclasspath")
-            arg(value: auxClasspath)
+            arg(value: "@" + responseFile.absolutePath)
+
+            responseFile << auxClasspath + EOL
 
             classpath()
             {
