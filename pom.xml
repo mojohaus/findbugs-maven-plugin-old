@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd ">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>mojo-parent</artifactId>
         <version>22</version>
     </parent>
+
     <artifactId>findbugs-maven-plugin</artifactId>
     <version>2.2-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
+
     <name>FindBugs Maven Plugin</name>
-    <url>http://mojo.codehaus.org/findbugs-maven-plugin</url>
-    <scm>
-        <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</connection>
-        <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</developerConnection>
-        <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/findbugs-maven-plugin</url>
-    </scm>
-    <issueManagement>
-        <system>JIRA</system>
-        <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
-    </issueManagement>
-    <inceptionYear>2005</inceptionYear>
-    <prerequisites>
-        <maven>2.0.8</maven>
-    </prerequisites>
     <description>This Plug-In generates reports based on the FindBugs Library</description>
+    <url>http://mojo.codehaus.org/findbugs-maven-plugin</url>
+    <inceptionYear>2005</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <developers>
         <developer>
             <id>cr</id>
@@ -71,16 +70,32 @@
             <timezone>+1</timezone>
         </contributor>
     </contributors>
-    <licenses>
-        <license>
-            <name>Apache 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+
+    <prerequisites>
+        <maven>2.0.8</maven>
+    </prerequisites>
+
+    <scm>
+        <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</developerConnection>
+        <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/findbugs-maven-plugin</url>
+    </scm>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
+    </issueManagement>
+    <distributionManagement>
+        <site>
+            <id>codehaus.org</id>
+            <name>Mojo Website</name>
+            <url>dav:https://dav.codehaus.org/mojo/findbugs-maven-plugin/${project.version}</url>
+        </site>
+    </distributionManagement>
+
     <properties>
         <groovy.plugin.version>1.0-rc-3</groovy.plugin.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -132,6 +147,7 @@
             <version>1.5.1</version>
         </dependency>
     </dependencies>
+
     <build>
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/main/groovy</sourceDirectory>
@@ -221,6 +237,7 @@
             </plugin>
         </plugins>
     </build>
+
     <reporting>
         <plugins>
             <!--
@@ -310,6 +327,7 @@
             </plugin>
         </plugins>
     </reporting>
+
     <profiles>
         <profile>
             <id>super-helpful-integration-tests</id>
@@ -342,12 +360,4 @@
             </build>
         </profile>
     </profiles>
-    <distributionManagement>
-        <site>
-            <id>codehaus.org</id>
-            <name>Mojo Website</name>
-            <url>dav:https://dav.codehaus.org/mojo/findbugs-maven-plugin/${project.version}</url>
-        </site>
-    </distributionManagement>
 </project>
-
