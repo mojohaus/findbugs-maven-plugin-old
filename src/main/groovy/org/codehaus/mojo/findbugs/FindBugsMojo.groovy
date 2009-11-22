@@ -482,6 +482,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
             log.debug("Generating Findbugs HTML")
 
+//            Locale objLocale = new Locale("pt","BR")
+//            log.info("Country is " + objLocale.getCountry())
+//            log.info("Language is " + objLocale.getLanguage())
 
             FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
 
@@ -634,7 +637,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         def ant = new AntBuilder()
 
-        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "true", timeout: "${timeout}", maxmemory: "${maxHeap}m")
+        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m")
         {
 
             def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
