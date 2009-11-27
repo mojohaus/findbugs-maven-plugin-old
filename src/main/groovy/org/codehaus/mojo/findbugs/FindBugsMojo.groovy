@@ -28,6 +28,7 @@ import org.apache.maven.reporting.AbstractMavenReport
 import org.codehaus.plexus.resource.ResourceManager
 import org.codehaus.plexus.resource.loader.FileResourceLoader
 import groovy.xml.StreamingMarkupBuilder
+import org.codehaus.plexus.util.FileUtils
 
 /**
  * Generates a FindBugs Report when the site plugin is run.
@@ -45,880 +46,937 @@ import groovy.xml.StreamingMarkupBuilder
  */
 class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
-    /**
-     * Location where generated html will be created.
-     *
-     * @parameter default-value="${project.reporting.outputDirectory}"
-     * @required
-     */
+  /**
+   * Location where generated html will be created.
+   *
+   * @parameter default-value="${project.reporting.outputDirectory}"
+   * @required
+   */
 
-    File outputDirectory
+  File outputDirectory
 
-    /**
-     * Turn on and off xml output of the Findbugs report.
-     *
-     * @parameter default-value="false"
-     * @since 1.0.0
-     */
-    boolean xmlOutput
+  /**
+   * Turn on and off xml output of the Findbugs report.
+   *
+   * @parameter default-value="false"
+   * @since 1.0.0
+   */
+  boolean xmlOutput
 
-    /**
-     * Specifies the directory where the xml output will be generated.
-     *
-     * @parameter default-value="${project.build.directory}"
-     * @required
-     * @since 1.0.0
-     */
-    File xmlOutputDirectory
+  /**
+   * Specifies the directory where the xml output will be generated.
+   *
+   * @parameter default-value="${project.build.directory}"
+   * @required
+   * @since 1.0.0
+   */
+  File xmlOutputDirectory
 
-    /**
-     * Turn on and off findbugs native xml output of the Findbugs report.
-     *
-     * @parameter default-value="false"
-     * @since 1.2.0
-     * @deprecated
-     */
-    boolean findbugsXmlOutput
+  /**
+   * Turn on and off findbugs native xml output of the Findbugs report.
+   *
+   * @parameter default-value="false"
+   * @since 1.2.0
+   * @deprecated
+   */
+  boolean findbugsXmlOutput
 
-    /**
-     * Specifies the directory where the findbugs native xml output will be generated.
-     *
-     * @parameter default-value="${project.build.directory}"
-     * @required
-     * @since 1.2.0
-     */
-    File findbugsXmlOutputDirectory
+  /**
+   * Specifies the directory where the findbugs native xml output will be generated.
+   *
+   * @parameter default-value="${project.build.directory}"
+   * @required
+   * @since 1.2.0
+   */
+  File findbugsXmlOutputDirectory
 
-    /**
-     * Doxia Site Renderer.
-     *
-     * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
-     * @required
-     * @readonly
-     */
-    SiteRenderer siteRenderer
+  /**
+   * Doxia Site Renderer.
+   *
+   * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
+   * @required
+   * @readonly
+   */
+  SiteRenderer siteRenderer
 
-    /**
-     * Directory containing the class files for FindBugs to analyze.
-     *
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
-     */
-    File classFilesDirectory
+  /**
+   * Directory containing the class files for FindBugs to analyze.
+   *
+   * @parameter default-value="${project.build.outputDirectory}"
+   * @required
+   */
+  File classFilesDirectory
 
-    /**
-     * Directory containing the test class files for FindBugs to analyze.
-     *
-     * @parameter default-value="${project.build.testOutputDirectory}"
-     * @required
-     */
-    File testClassFilesDirectory
+  /**
+   * Directory containing the test class files for FindBugs to analyze.
+   *
+   * @parameter default-value="${project.build.testOutputDirectory}"
+   * @required
+   */
+  File testClassFilesDirectory
 
-    /**
-     * Location of the Xrefs to link to.
-     *
-     * @parameter default-value="${project.reporting.outputDirectory}/xref"
-     */
-    File xrefLocation
+  /**
+   * Location of the Xrefs to link to.
+   *
+   * @parameter default-value="${project.reporting.outputDirectory}/xref"
+   */
+  File xrefLocation
 
-    /**
-     * Location of the Test Xrefs to link to.
-     *
-     * @parameter default-value="${project.reporting.outputDirectory}/xref-test"
-     */
-    File xrefTestLocation
+  /**
+   * Location of the Test Xrefs to link to.
+   *
+   * @parameter default-value="${project.reporting.outputDirectory}/xref-test"
+   */
+  File xrefTestLocation
 
-    /**
-     * The directories containing the sources to be compiled.
-     *
-     * @parameter expression="${project.compileSourceRoots}"
-     * @required
-     * @readonly
-     */
-    List compileSourceRoots
+  /**
+   * The directories containing the sources to be compiled.
+   *
+   * @parameter expression="${project.compileSourceRoots}"
+   * @required
+   * @readonly
+   */
+  List compileSourceRoots
 
-    /**
-     * The directories containing the test-sources to be compiled.
-     *
-     * @parameter expression="${project.testCompileSourceRoots}"
-     * @required
-     * @readonly
-     * @since 2.0
-     */
-    List testSourceRoots
+  /**
+   * The directories containing the test-sources to be compiled.
+   *
+   * @parameter expression="${project.testCompileSourceRoots}"
+   * @required
+   * @readonly
+   * @since 2.0
+   */
+  List testSourceRoots
 
-    /**
-     * Run Findbugs on the tests.
-     *
-     * @parameter default-value="false"
-     * @since 2.0
-     */
-    boolean includeTests
+  /**
+   * Run Findbugs on the tests.
+   *
+   * @parameter default-value="false"
+   * @since 2.0
+   */
+  boolean includeTests
 
-    /**
-     * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
-     *
-     * @parameter expression="${plugin.artifacts}"
-     * @required
-     * @readonly
-     */
-    ArrayList pluginArtifacts
+  /**
+   * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
+   *
+   * @parameter expression="${plugin.artifacts}"
+   * @required
+   * @readonly
+   */
+  ArrayList pluginArtifacts
 
-    /**
-     * The local repository, needed to download the coreplugin jar.
-     *
-     * @parameter expression="${localRepository}"
-     * @required
-     * @readonly
-     */
-    DefaultArtifactRepository localRepository
+  /**
+   * The local repository, needed to download the coreplugin jar.
+   *
+   * @parameter expression="${localRepository}"
+   * @required
+   * @readonly
+   */
+  DefaultArtifactRepository localRepository
 
-    /**
-     * Remote repositories which will be searched for the coreplugin jar.
-     *
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     * @required
-     * @readonly
-     */
-    List remoteArtifactRepositories
+  /**
+   * Remote repositories which will be searched for the coreplugin jar.
+   *
+   * @parameter expression="${project.remoteArtifactRepositories}"
+   * @required
+   * @readonly
+   */
+  List remoteArtifactRepositories
 
-    /**
-     * Maven Project
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    MavenProject project
+  /**
+   * Maven Project
+   *
+   * @parameter expression="${project}"
+   * @required
+   * @readonly
+   */
+  MavenProject project
 
-    /**
-     * Encoding used for xml files. Default value is UTF-8.
-     *
-     * @parameter default-value="UTF-8"
-     * @readonly
-     */
-    String xmlEncoding
+  /**
+   * Encoding used for xml files. Default value is UTF-8.
+   *
+   * @parameter default-value="UTF-8"
+   * @readonly
+   */
+  String xmlEncoding
 
-    /**
-     * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
-     * is not set, the platform default encoding is used.
-     *
-     * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
-     * @since 2.2
-     */
-    String sourceEncoding
+  /**
+   * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
+   * is not set, the platform default encoding is used.
+   *
+   * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
+   * @since 2.2
+   */
+  String sourceEncoding
 
-    /**
-     * The file encoding to use when creating the HTML reports. If the property <code>project.reporting.outputEncoding</code>
-     * is not set, the platform default encoding is used.
-     *
-     * @parameter expression="${outputEncoding}" default-value="${project.reporting.outputEncoding}"
-     * @since 2.2
-     */
-    String outputEncoding
+  /**
+   * The file encoding to use when creating the HTML reports. If the property <code>project.reporting.outputEncoding</code>
+   * is not set, the platform default encoding is used.
+   *
+   * @parameter expression="${outputEncoding}" default-value="${project.reporting.outputEncoding}"
+   * @since 2.2
+   */
+  String outputEncoding
 
-    /**
-     * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
-     *
-     * @parameter
-     */
-    String threshold
+  /**
+   * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
+   *
+   * @parameter
+   */
+  String threshold
 
-    /**
-     * Artifact resolver, needed to download the coreplugin jar.
-     *
-     * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
-     * @required
-     * @readonly
-     */
-    ArtifactResolver artifactResolver
+  /**
+   * Artifact resolver, needed to download the coreplugin jar.
+   *
+   * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
+   * @required
+   * @readonly
+   */
+  ArtifactResolver artifactResolver
 
-    /**
-     * File name of the include filter. Only bugs in matching the filters are reported.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String includeFilterFile
+  /**
+   * File name of the include filter. Only bugs in matching the filters are reported.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String includeFilterFile
 
-    /**
-     * File name of the exclude filter. Bugs matching the filters are not reported.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String excludeFilterFile
+  /**
+   * File name of the exclude filter. Bugs matching the filters are not reported.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String excludeFilterFile
 
-    /**
-     * Effort of the bug finders. Valid values are Min, Default and Max.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String effort
+  /**
+   * Effort of the bug finders. Valid values are Min, Default and Max.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String effort
 
-    /**
-     * turn on Findbugs debugging
-     *
-     * @parameter default-value="false"
-     */
-    Boolean debug
+  /**
+   * turn on Findbugs debugging
+   *
+   * @parameter default-value="false"
+   */
+  Boolean debug
 
-    /**
-     * Relaxed reporting mode. For many detectors, this option suppresses the heuristics used to avoid reporting false
-     * positives.
-     *
-     * @parameter default-value="false"
-     * @since 1.1
-     */
-    Boolean relaxed
+  /**
+   * Relaxed reporting mode. For many detectors, this option suppresses the heuristics used to avoid reporting false
+   * positives.
+   *
+   * @parameter default-value="false"
+   * @since 1.1
+   */
+  Boolean relaxed
 
-    /**
-     * The visitor list to run. This is a comma-delimited list.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String visitors
+  /**
+   * The visitor list to run. This is a comma-delimited list.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String visitors
 
-    /**
-     * The visitor list to omit. This is a comma-delimited list.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String omitVisitors
+  /**
+   * The visitor list to omit. This is a comma-delimited list.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String omitVisitors
 
-    /**
-     * The plugin list to include in the report. This is a comma-delimited list.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String pluginList
+  /**
+   * The plugin list to include in the report. This is a comma-delimited list.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String pluginList
 
-    /**
-     * Restrict analysis to the given comma-separated list of classes and packages.
-     *
-     * @parameter
-     * @since 1.1
-     */
-    String onlyAnalyze
+  /**
+   * Restrict analysis to the given comma-separated list of classes and packages.
+   *
+   * @parameter
+   * @since 1.1
+   */
+  String onlyAnalyze
 
-    /**
-     * Skip entire check.
-     *
-     * @parameter expression="${findbugs.skip}" default-value="false"
-     * @since 1.1
-     */
-    boolean skip
+  /**
+   * Skip entire check.
+   *
+   * @parameter expression="${findbugs.skip}" default-value="false"
+   * @since 1.1
+   */
+  boolean skip
 
-    /**
-     * @component
-     * @required
-     * @readonly
-     * @since 2.0
-     */
-    ResourceManager resourceManager
+  /**
+   * @component
+   * @required
+   * @readonly
+   * @since 2.0
+   */
+  ResourceManager resourceManager
 
-    /**
-     * SiteTool.
-     *
-     * @since 2.1-SNAPSHOT
-     * @component role="org.apache.maven.doxia.tools.SiteTool"
-     * @required
-     * @readonly
-     */
-    protected SiteTool siteTool
+  /**
+   * SiteTool.
+   *
+   * @since 2.1-SNAPSHOT
+   * @component role="org.apache.maven.doxia.tools.SiteTool"
+   * @required
+   * @readonly
+   */
+  protected SiteTool siteTool
 
 
-    /**
-     * Fail the build on an error.
-     *
-     * @parameter default-value="true"
-     * @since 2.0
-     */
-    boolean failOnError
+  /**
+   * Fail the build on an error.
+   *
+   * @parameter default-value="true"
+   * @since 2.0
+   */
+  boolean failOnError
 
-    /**
-     * Maximum Java heap size in megabytes  (default=512).
-     *
-     * @parameter default-value="512"
-     * @since 2.2
-     */
-    int maxHeap
+  /**
+   * Maximum Java heap size in megabytes  (default=512).
+   *
+   * @parameter default-value="512"
+   * @since 2.2
+   */
+  int maxHeap
 
-    /**
-     * Specifies the amount of time, in milliseconds, that FindBugs may run before
-     *  it is assumed to be hung and is terminated.
-     * The default is 600,000 milliseconds, which is ten minutes.
-     *
-     * @parameter default-value="600000"
-     * @since 2.2
-     */
-    int timeout
+  /**
+   * Specifies the amount of time, in milliseconds, that FindBugs may run before
+   *  it is assumed to be hung and is terminated.
+   * The default is 600,000 milliseconds, which is ten minutes.
+   *
+   * @parameter default-value="600000"
+   * @since 2.2
+   */
+  int timeout
 
-    int bugCount
-    int errorCount
+  int bugCount
+  int errorCount
 
-    ResourceBundle bundle
+  ResourceBundle bundle
 
-    /**
-     * Checks whether prerequisites for generating this report are given.
-     *
-     * @return true if report can be generated, otherwise false
-     * @see org.apache.maven.reporting.MavenReport#canGenerateReport()
-     */
-    boolean canGenerateReport() {
+  /**
+   * The file for the auxclasspath
+   *
+   */
+  private static final RESPONSE_FILE = "findbugs.response"
 
-        def canGenerate = false
 
-        log.debug("Inside canGenerateReport.....")
+  private static final EOL = "\n"
 
-        if ( !skip && classFilesDirectory.exists() ) {
+  /**
+   * The regex pattern to search for java class files.
+   *
+   */
+  private static final String JAVA_REGEX_PATTERN = "**/*.class"
 
-            classFilesDirectory.eachFileRecurse {
-                if ( it.name.contains('.class') )
-                canGenerate = true
-            }
+
+  /**
+   * Checks whether prerequisites for generating this report are given.
+   *
+   * @return true if report can be generated, otherwise false
+   * @see org.apache.maven.reporting.MavenReport#canGenerateReport()
+   */
+  boolean canGenerateReport() {
+
+    def canGenerate = false
+
+    log.debug("Inside canGenerateReport.....")
+
+    if ( !skip && classFilesDirectory.exists() ) {
+
+      classFilesDirectory.eachFileRecurse {
+        if ( it.name.contains('.class') )
+        canGenerate = true
+      }
+    }
+
+    return canGenerate
+  }
+
+  /**
+   * Returns the plugins description for the "generated reports" overview page.
+   *
+   * @param locale
+   *            the locale the report should be generated for
+   *
+   * @return description of the report
+   * @see org.apache.maven.reporting.MavenReport#getDescription(java.util.Locale)
+   */
+  String getDescription(Locale locale) {
+    return getBundle(locale).getString(DESCRIPTION_KEY)
+
+  }
+
+  /**
+   * Returns the plugins name for the "generated reports" overview page and the menu.
+   *
+   * @param locale
+   *            the locale the report should be generated for
+   *
+   * @return name of the report
+   * @see org.apache.maven.reporting.MavenReport#getName(java.util.Locale)
+   */
+  String getName(Locale locale) {
+    return getBundle(locale).getString(NAME_KEY)
+  }
+
+  /**
+   * Returns report output file name, without the extension.
+   *
+   * Called by AbstractMavenReport.execute() for creating the sink.
+   *
+   * @return name of the generated page
+   * @see org.apache.maven.reporting.MavenReport#getOutputName()
+   */
+  String getOutputName() {
+    return PLUGIN_NAME
+  }
+
+
+  /**
+   * Executes the generation of the report.
+   *
+   * Callback from Maven Site Plugin.
+   *
+   * @param locale he wanted locale to generate the report, could be null.
+   *
+   * @see org.apache.maven.reporting.MavenReport #executeReport(java.util.Locale)
+   */
+  void executeReport(Locale locale) {
+
+    if ( canGenerateReport() ) {
+
+
+      log.debug("****** Executing FindBugsMojo *******")
+
+
+      resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
+      resourceManager.addSearchPath("url", "")
+
+      resourceManager.setOutputDirectory(new File(this.project.getBuild().getDirectory()))
+
+
+      log.debug("report Output Directory is " + getReportOutputDirectory())
+      log.debug("Output Directory is " + outputDirectory)
+      log.debug("Classes Directory is " + classFilesDirectory)
+
+      log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
+
+
+      log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
+
+      if (!findbugsXmlOutputDirectory.exists()) {
+        if ( !findbugsXmlOutputDirectory.mkdirs() ) {
+          fail("Cannot create xml output directory")
+        }
+      }
+
+      File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
+
+      log.debug("XML outputFile is " + outputFile.getAbsolutePath())
+      log.debug("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
+
+      executeFindbugs(locale, outputFile)
+
+      if (!outputDirectory.exists()) {
+        if ( !outputDirectory.mkdirs() ) {
+          fail("Cannot create html output directory")
+        }
+      }
+
+      log.debug("Generating Findbugs HTML")
+
+      //            Locale objLocale = new Locale("pt","BR")
+      //            log.info("Country is " + objLocale.getCountry())
+      //            log.info("Language is " + objLocale.getLanguage())
+
+      FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
+
+      boolean isJxrPluginEnabled = isJxrPluginEnabled()
+
+      generator.setIsJXRReportEnabled(isJxrPluginEnabled)
+
+      if ( isJxrPluginEnabled ) {
+        generator.setCompileSourceRoots(this.compileSourceRoots)
+        generator.setTestSourceRoots(this.testSourceRoots)
+        generator.setXrefLocation(this.xrefLocation)
+        generator.setXrefTestLocation(this.xrefTestLocation)
+        generator.setIncludeTests(this.includeTests)
+      }
+
+
+      generator.setLog(log)
+
+      generator.setThreshold(threshold)
+
+      generator.setEffort(effort)
+
+      generator.setFindbugsResults(new XmlSlurper().parse(outputFile))
+
+
+      generator.setOutputDirectory(new File(outputDirectory.getAbsolutePath()))
+
+      generator.generateReport()
+
+
+
+
+      if ( xmlOutput ) {
+        log.debug("  Using the xdoc format")
+
+        if ( !xmlOutputDirectory.exists() ) {
+          if ( !xmlOutputDirectory.mkdirs() ) {
+            fail("Cannot create xdoc output directory")
+          }
         }
 
-        return canGenerate
+        XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
+        xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
+        xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
+        xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+
+        xDocsReporter.generateReport()
+      }
     }
 
-    /**
-     * Returns the plugins description for the "generated reports" overview page.
-     *
-     * @param locale
-     *            the locale the report should be generated for
-     *
-     * @return description of the report
-     * @see org.apache.maven.reporting.MavenReport#getDescription(java.util.Locale)
-     */
-    String getDescription(Locale locale) {
-        return getBundle(locale).getString(DESCRIPTION_KEY)
+  }
 
+  /**
+   * Returns the report output directory.
+   *
+   * Called by AbstractMavenReport.execute() for creating the sink.
+   *
+   * @return full path to the directory where the files in the site get copied to
+   * @see org.apache.maven.reporting.AbstractMavenReport#getOutputDirectory()
+   */
+  protected String getOutputDirectory() {
+    return outputDirectory.getAbsolutePath()
+  }
+
+  /**
+   * Return the project.
+   *
+   * @return the project.
+   * @see org.apache.maven.reporting.AbstractMavenReport#getProject()
+   */
+  protected MavenProject getProject() {
+    return this.project
+  }
+
+  /**
+   * Return the Sire Renderer.
+   *
+   * @return the Render used for generating the site.
+   * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
+   */
+  protected SiteRenderer getSiteRenderer() {
+    return this.siteRenderer
+  }
+
+  /**
+   * Determines if the JXR-Plugin is included in the report section of the POM.
+   *
+   * @param bundle
+   *            The bundle to load the artifactIf of the jxr plugin.
+   * @return True if the JXR-Plugin is included in the POM, false otherwise.
+   *
+   */
+  protected boolean isJxrPluginEnabled() {
+    boolean isEnabled = false
+
+
+    List reportPlugins = getProject().getReportPlugins()
+
+    reportPlugins.each() {reportPlugin ->
+      if ( "maven-jxr-plugin".equals(reportPlugin.getArtifactId()) || "jxr-maven-plugin".equals(reportPlugin.getArtifactId()) ) {
+        isEnabled = true
+      }
     }
+    return isEnabled
+  }
 
-    /**
-     * Returns the plugins name for the "generated reports" overview page and the menu.
-     *
-     * @param locale
-     *            the locale the report should be generated for
-     *
-     * @return name of the report
-     * @see org.apache.maven.reporting.MavenReport#getName(java.util.Locale)
-     */
-    String getName(Locale locale) {
-        return getBundle(locale).getString(NAME_KEY)
+
+  ResourceBundle getBundle(locale) {
+
+    if ( bundle == null ) {
+      bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale)
     }
+    return bundle
+  }
 
-    /**
-     * Returns report output file name, without the extension.
-     *
-     * Called by AbstractMavenReport.execute() for creating the sink.
-     *
-     * @return name of the generated page
-     * @see org.apache.maven.reporting.MavenReport#getOutputName()
-     */
-    String getOutputName() {
-        return PLUGIN_NAME
-    }
+  /**
+   * Set up and run the Findbugs engine.
+   *
+   * @param locale
+   *            the locale the report should be generated for
+   *
+   */
+  public void executeFindbugs(Locale locale, File outputFile) {
 
+    File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
 
-    /**
-     * Executes the generation of the report.
-     *
-     * Callback from Maven Site Plugin.
-     *
-     * @param locale he wanted locale to generate the report, could be null.
-     *
-     * @see org.apache.maven.reporting.MavenReport #executeReport(java.util.Locale)
-     */
-    void executeReport(Locale locale) {
+    File responseFile = new File("${project.build.directory}/" + RESPONSE_FILE)
 
-        if ( canGenerateReport() ) {
+    if (!outputEncoding) { outputEncoding = "UTF-8"}
 
+    log.debug("****** Executing FindBugsMojo *******")
 
-            log.debug("****** Executing FindBugsMojo *******")
+    resourceManager.addSearchPath(FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath())
+    resourceManager.addSearchPath("url", "")
 
+    resourceManager.setOutputDirectory(new File(project.getBuild().getDirectory()))
 
-            resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
-            resourceManager.addSearchPath("url", "")
+    log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
 
-            resourceManager.setOutputDirectory(new File(this.project.getBuild().getDirectory()))
 
 
-            log.debug("report Output Directory is " + getReportOutputDirectory())
-            log.debug("Output Directory is " + outputDirectory)
-            log.debug("Classes Directory is " + classFilesDirectory)
+    def auxClasspathElements = project.compileClasspathElements
 
-            log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
+    log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
 
+    log.debug("outputFile is " + outputFile.getAbsolutePath())
+    log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
-            log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
+    log.debug("Temp File is " + tempFile.getAbsolutePath())
 
-            if (!findbugsXmlOutputDirectory.exists()) {
-                if ( !findbugsXmlOutputDirectory.mkdirs() ) {
-                    fail("Cannot create xml output directory")
-                }
-            }
+    def ant = new AntBuilder()
 
-            File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
+    ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m")
+    {
 
-            log.debug("XML outputFile is " + outputFile.getAbsolutePath())
-            log.debug("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
+      def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
-            executeFindbugs(locale, outputFile)
+      if ( sourceEncoding ) { effectiveEncoding = sourceEncoding }
 
-            if (!outputDirectory.exists()) {
-                if ( !outputDirectory.mkdirs() ) {
-                    fail("Cannot create html output directory")
-                }
-            }
+      log.debug("File Encoding is " + effectiveEncoding)
 
-            log.debug("Generating Findbugs HTML")
-
-//            Locale objLocale = new Locale("pt","BR")
-//            log.info("Country is " + objLocale.getCountry())
-//            log.info("Language is " + objLocale.getLanguage())
-
-            FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
-
-            boolean isJxrPluginEnabled = isJxrPluginEnabled()
-
-            generator.setIsJXRReportEnabled(isJxrPluginEnabled)
-
-            if ( isJxrPluginEnabled ) {
-                generator.setCompileSourceRoots(this.compileSourceRoots)
-                generator.setTestSourceRoots(this.testSourceRoots)
-                generator.setXrefLocation(this.xrefLocation)
-                generator.setXrefTestLocation(this.xrefTestLocation)
-                generator.setIncludeTests(this.includeTests)
-            }
-
-
-            generator.setLog(log)
-
-            generator.setThreshold(threshold)
-
-            generator.setEffort(effort)
-
-            generator.setFindbugsResults(new XmlSlurper().parse(outputFile))
-
-
-            generator.setOutputDirectory(new File(outputDirectory.getAbsolutePath()))
-
-            generator.generateReport()
-
-
-
-
-            if ( xmlOutput ) {
-                log.debug("  Using the xdoc format")
-
-                if ( !xmlOutputDirectory.exists() ) {
-                    if ( !xmlOutputDirectory.mkdirs() ) {
-                        fail("Cannot create xdoc output directory")
-                    }
-                }
-
-                XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
-                xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
-                xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
-                xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
-
-                xDocsReporter.generateReport()
-            }
-        }
-
-    }
-
-    /**
-     * Returns the report output directory.
-     *
-     * Called by AbstractMavenReport.execute() for creating the sink.
-     *
-     * @return full path to the directory where the files in the site get copied to
-     * @see org.apache.maven.reporting.AbstractMavenReport#getOutputDirectory()
-     */
-    protected String getOutputDirectory() {
-        return outputDirectory.getAbsolutePath()
-    }
-
-    /**
-     * Return the project.
-     *
-     * @return the project.
-     * @see org.apache.maven.reporting.AbstractMavenReport#getProject()
-     */
-    protected MavenProject getProject() {
-        return this.project
-    }
-
-    /**
-     * Return the Sire Renderer.
-     *
-     * @return the Render used for generating the site.
-     * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
-     */
-    protected SiteRenderer getSiteRenderer() {
-        return this.siteRenderer
-    }
-
-    /**
-     * Determines if the JXR-Plugin is included in the report section of the POM.
-     *
-     * @param bundle
-     *            The bundle to load the artifactIf of the jxr plugin.
-     * @return True if the JXR-Plugin is included in the POM, false otherwise.
-     *
-     */
-    protected boolean isJxrPluginEnabled() {
-        boolean isEnabled = false
-
-
-        List reportPlugins = getProject().getReportPlugins()
-
-        reportPlugins.each() {reportPlugin ->
-            if ( "maven-jxr-plugin".equals(reportPlugin.getArtifactId()) || "jxr-maven-plugin".equals(reportPlugin.getArtifactId()) ) {
-                isEnabled = true
-            }
-        }
-        return isEnabled
-    }
-
-
-    ResourceBundle getBundle(locale) {
-
-        if ( bundle == null ) {
-            bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale)
-        }
-        return bundle
-    }
-
-    /**
-     * Set up and run the Findbugs engine.
-     *
-     * @param locale
-     *            the locale the report should be generated for
-     *
-     */
-    public void executeFindbugs(Locale locale, File outputFile) {
-
-        File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
-
-        if (!outputEncoding) { outputEncoding = "UTF-8"}
-
-        log.debug("****** Executing FindBugsMojo *******")
-
-        resourceManager.addSearchPath(FileResourceLoader.ID, project.getFile().getParentFile().getAbsolutePath())
-        resourceManager.addSearchPath("url", "")
-
-        resourceManager.setOutputDirectory(new File(project.getBuild().getDirectory()))
-
-        log.debug("resourceManager outputDirectory is " + resourceManager.outputDirectory)
-
-
-
-        def auxClasspathElements = project.compileClasspathElements
-
-        log.info("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
-
-        log.debug("outputFile is " + outputFile.getAbsolutePath())
-        log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
-
-        log.debug("Temp File is " + tempFile.getAbsolutePath())
-
-        def ant = new AntBuilder()
-
-        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m")
-        {
-
-            def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
-
-            if ( sourceEncoding ) { effectiveEncoding = sourceEncoding }
-
-            log.debug("File Encoding is " + effectiveEncoding)
-
-            sysproperty(key: "file.encoding" , value: effectiveEncoding)
+      sysproperty(key: "file.encoding" , value: effectiveEncoding)
             
-            arg(value: "-xml:withMessages")
+      arg(value: "-xml:withMessages")
 
-            arg(value: getEffortParameter())
-            arg(value: getThresholdParameter())
+      arg(value: getEffortParameter())
+      arg(value: getThresholdParameter())
 
-            if ( debug ) {
-                arg(value: "-progress")
-            }
+      if ( debug ) {
+        arg(value: "-progress")
+      }
 
-            if ( pluginList ) {
-                arg(value: "-pluginList")
-                arg(value: getPlugins())
-            }
-
-
-            if ( visitors ) {
-                arg(value: "-visitors")
-                arg(value: visitors)
-            }
-
-            if ( omitVisitors ) {
-                arg(value: "-omitVisitors")
-                arg(value: omitVisitors)
-            }
-
-            if ( relaxed ) {
-                arg(value: "-relaxed")
-            }
+      if ( pluginList ) {
+        arg(value: "-pluginList")
+        arg(value: getPlugins())
+      }
 
 
-            if ( onlyAnalyze ) {
-                arg(value: "-onlyAnalyze")
-                arg(value: onlyAnalyze)
-            }
+      if ( visitors ) {
+        arg(value: "-visitors")
+        arg(value: visitors)
+      }
+
+      if ( omitVisitors ) {
+        arg(value: "-omitVisitors")
+        arg(value: omitVisitors)
+      }
+
+      if ( relaxed ) {
+        arg(value: "-relaxed")
+      }
 
 
-            if ( includeFilterFile ) {
-                arg(value: "-include")
-                arg(value: getResourceFile(includeFilterFile))
-            }
-
-            if ( excludeFilterFile ) {
-                arg(value: "-exclude")
-                arg(value: getResourceFile(excludeFilterFile))
-            }
+      if ( onlyAnalyze ) {
+        arg(value: "-onlyAnalyze")
+        arg(value: onlyAnalyze)
+      }
 
 
-            arg(value: "-output")
-            arg(value: tempFile.getAbsolutePath())
+      if ( includeFilterFile ) {
+        arg(value: "-include")
+        arg(value: getResourceFile(includeFilterFile))
+      }
 
-            def auxClasspath = ""
-
-            pluginArtifacts.each() {pluginArtifact ->
-                log.debug("  Adding to AuxClasspath ->" + pluginArtifact.file.toString())
-
-                auxClasspath += pluginArtifact.file.toString() + ((pluginArtifact == pluginArtifacts[pluginArtifacts.size() - 1]) ? "" : File.pathSeparator)
-            }
-
-            if (auxClasspathElements) {
-
-                log.debug("  AuxClasspath Elements ->" + auxClasspathElements)
+      if ( excludeFilterFile ) {
+        arg(value: "-exclude")
+        arg(value: getResourceFile(excludeFilterFile))
+      }
 
 
-                def auxClasspathList = auxClasspathElements.findAll{project.build.outputDirectory != it.toString()}
+      arg(value: "-output")
+      arg(value: tempFile.getAbsolutePath())
 
-                if (auxClasspathList.size() > 0) {
+      def auxClasspath = ""
 
-                    auxClasspath += File.pathSeparator
+      pluginArtifacts.each() {pluginArtifact ->
+        log.debug("  Adding to AuxClasspath ->" + pluginArtifact.file.toString())
 
-                    log.debug("  Last AuxClasspath is ->" + auxClasspathList[auxClasspathList.size() - 1] )
+        //                auxClasspath += '"' + pluginArtifact.file.toString() + '"' + ((pluginArtifact == pluginArtifacts[pluginArtifacts.size() - 1]) ? "" : File.pathSeparator)
+        auxClasspath += pluginArtifact.file.toString() + ((pluginArtifact == pluginArtifacts[pluginArtifacts.size() - 1]) ? "" : File.pathSeparator)
+      }
 
-                    auxClasspathList.each() {auxClasspathElement ->
+      if (auxClasspathElements) {
 
-                        log.debug("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
-
-                        auxClasspath += auxClasspathElement.toString() + ((auxClasspathElement == auxClasspathList[auxClasspathList.size() - 1]) ? "" : File.pathSeparator)
-                    }
-
-
-                }
-
-            }
-
-            log.debug("  AuxClasspath is ->" + auxClasspath)
-            arg(value: "-auxclasspath")
-            arg(path: auxClasspath)
-
-            classpath()
-            {
+        log.debug("  AuxClasspath Elements ->" + auxClasspathElements)
 
 
-                pluginArtifacts.each() {pluginArtifact ->
-                    log.debug("  Adding to pluginArtifact ->" + pluginArtifact.file.toString())
+        def auxClasspathList = auxClasspathElements.findAll{project.build.outputDirectory != it.toString()}
 
-                    pathelement(location: pluginArtifact.file)
-                }
-            }
+        if (auxClasspathList.size() > 0) {
 
-            log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
-            arg(value: classFilesDirectory.getAbsolutePath())
+          auxClasspath += File.pathSeparator
+
+          log.debug("  Last AuxClasspath is ->" + auxClasspathList[auxClasspathList.size() - 1] )
+
+          auxClasspathList.each() {auxClasspathElement ->
+
+            log.debug("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
+
+            auxClasspath += auxClasspathElement.toString() + ((auxClasspathElement == auxClasspathList[auxClasspathList.size() - 1]) ? "" : File.pathSeparator)
+          }
 
 
         }
 
+      }
 
-        def path = new XmlSlurper().parse(tempFile)
+      log.debug("  AuxClasspath is ->" + auxClasspath)
+      arg(value: "-auxclasspath")
+      arg(value: "@" + responseFile.absolutePath)
 
-        def allNodes = path.depthFirst().collect { it }
+      auxClasspath = '"' + auxClasspath + '"'
+      
+      responseFile << auxClasspath + EOL
 
-        bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
-        log.debug("BugInstance size is ${bugCount}")
-
-        errorCount = allNodes.findAll {it.name() == 'Error'}.size()
-        log.debug("Error size is ${errorCount}")
-
+      classpath()
+      {
 
 
-        def xmlProject = path.Project
+        pluginArtifacts.each() {pluginArtifact ->
+          log.debug("  Adding to pluginArtifact ->" + pluginArtifact.file.toString())
 
-        compileSourceRoots.each() { compileSourceRoot ->
-            xmlProject.appendNode {
-                SrcDir(compileSourceRoot)
-            }
+          pathelement(location: pluginArtifact.file)
         }
+      }
 
-        path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
+      log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
+      arg(value: classFilesDirectory.getAbsolutePath())
 
-        xmlProject.appendNode {
-            WrkDir(project.build.directory)
-        }
+      def sourceFileList = getJavaSources()
 
-        def xmlBuilder = new StreamingMarkupBuilder()
 
-        if (outputFile.exists()) outputFile.write "\n"
+      sourceFileList.each() {sourceFile ->
+
+        log.info("  Adding to Source Files ->" + sourceFile.absolutePath)
+
+        responseFile << sourceFile.absolutePath + EOL
+      }
+
+    }
+
+
+    def path = new XmlSlurper().parse(tempFile)
+
+    def allNodes = path.depthFirst().collect { it }
+
+    bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
+    log.debug("BugInstance size is ${bugCount}")
+
+    errorCount = allNodes.findAll {it.name() == 'Error'}.size()
+    log.debug("Error size is ${errorCount}")
+
+
+
+    def xmlProject = path.Project
+
+    compileSourceRoots.each() { compileSourceRoot ->
+      xmlProject.appendNode {
+        SrcDir(compileSourceRoot)
+      }
+    }
+
+    path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
+
+    xmlProject.appendNode {
+      WrkDir(project.build.directory)
+    }
+
+    def xmlBuilder = new StreamingMarkupBuilder()
+
+    if (outputFile.exists()) outputFile.write "\n"
         
-        outputFile << xmlBuilder.bind{ mkp.yield path }
+    outputFile << xmlBuilder.bind{ mkp.yield path }
 
-        tempFile.delete()
+    tempFile.delete()
 
+  }
+
+  /**
+   * Returns the threshold parameter to use.
+   *
+   * @return A valid threshold parameter.
+   *
+   */
+  protected String getThresholdParameter() {
+
+    String thresholdParameter
+
+    switch ( threshold ) {
+      case threshold = "High":
+      thresholdParameter = "-high"; break
+
+      case threshold = "Exp":
+      thresholdParameter = "-experimental"; break
+
+      case threshold = "Low":
+      thresholdParameter = "-low"; break
+
+      case threshold = "high":
+      thresholdParameter = "-high"; break
+
+      default:
+      thresholdParameter = "-medium"; break
+    }
+    return thresholdParameter
+
+  }
+
+  /**
+   * Returns the effort parameter to use.
+   *
+   * @return A valid effort parameter.
+   *
+   */
+  protected String getEffortParameter() {
+    String effortParameter
+
+    switch ( effort ) {
+      case effort = "Max":
+      effortParameter = "max"; break
+
+      case effort = "Min":
+      effortParameter = "min"; break
+
+      default:
+      effortParameter = "default"; break
     }
 
-    /**
-     * Returns the threshold parameter to use.
-     *
-     * @return A valid threshold parameter.
-     *
-     */
-    protected String getThresholdParameter() {
+    return "-effort:" + effortParameter
+  }
 
-        String thresholdParameter
+  /**
+   * Get the File reference for a File passed in as a string reference.
+   *
+   * @param resource
+   *            The file for the resource manager to locate
+   * @return The File of the resource
+   *
+   */
+  protected File getResourceFile(String resource) {
 
-        switch ( threshold ) {
-            case threshold = "High":
-            thresholdParameter = "-high"; break
+    assert resource
 
-            case threshold = "Exp":
-            thresholdParameter = "-experimental"; break
+    String location = null
+    String artifact = resource
 
-            case threshold = "Low":
-            thresholdParameter = "-low"; break
-
-            case threshold = "high":
-            thresholdParameter = "-high"; break
-
-            default:
-            thresholdParameter = "-medium"; break
-        }
-        return thresholdParameter
-
+    if ( resource.indexOf('/') != -1 ) {
+      artifact = resource.substring(resource.lastIndexOf('/') + 1)
     }
 
-    /**
-     * Returns the effort parameter to use.
-     *
-     * @return A valid effort parameter.
-     *
-     */
-    protected String getEffortParameter() {
-        String effortParameter
-
-        switch ( effort ) {
-            case effort = "Max":
-            effortParameter = "max"; break
-
-            case effort = "Min":
-            effortParameter = "min"; break
-
-            default:
-            effortParameter = "default"; break
-        }
-
-        return "-effort:" + effortParameter
+    if ( resource.indexOf('/') != -1 ) {
+      location = resource.substring(0, resource.lastIndexOf('/'))
     }
 
-    /**
-     * Get the File reference for a File passed in as a string reference.
-     *
-     * @param resource
-     *            The file for the resource manager to locate
-     * @return The File of the resource
-     *
-     */
-    protected File getResourceFile(String resource) {
+    log.debug("resource is " + resource)
+    log.debug("location is " + location)
+    log.debug("artifact is " + artifact)
 
-        assert resource
+    File resourceFile = resourceManager.getResourceAsFile(resource, artifact)
 
-        String location = null
-        String artifact = resource
+    log.debug("location of configFile file is " + resourceFile)
 
-        if ( resource.indexOf('/') != -1 ) {
-            artifact = resource.substring(resource.lastIndexOf('/') + 1)
+    return resourceFile
+
+  }
+
+  /**
+   * Adds the specified plugins to findbugs. The coreplugin is always added first.
+   *
+   */
+  protected String getPlugins() {
+    URL[] pluginURL
+
+    def urlPlugins = ""
+
+    if ( pluginList ) {
+      log.debug("  Adding Plugins ")
+      String[] pluginJars = pluginList.split(",")
+
+      pluginJars.each() {pluginJar ->
+        def pluginFileName = pluginJar.trim()
+
+        if ( !pluginFileName.endsWith(".jar") ) {
+          throw new IllegalArgumentException("Plugin File is not a Jar file: " + pluginFileName)
         }
 
-        if ( resource.indexOf('/') != -1 ) {
-            location = resource.substring(0, resource.lastIndexOf('/'))
+        try {
+          log.debug("  Processing Plugin: " + pluginFileName.toString())
+
+          if ( urlPlugins ) {
+            urlPlugins = urlPlugins + "," + new File(pluginFileName.toString()).toURL().toString()
+          } else {
+            urlPlugins = new File(pluginFileName.toString()).toURL().toString()
+          }
         }
-
-        log.debug("resource is " + resource)
-        log.debug("location is " + location)
-        log.debug("artifact is " + artifact)
-
-        File resourceFile = resourceManager.getResourceAsFile(resource, artifact)
-
-        log.debug("location of configFile file is " + resourceFile)
-
-        return resourceFile
-
+        catch (MalformedURLException exception) {
+          fail("The addin plugin has an invalid URL", exception)
+        }
+      }
     }
 
-    /**
-     * Adds the specified plugins to findbugs. The coreplugin is always added first.
-     *
-     */
-    protected String getPlugins() {
-        URL[] pluginURL
 
-        def urlPlugins = ""
-
-        if ( pluginList ) {
-            log.debug("  Adding Plugins ")
-            String[] pluginJars = pluginList.split(",")
-
-            pluginJars.each() {pluginJar ->
-                def pluginFileName = pluginJar.trim()
-
-                if ( !pluginFileName.endsWith(".jar") ) {
-                    throw new IllegalArgumentException("Plugin File is not a Jar file: " + pluginFileName)
-                }
-
-                try {
-                    log.debug("  Processing Plugin: " + pluginFileName.toString())
-
-                    if ( urlPlugins ) {
-                        urlPlugins = urlPlugins + "," + new File(pluginFileName.toString()).toURL().toString()
-                    } else {
-                        urlPlugins = new File(pluginFileName.toString()).toURL().toString()
-                    }
-                }
-                catch (MalformedURLException exception) {
-                    fail("The addin plugin has an invalid URL", exception)
-                }
-            }
-        }
-
-
-        return urlPlugins
-    }
+    return urlPlugins
+  }
     
 
-    /**
-     * @see org.apache.maven.reporting.AbstractMavenReport#setReportOutputDirectory(java.io.File)
-     */
-    public void setReportOutputDirectory( File reportOutputDirectory )
+  /**
+   * @see org.apache.maven.reporting.AbstractMavenReport#setReportOutputDirectory(java.io.File)
+   */
+  public void setReportOutputDirectory( File reportOutputDirectory )
+  {
+    super.setReportOutputDirectory( reportOutputDirectory )
+    this.outputDirectory = reportOutputDirectory
+  }
+
+  /**
+   * Collects the java sources from the source roots.
+   *
+   * @return A list containing the java sources or an empty list if no java sources are found.
+   *
+   */
+  protected List getJavaSources( Locale locale )
+  {
+    List sourceFiles = new ArrayList()
+
+    if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() )
     {
-        super.setReportOutputDirectory( reportOutputDirectory )
-        this.outputDirectory = reportOutputDirectory
+      List files = FileUtils.getFiles( classFilesDirectory, FindBugsMojo.JAVA_REGEX_PATTERN, null )
+      sourceFiles.addAll( files )
     }
+
+    if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests )
+    {
+      List files = FileUtils.getFiles( testClassFilesDirectory, FindBugsMojo.JAVA_REGEX_PATTERN, null )
+      sourceFiles.addAll( files )
+    }
+
+    return sourceFiles
+  }
 
 }
