@@ -186,7 +186,7 @@ class XDocsReporter implements FindBugsInfo {
               def line = bugInstance.SourceLine.@start[0].text()
               log.debug(message)
 
-              BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: line)
+              BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: ((line) ? line: "-1"))
 
             }
           }
