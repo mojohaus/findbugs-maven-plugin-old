@@ -32,200 +32,200 @@ import groovy.xml.StreamingMarkupBuilder
  */
 class XDocsReporter implements FindBugsInfo {
 
-    /**
-     * The key to get the value if the line number is not available.
-     *
-     */
-    static final String NOLINE_KEY = "report.findbugs.noline"
+  /**
+   * The key to get the value if the line number is not available.
+   *
+   */
+  static final String NOLINE_KEY = "report.findbugs.noline"
 
-    /**
-     * The bundle to get the messages from.
-     *
-     */
-    ResourceBundle bundle
+  /**
+   * The bundle to get the messages from.
+   *
+   */
+  ResourceBundle bundle
 
-    /**
-     * The logger to write logs to.
-     *
-     */
-    Log log
+  /**
+   * The logger to write logs to.
+   *
+   */
+  Log log
 
-    /**
-     * The threshold of bugs severity.
-     *
-     */
-    String threshold
+  /**
+   * The threshold of bugs severity.
+   *
+   */
+  String threshold
 
-    /**
-     * The used effort for searching bugs.
-     *
-     */
-    String effort
+  /**
+   * The used effort for searching bugs.
+   *
+   */
+  String effort
 
-    /**
-     * The output Writer stream.
-     *
-     */
-    Writer outputWriter
+  /**
+   * The output Writer stream.
+   *
+   */
+  Writer outputWriter
 
-    GPathResult findbugsResults
+  GPathResult findbugsResults
 
-    List bugClasses
+  List bugClasses
 
-    /**
-     * The directories containing the sources to be compiled.
-     *
-     */
-    List compileSourceRoots
+  /**
+   * The directories containing the sources to be compiled.
+   *
+   */
+  List compileSourceRoots
 
-    String outputEncoding
+  String outputEncoding
     
 
 
-    /**
-     * Default constructor.
-     *
-     * @param bundle - The Resource Bundle to use
-     */
-    XDocsReporter(ResourceBundle bundle, Log log, String threshold, String effort, String outputEncoding) {
-        assert bundle
-        assert log
-        assert threshold
-        assert effort
-        assert outputEncoding
+  /**
+   * Default constructor.
+   *
+   * @param bundle - The Resource Bundle to use
+   */
+  XDocsReporter(ResourceBundle bundle, Log log, String threshold, String effort, String outputEncoding) {
+    assert bundle
+    assert log
+    assert threshold
+    assert effort
+    assert outputEncoding
 
-        this.bundle = bundle
-        this.log = log
-        this.threshold = threshold
-        this.effort = effort
-        this.outputEncoding = outputEncoding
+    this.bundle = bundle
+    this.log = log
+    this.threshold = threshold
+    this.effort = effort
+    this.outputEncoding = outputEncoding
 
-        this.outputWriter = null
-        this.findbugsResults = null
+    this.outputWriter = null
+    this.findbugsResults = null
 
-        this.compileSourceRoots = []
-        this.bugClasses = []
+    this.compileSourceRoots = []
+    this.bugClasses = []
+  }
+
+
+  /**
+   * Returns the threshold string value for the integer input.
+   *
+   * @param thresholdValue
+   *            The ThresholdValue integer to evaluate.
+   * @return The string valueof the Threshold object.
+   *
+   */
+  protected String evaluateThresholdParameter(String thresholdValue) {
+    String thresholdName
+
+    switch ( thresholdValue ) {
+      case "1":
+      thresholdName = "High"
+      break
+      case "2":
+      thresholdName = "Normal"
+      break
+      case "3":
+      thresholdName = "Low"
+      break
+      case "4":
+      thresholdName = "Exp"
+      break
+      case "5":
+      thresholdName = "Ignore"
+      break
+      default:
+      thresholdName = "Invalid Priority"
     }
 
+    return thresholdName
 
-    /**
-     * Returns the threshold string value for the integer input.
-     *
-     * @param thresholdValue
-     *            The ThresholdValue integer to evaluate.
-     * @return The string valueof the Threshold object.
-     *
-     */
-    protected String evaluateThresholdParameter(String thresholdValue) {
-        String thresholdName
+  }
 
-        switch ( thresholdValue ) {
-            case "1":
-            thresholdName = "High"
-            break
-            case "2":
-            thresholdName = "Normal"
-            break
-            case "3":
-            thresholdName = "Low"
-            break
-            case "4":
-            thresholdName = "Exp"
-            break
-            case "5":
-            thresholdName = "Ignore"
-            break
-            default:
-            thresholdName = "Invalid Priority"
+  /**
+   * Gets the Findbugs Version of the report.
+   *
+   * @return The Findbugs Version used on the report.
+   *
+   */
+  protected String getFindBugsVersion() {
+    return edu.umd.cs.findbugs.Version.RELEASE
+  }
+
+
+  public void generateReport() {
+
+    def xmlBuilder = new StreamingMarkupBuilder()
+    xmlBuilder.encoding = "UTF-8"
+
+    def xdoc = {
+      mkp.xmlDeclaration()
+      BugCollection(version: getFindBugsVersion(), threshold:findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) {
+        findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
+
+          def classStatsValue = classStats.'@class'.text()
+          def classStatsBugCount = classStats.'@bugs'.text()
+
+          if ( classStatsBugCount.toInteger() > 0 ) {
+            bugClasses << classStatsValue
+          }
         }
 
-        return thresholdName
+        bugClasses.each() {bugClass ->
+          log.debug("finish bugClass is ${bugClass}")
+          file(classname: URLEncoder.encode(bugClass, outputEncoding))
+          findbugsResults.BugInstance.each() {bugInstance ->
 
-    }
+            if ( bugInstance.Class.@classname.text() == bugClass ) {
 
-    /**
-     * Gets the Findbugs Version of the report.
-     *
-     * @return The Findbugs Version used on the report.
-     *
-     */
-    protected String getFindBugsVersion() {
-        return edu.umd.cs.findbugs.Version.RELEASE
-    }
+              def type = bugInstance.@type.text()
+              def category = bugInstance.@category.text()
+              def message = bugInstance.LongMessage.text()
+              def priority = evaluateThresholdParameter(bugInstance.@priority.text())
+              def line = bugInstance.SourceLine.@start[0].text()
+              log.debug(message)
 
+              BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: line)
 
-    public void generateReport() {
-
-        def xmlBuilder = new StreamingMarkupBuilder()
-        xmlBuilder.encoding = "UTF-8"
-
-        def xdoc = {
-            mkp.xmlDeclaration()
-            BugCollection(version: getFindBugsVersion(), threshold:findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) {
-                findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
-
-                    def classStatsValue = classStats.'@class'.text()
-                    def classStatsBugCount = classStats.'@bugs'.text()
-
-                    if ( classStatsBugCount.toInteger() > 0 ) {
-                        bugClasses << classStatsValue
-                    }
-                }
-
-                bugClasses.each() {bugClass ->
-                    log.debug("finish bugClass is ${bugClass}")
-                    file(classname: URLEncoder.encode(bugClass, outputEncoding))
-                    findbugsResults.BugInstance.each() {bugInstance ->
-
-                        if ( bugInstance.Class.@classname.text() == bugClass ) {
-
-                            def type = bugInstance.@type.text()
-                            def category = bugInstance.@category.text()
-                            def message = bugInstance.LongMessage.text()
-                            def priority = evaluateThresholdParameter(bugInstance.@priority.text())
-                            def line = bugInstance.SourceLine.@start.text()
-                            log.debug(message)
-
-                            BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: line)
-
-                        }
-                    }
-
-                }
-                log.debug("Printing Errors")
-                Error() {
-                    findbugsResults.Error.analysisError.each() {analysisError ->
-                        AnalysisError(URLEncoder.encode(analysisError.message.text(), outputEncoding))
-                    }
-
-                    log.debug("Printing Missing classes")
-
-                    findbugsResults.Error.MissingClass.each() {missingClass ->
-                        MissingClass(URLEncoder.encode(missingClass.text, outputEncoding))
-                    }
-                }
-
-                Project() {
-                    log.debug("Printing Source Roots")
-
-                    if ( !compileSourceRoots.isEmpty() ) {
-                        compileSourceRoots.each() {srcDir ->
-                            SrcDir(srcDir)
-                        }
-                    }
-
-                }
             }
+          }
+
         }
- 
-        //     printErrors()
-        //   printSource()
+        log.debug("Printing Errors")
+        Error() {
+          findbugsResults.Error.analysisError.each() {analysisError ->
+            AnalysisError(URLEncoder.encode(analysisError.message.text(), outputEncoding))
+          }
 
-        outputWriter << xmlBuilder.bind(xdoc)
-        outputWriter.flush()
-        outputWriter.close()
+          log.debug("Printing Missing classes")
 
+          findbugsResults.Error.MissingClass.each() {missingClass ->
+            MissingClass(URLEncoder.encode(missingClass.text, outputEncoding))
+          }
+        }
+
+        Project() {
+          log.debug("Printing Source Roots")
+
+          if ( !compileSourceRoots.isEmpty() ) {
+            compileSourceRoots.each() {srcDir ->
+              SrcDir(srcDir)
+            }
+          }
+
+        }
+      }
     }
+ 
+    //     printErrors()
+    //   printSource()
+
+    outputWriter << xmlBuilder.bind(xdoc)
+    outputWriter.flush()
+    outputWriter.close()
+
+  }
 
 }
     
