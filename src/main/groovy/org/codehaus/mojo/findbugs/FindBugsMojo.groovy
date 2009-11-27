@@ -364,13 +364,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
   ResourceBundle bundle
 
-  /**
-   * The file for the auxclasspath
-   *
-   */
-  private static final RESPONSE_FILE = "findbugs.response"
-
-
   private static final EOL = "\n"
 
   /**
@@ -625,8 +618,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
 
-    File responseFile = new File("${project.build.directory}/" + RESPONSE_FILE)
-
     if (!outputEncoding) { outputEncoding = "UTF-8"}
 
     log.debug("****** Executing FindBugsMojo *******")
@@ -717,7 +708,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       pluginArtifacts.each() {pluginArtifact ->
         log.debug("  Adding to AuxClasspath ->" + pluginArtifact.file.toString())
 
-        //                auxClasspath += '"' + pluginArtifact.file.toString() + '"' + ((pluginArtifact == pluginArtifacts[pluginArtifacts.size() - 1]) ? "" : File.pathSeparator)
         auxClasspath += pluginArtifact.file.toString() + ((pluginArtifact == pluginArtifacts[pluginArtifacts.size() - 1]) ? "" : File.pathSeparator)
       }
 
@@ -741,22 +731,15 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             auxClasspath += auxClasspathElement.toString() + ((auxClasspathElement == auxClasspathList[auxClasspathList.size() - 1]) ? "" : File.pathSeparator)
           }
 
-
         }
 
       }
 
       log.debug("  AuxClasspath is ->" + auxClasspath)
       arg(value: "-auxclasspath")
-      arg(value: "@" + responseFile.absolutePath)
+      arg(value: auxClasspath)
 
-      auxClasspath = '"' + auxClasspath + '"'
-      
-      responseFile << auxClasspath + EOL
-
-      classpath()
-      {
-
+      classpath() {
 
         pluginArtifacts.each() {pluginArtifact ->
           log.debug("  Adding to pluginArtifact ->" + pluginArtifact.file.toString())
@@ -765,17 +748,13 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         }
       }
 
-      log.debug("  Adding Source Directory: " + classFilesDirectory.getAbsolutePath())
-      arg(value: classFilesDirectory.getAbsolutePath())
-
       def sourceFileList = getJavaSources()
-
 
       sourceFileList.each() {sourceFile ->
 
-        log.info("  Adding to Source Files ->" + sourceFile.absolutePath)
+        log.debug("  Adding to Source Files ->" + sourceFile.absolutePath)
 
-        responseFile << sourceFile.absolutePath + EOL
+        arg(value: sourceFile.absolutePath)
       }
 
     }
