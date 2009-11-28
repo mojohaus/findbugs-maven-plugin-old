@@ -487,59 +487,62 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         }
       }
 
-      log.debug("Generating Findbugs HTML")
+      if (outputFile.exists()) {
+        log.debug("Generating Findbugs HTML")
 
-      //            Locale objLocale = new Locale("pt","BR")
-      //            log.info("Country is " + objLocale.getCountry())
-      //            log.info("Language is " + objLocale.getLanguage())
+        //            Locale objLocale = new Locale("pt","BR")
+        //            log.info("Country is " + objLocale.getCountry())
+        //            log.info("Language is " + objLocale.getLanguage())
 
-      FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
+        FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
 
-      boolean isJxrPluginEnabled = isJxrPluginEnabled()
+        boolean isJxrPluginEnabled = isJxrPluginEnabled()
 
-      generator.setIsJXRReportEnabled(isJxrPluginEnabled)
+        generator.setIsJXRReportEnabled(isJxrPluginEnabled)
 
-      if ( isJxrPluginEnabled ) {
-        generator.setCompileSourceRoots(this.compileSourceRoots)
-        generator.setTestSourceRoots(this.testSourceRoots)
-        generator.setXrefLocation(this.xrefLocation)
-        generator.setXrefTestLocation(this.xrefTestLocation)
-        generator.setIncludeTests(this.includeTests)
-      }
-
-
-      generator.setLog(log)
-
-      generator.setThreshold(threshold)
-
-      generator.setEffort(effort)
-
-      generator.setFindbugsResults(new XmlSlurper().parse(outputFile))
-
-
-      generator.setOutputDirectory(new File(outputDirectory.getAbsolutePath()))
-
-      generator.generateReport()
-
-
-
-
-      if ( xmlOutput ) {
-        log.debug("  Using the xdoc format")
-
-        if ( !xmlOutputDirectory.exists() ) {
-          if ( !xmlOutputDirectory.mkdirs() ) {
-            fail("Cannot create xdoc output directory")
-          }
+        if ( isJxrPluginEnabled ) {
+          generator.setCompileSourceRoots(this.compileSourceRoots)
+          generator.setTestSourceRoots(this.testSourceRoots)
+          generator.setXrefLocation(this.xrefLocation)
+          generator.setXrefTestLocation(this.xrefTestLocation)
+          generator.setIncludeTests(this.includeTests)
         }
 
-        XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
-        xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
-        xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
-        xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
 
-        xDocsReporter.generateReport()
+        generator.setLog(log)
+
+        generator.setThreshold(threshold)
+
+        generator.setEffort(effort)
+
+        generator.setFindbugsResults(new XmlSlurper().parse(outputFile))
+
+
+        generator.setOutputDirectory(new File(outputDirectory.getAbsolutePath()))
+
+        generator.generateReport()
+
+
+
+
+        if ( xmlOutput ) {
+          log.debug("  Using the xdoc format")
+
+          if ( !xmlOutputDirectory.exists() ) {
+            if ( !xmlOutputDirectory.mkdirs() ) {
+              fail("Cannot create xdoc output directory")
+            }
+          }
+
+          XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
+          xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
+          xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
+          xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+
+          xDocsReporter.generateReport()
+        }
       }
+
     }
 
   }
@@ -640,10 +643,13 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     log.debug("Temp File is " + tempFile.getAbsolutePath())
 
+    //    def ant = new AntBuilder(output: "${project.build.directory}/Findbugs.debug")
     def ant = new AntBuilder()
 
-    ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m")
-    {
+    //    ant(output: "${project.build.directory}/Findbugs.debug")
+
+
+    ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
 
       def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
@@ -748,51 +754,47 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         }
       }
 
-      def sourceFileList = getJavaSources()
-
-      sourceFileList.each() {sourceFile ->
-
-        log.debug("  Adding to Source Files ->" + sourceFile.absolutePath)
-
-        arg(value: sourceFile.absolutePath)
-      }
-
+      log.debug("  Adding to Source Directory ->" + classFilesDirectory.absolutePath)
+      arg(value: classFilesDirectory.absolutePath)
     }
 
+    if (tempFile.exists()) {
 
-    def path = new XmlSlurper().parse(tempFile)
+      def path = new XmlSlurper().parse(tempFile)
 
-    def allNodes = path.depthFirst().collect { it }
+      def allNodes = path.depthFirst().collect { it }
 
-    bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
-    log.debug("BugInstance size is ${bugCount}")
+      bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
+      log.debug("BugInstance size is ${bugCount}")
 
-    errorCount = allNodes.findAll {it.name() == 'Error'}.size()
-    log.debug("Error size is ${errorCount}")
+      errorCount = allNodes.findAll {it.name() == 'Error'}.size()
+      log.debug("Error size is ${errorCount}")
 
 
 
-    def xmlProject = path.Project
+      def xmlProject = path.Project
 
-    compileSourceRoots.each() { compileSourceRoot ->
+      compileSourceRoots.each() { compileSourceRoot ->
+        xmlProject.appendNode {
+          SrcDir(compileSourceRoot)
+        }
+      }
+
+      path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
+
       xmlProject.appendNode {
-        SrcDir(compileSourceRoot)
+        WrkDir(project.build.directory)
       }
-    }
 
-    path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
+      def xmlBuilder = new StreamingMarkupBuilder()
 
-    xmlProject.appendNode {
-      WrkDir(project.build.directory)
-    }
-
-    def xmlBuilder = new StreamingMarkupBuilder()
-
-    if (outputFile.exists()) outputFile.write "\n"
+      if (outputFile.exists()) outputFile.write "\n"
         
-    outputFile << xmlBuilder.bind{ mkp.yield path }
+      outputFile << xmlBuilder.bind{ mkp.yield path }
 
-    tempFile.delete()
+      tempFile.delete()
+    }
+
 
   }
 
