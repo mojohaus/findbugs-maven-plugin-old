@@ -235,7 +235,20 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   ArtifactResolver artifactResolver
 
   /**
+   * <p>
    * File name of the include filter. Only bugs in matching the filters are reported.
+   * </p>
+   *
+   * <p>
+   * Potential values are a filesystem path, a URL, or a classpath resource.
+   * </p>
+   *
+   * <p>
+   * This parameter is resolved as resource, URL, then file. If successfully
+   * resolved, the contents of the configuration is copied into the
+   * <code>${project.build.directory}</code>
+   * directory before being passed to Findbugs as a filter file.
+   * </p>
    *
    * @parameter
    * @since 1.0-beta-1
@@ -243,7 +256,20 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   String includeFilterFile
 
   /**
+   * <p>
    * File name of the exclude filter. Bugs matching the filters are not reported.
+   * </p>
+   *
+   * <p>
+   * Potential values are a filesystem path, a URL, or a classpath resource.
+   * </p>
+   *
+   * <p>
+   * This parameter is resolved as resource, URL, then file. If successfully
+   * resolved, the contents of the configuration is copied into the
+   * <code>${project.build.directory}</code>
+   * directory before being passed to Findbugs as a filter file.
+   * </p>
    *
    * @parameter
    * @since 1.0-beta-1
@@ -756,6 +782,12 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
       log.debug("  Adding to Source Directory ->" + classFilesDirectory.absolutePath)
       arg(value: classFilesDirectory.absolutePath)
+
+      if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
+        log.debug("  Adding to Source Directory ->" + testClassFilesDirectory.absolutePath)
+        arg(value: testClassFilesDirectory.absolutePath)
+      }
+
     }
 
     if (tempFile.exists()) {
@@ -945,14 +977,12 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   {
     List sourceFiles = new ArrayList()
 
-    if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() )
-    {
+    if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() ) {
       List files = FileUtils.getFiles( classFilesDirectory, FindBugsMojo.JAVA_REGEX_PATTERN, null )
       sourceFiles.addAll( files )
     }
 
-    if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests )
-    {
+    if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
       List files = FileUtils.getFiles( testClassFilesDirectory, FindBugsMojo.JAVA_REGEX_PATTERN, null )
       sourceFiles.addAll( files )
     }
