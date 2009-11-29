@@ -317,7 +317,20 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   String omitVisitors
 
   /**
+   * <p>
    * The plugin list to include in the report. This is a comma-delimited list.
+   * </p>
+   *
+   * <p>
+   * Potential values are a filesystem path, a URL, or a classpath resource.
+   * </p>
+   *
+   * <p>
+   * This parameter is resolved as resource, URL, then file. If successfully
+   * resolved, the contents of the configuration is copied into the
+   * <code>${project.build.directory}</code>
+   * directory before being passed to Findbugs as a plugin file.
+   * </p>
    *
    * @parameter
    * @since 1.0-beta-1
@@ -941,11 +954,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         try {
           log.debug("  Processing Plugin: " + pluginFileName.toString())
 
-          if ( urlPlugins ) {
-            urlPlugins = urlPlugins + "," + new File(pluginFileName.toString()).toURL().toString()
-          } else {
-            urlPlugins = new File(pluginFileName.toString()).toURL().toString()
-          }
+          urlPlugins += getResourceFile(pluginFileName.toString()).getAbsolutePath() + ((pluginJar == pluginJars[pluginJars.size() - 1]) ? "" : ",")
         }
         catch (MalformedURLException exception) {
           fail("The addin plugin has an invalid URL", exception)
@@ -953,7 +962,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
     }
 
-
+    log.debug("  Plugin list is: ${urlPlugins}")
+      
     return urlPlugins
   }
     
