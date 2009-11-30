@@ -84,6 +84,7 @@
         <system>JIRA</system>
         <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
     </issueManagement>
+    <!--
     <distributionManagement>
         <site>
             <id>codehaus.org</id>
@@ -91,6 +92,7 @@
             <url>dav:https://dav.codehaus.org/mojo/findbugs-maven-plugin/${project.version}</url>
         </site>
     </distributionManagement>
+    -->
 
     <properties>
         <groovy.plugin.version>1.0-rc-3</groovy.plugin.version>

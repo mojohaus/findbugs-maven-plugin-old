@@ -3,25 +3,27 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd"
     name="Maven FindBugs Plugin">
-    <body>
-        <links>
-            <item name="Findbugs" href="http://findbugs.sourceforge.net/"/>
-        </links>
-        <menu name="Overview">
-            <item name="Introduction" href="index.html"/>
-            <item name="Goals" href="plugin-info.html"/>
-            <item name="Usage" href="usage.html"/>
-            <item name="FAQ" href="faq.html"/>
-        </menu>
-        <menu name="Examples">
-            <item name="Sample Report" href="examples/findbugs.html"/>
-            <item name="Sample XML xdoc Report" href="examples/findbugs.xml"/>
-            <item name="Sample Legacy XML Report" href="examples/findbugsXml.xml"/>
-            <item name="Multi-Module Configuration" href="examples/multi-module-config.html"/>
-            <item name="Violation Checking Configuration" href="examples/violationChecking.html"/>
-        </menu>
-        <menu name="Previous Versions">
-            <item name="2.0.1" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.0.1/index.html"  />
-        </menu>
-    </body>
+  <body>
+    <links>
+      <item name="Findbugs" href="http://findbugs.sourceforge.net/"/>
+    </links>
+    <menu name="Mojo">
+      <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
+      <item name="Version 2.2" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.2/"/>
+      <item name="Version 2.0.1" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.0.1/"/>
+    </menu>
+    <menu name="Overview">
+      <item name="Introduction" href="index.html"/>
+      <item name="Goals" href="plugin-info.html"/>
+      <item name="Usage" href="usage.html"/>
+      <item name="FAQ" href="faq.html"/>
+    </menu>
+    <menu name="Examples">
+      <item name="Sample Report" href="examples/findbugs.html"/>
+      <item name="Sample XML xdoc Report" href="examples/findbugs.xml"/>
+      <item name="Sample Legacy XML Report" href="examples/findbugsXml.xml"/>
+      <item name="Multi-Module Configuration" href="examples/multi-module-config.html"/>
+      <item name="Violation Checking Configuration" href="examples/violationChecking.html"/>
+    </menu>
+  </body>
 </project>
