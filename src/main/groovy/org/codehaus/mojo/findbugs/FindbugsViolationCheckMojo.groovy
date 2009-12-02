@@ -48,193 +48,193 @@ import org.codehaus.plexus.util.FileUtils
 
 class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
-    /**
-     * Location where generated html will be created.
-     *
-     * @parameter default-value="${project.reporting.outputDirectory}"
-     * @required
-     */
+  /**
+   * Location where generated html will be created.
+   *
+   * @parameter default-value="${project.reporting.outputDirectory}"
+   * @required
+   */
 
-    File outputDirectory
+  File outputDirectory
 
-    /**
-     * Turn on and off xml output of the Findbugs report.
-     *
-     * @parameter default-value="false"
-     * @since 1.0.0
-     */
-    boolean xmlOutput
+  /**
+   * Turn on and off xml output of the Findbugs report.
+   *
+   * @parameter default-value="false"
+   * @since 1.0.0
+   */
+  boolean xmlOutput
 
-    /**
-     * Specifies the directory where the xml output will be generated.
-     *
-     * @parameter default-value="${project.build.directory}"
-     * @required
-     * @since 1.0.0
-     */
-    File xmlOutputDirectory
+  /**
+   * Specifies the directory where the xml output will be generated.
+   *
+   * @parameter default-value="${project.build.directory}"
+   * @required
+   * @since 1.0.0
+   */
+  File xmlOutputDirectory
 
-    /**
-     * Turn on and off findbugs native xml output of the Findbugs report.
-     *
-     * @parameter default-value="false"
-     * @since 1.2.0
-     * @deprecated
-     */
-    boolean findbugsXmlOutput
+  /**
+   * Turn on and off findbugs native xml output of the Findbugs report.
+   *
+   * @parameter default-value="false"
+   * @since 1.2.0
+   * @deprecated
+   */
+  boolean findbugsXmlOutput
 
-    /**
-     * Specifies the directory where the findbugs native xml output will be generated.
-     *
-     * @parameter default-value="${project.build.directory}"
-     * @required
-     * @since 1.2.0
-     */
-    File findbugsXmlOutputDirectory
+  /**
+   * Specifies the directory where the findbugs native xml output will be generated.
+   *
+   * @parameter default-value="${project.build.directory}"
+   * @required
+   * @since 1.2.0
+   */
+  File findbugsXmlOutputDirectory
 
-    /**
-     * Doxia Site Renderer.
-     *
-     * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
-     * @required
-     * @readonly
-     */
-    SiteRenderer siteRenderer
+  /**
+   * Doxia Site Renderer.
+   *
+   * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
+   * @required
+   * @readonly
+   */
+  SiteRenderer siteRenderer
 
-    /**
-     * Directory containing the class files for FindBugs to analyze.
-     *
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
-     */
-    File classFilesDirectory
+  /**
+   * Directory containing the class files for FindBugs to analyze.
+   *
+   * @parameter default-value="${project.build.outputDirectory}"
+   * @required
+   */
+  File classFilesDirectory
 
-    /**
-     * Directory containing the test class files for FindBugs to analyze.
-     *
-     * @parameter default-value="${project.build.testOutputDirectory}"
-     * @required
-     */
-    File testClassFilesDirectory
+  /**
+   * Directory containing the test class files for FindBugs to analyze.
+   *
+   * @parameter default-value="${project.build.testOutputDirectory}"
+   * @required
+   */
+  File testClassFilesDirectory
 
-    /**
-     * Location of the Xrefs to link to.
-     *
-     * @parameter default-value="${project.reporting.outputDirectory}/xref"
-     */
-    File xrefLocation
+  /**
+   * Location of the Xrefs to link to.
+   *
+   * @parameter default-value="${project.reporting.outputDirectory}/xref"
+   */
+  File xrefLocation
 
-    /**
-     * Location of the Test Xrefs to link to.
-     *
-     * @parameter default-value="${project.reporting.outputDirectory}/xref-test"
-     */
-    File xrefTestLocation
+  /**
+   * Location of the Test Xrefs to link to.
+   *
+   * @parameter default-value="${project.reporting.outputDirectory}/xref-test"
+   */
+  File xrefTestLocation
 
-    /**
-     * The directories containing the sources to be compiled.
-     *
-     * @parameter expression="${project.compileSourceRoots}"
-     * @required
-     * @readonly
-     */
-    List compileSourceRoots
+  /**
+   * The directories containing the sources to be compiled.
+   *
+   * @parameter expression="${project.compileSourceRoots}"
+   * @required
+   * @readonly
+   */
+  List compileSourceRoots
 
-    /**
-     * The directories containing the test-sources to be compiled.
-     *
-     * @parameter expression="${project.testCompileSourceRoots}"
-     * @required
-     * @readonly
-     * @since 2.0
-     */
-    List testSourceRoots
+  /**
+   * The directories containing the test-sources to be compiled.
+   *
+   * @parameter expression="${project.testCompileSourceRoots}"
+   * @required
+   * @readonly
+   * @since 2.0
+   */
+  List testSourceRoots
 
-    /**
-     * Run Findbugs on the tests.
-     *
-     * @parameter default-value="false"
-     * @since 2.0
-     */
-    boolean includeTests
+  /**
+   * Run Findbugs on the tests.
+   *
+   * @parameter default-value="false"
+   * @since 2.0
+   */
+  boolean includeTests
 
-    /**
-     * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
-     *
-     * @parameter expression="${plugin.artifacts}"
-     * @required
-     * @readonly
-     */
-    ArrayList pluginArtifacts
+  /**
+   * List of artifacts this plugin depends on. Used for resolving the Findbugs coreplugin.
+   *
+   * @parameter expression="${plugin.artifacts}"
+   * @required
+   * @readonly
+   */
+  ArrayList pluginArtifacts
 
-    /**
-     * The local repository, needed to download the coreplugin jar.
-     *
-     * @parameter expression="${localRepository}"
-     * @required
-     * @readonly
-     */
-    DefaultArtifactRepository localRepository
+  /**
+   * The local repository, needed to download the coreplugin jar.
+   *
+   * @parameter expression="${localRepository}"
+   * @required
+   * @readonly
+   */
+  DefaultArtifactRepository localRepository
 
-    /**
-     * Remote repositories which will be searched for the coreplugin jar.
-     *
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     * @required
-     * @readonly
-     */
-    List remoteArtifactRepositories
+  /**
+   * Remote repositories which will be searched for the coreplugin jar.
+   *
+   * @parameter expression="${project.remoteArtifactRepositories}"
+   * @required
+   * @readonly
+   */
+  List remoteArtifactRepositories
 
-    /**
-     * Maven Project
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    MavenProject project
+  /**
+   * Maven Project
+   *
+   * @parameter expression="${project}"
+   * @required
+   * @readonly
+   */
+  MavenProject project
 
-    /**
-     * Encoding used for xml files. Default value is UTF-8.
-     *
-     * @parameter default-value="UTF-8"
-     * @readonly
-     */
-    String xmlEncoding
+  /**
+   * Encoding used for xml files. Default value is UTF-8.
+   *
+   * @parameter default-value="UTF-8"
+   * @readonly
+   */
+  String xmlEncoding
 
-    /**
-     * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
-     * is not set, the platform default encoding is used.
-     *
-     * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
-     * @since 2.2
-     */
-    String sourceEncoding
+  /**
+   * The file encoding to use when reading the source files. If the property <code>project.build.sourceEncoding</code>
+   * is not set, the platform default encoding is used.
+   *
+   * @parameter expression="${encoding}" default-value="${project.build.sourceEncoding}"
+   * @since 2.2
+   */
+  String sourceEncoding
 
-    /**
-     * The file encoding to use when creating the HTML reports. If the property <code>project.reporting.outputEncoding</code>
-     * is not set, the platform default encoding is used.
-     *
-     * @parameter expression="${outputEncoding}" default-value="${project.reporting.outputEncoding}"
-     * @since 2.2
-     */
-    String outputEncoding
+  /**
+   * The file encoding to use when creating the HTML reports. If the property <code>project.reporting.outputEncoding</code>
+   * is not set, the platform default encoding is used.
+   *
+   * @parameter expression="${outputEncoding}" default-value="${project.reporting.outputEncoding}"
+   * @since 2.2
+   */
+  String outputEncoding
 
-    /**
-     * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
-     *
-     * @parameter
-     */
-    String threshold
+  /**
+   * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
+   *
+   * @parameter default-value="Default"
+   */
+  String threshold
 
-    /**
-     * Artifact resolver, needed to download the coreplugin jar.
-     *
-     * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
-     * @required
-     * @readonly
-     */
-    ArtifactResolver artifactResolver
+  /**
+   * Artifact resolver, needed to download the coreplugin jar.
+   *
+   * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
+   * @required
+   * @readonly
+   */
+  ArtifactResolver artifactResolver
 
   /**
    * <p>
@@ -255,7 +255,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
    * @parameter
    * @since 1.0-beta-1
    */
-    String includeFilterFile
+  String includeFilterFile
 
   /**
    * <p>
@@ -276,47 +276,47 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
    * @parameter
    * @since 1.0-beta-1
    */
-    String excludeFilterFile
+  String excludeFilterFile
 
-    /**
-     * Effort of the bug finders. Valid values are Min, Default and Max.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String effort
+  /**
+   * Effort of the bug finders. Valid values are Min, Default and Max.
+   *
+   * @parameter default-value="Default"
+   * @since 1.0-beta-1
+   */
+  String effort
 
-    /**
-     * turn on Findbugs debugging
-     *
-     * @parameter default-value="false"
-     */
-    Boolean debug
+  /**
+   * turn on Findbugs debugging
+   *
+   * @parameter default-value="false"
+   */
+  Boolean debug
 
-    /**
-     * Relaxed reporting mode. For many detectors, this option suppresses the heuristics used to avoid reporting false
-     * positives.
-     *
-     * @parameter default-value="false"
-     * @since 1.1
-     */
-    Boolean relaxed
+  /**
+   * Relaxed reporting mode. For many detectors, this option suppresses the heuristics used to avoid reporting false
+   * positives.
+   *
+   * @parameter default-value="false"
+   * @since 1.1
+   */
+  Boolean relaxed
 
-    /**
-     * The visitor list to run. This is a comma-delimited list.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String visitors
+  /**
+   * The visitor list to run. This is a comma-delimited list.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String visitors
 
-    /**
-     * The visitor list to omit. This is a comma-delimited list.
-     *
-     * @parameter
-     * @since 1.0-beta-1
-     */
-    String omitVisitors
+  /**
+   * The visitor list to omit. This is a comma-delimited list.
+   *
+   * @parameter
+   * @since 1.0-beta-1
+   */
+  String omitVisitors
 
   /**
    * <p>
@@ -337,119 +337,119 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
    * @parameter
    * @since 1.0-beta-1
    */
-    String pluginList
+  String pluginList
 
-    /**
-     * Restrict analysis to the given comma-separated list of classes and packages.
-     *
-     * @parameter
-     * @since 1.1
-     */
-    String onlyAnalyze
+  /**
+   * Restrict analysis to the given comma-separated list of classes and packages.
+   *
+   * @parameter
+   * @since 1.1
+   */
+  String onlyAnalyze
 
-    /**
-     * Skip entire check.
-     *
-     * @parameter expression="${findbugs.skip}" default-value="false"
-     * @since 1.1
-     */
-    boolean skip
+  /**
+   * Skip entire check.
+   *
+   * @parameter expression="${findbugs.skip}" default-value="false"
+   * @since 1.1
+   */
+  boolean skip
 
-    /**
-     * @component
-     * @required
-     * @readonly
-     * @since 2.0
-     */
-    ResourceManager resourceManager
+  /**
+   * @component
+   * @required
+   * @readonly
+   * @since 2.0
+   */
+  ResourceManager resourceManager
 
-    /**
-     * SiteTool.
-     *
-     * @since 2.1-SNAPSHOT
-     * @component role="org.apache.maven.doxia.tools.SiteTool"
-     * @required
-     * @readonly
-     */
-    protected SiteTool siteTool
+  /**
+   * SiteTool.
+   *
+   * @since 2.1-SNAPSHOT
+   * @component role="org.apache.maven.doxia.tools.SiteTool"
+   * @required
+   * @readonly
+   */
+  protected SiteTool siteTool
 
-    /**
-     * Fail the build on an error.
-     *
-     * @parameter default-value="true"
-     * @since 2.0
-     */
-    boolean failOnError
+  /**
+   * Fail the build on an error.
+   *
+   * @parameter default-value="true"
+   * @since 2.0
+   */
+  boolean failOnError
 
-    /**
-     * Maximum Java heap size in megabytes  (default=512).
-     *
-     * @parameter default-value="512"
-     * @since 2.2
-     */
-    int maxHeap
+  /**
+   * Maximum Java heap size in megabytes  (default=512).
+   *
+   * @parameter default-value="512"
+   * @since 2.2
+   */
+  int maxHeap
 
-    /**
-     * Specifies the amount of time, in milliseconds, that FindBugs may run before
-     *  it is assumed to be hung and is terminated.
-     * The default is 600,000 milliseconds, which is ten minutes.
-     *
-     * @parameter default-value="600000"
-     * @since 2.2
-     */
-    int timeout
+  /**
+   * Specifies the amount of time, in milliseconds, that FindBugs may run before
+   *  it is assumed to be hung and is terminated.
+   * The default is 600,000 milliseconds, which is ten minutes.
+   *
+   * @parameter default-value="600000"
+   * @since 2.2
+   */
+  int timeout
 
-    int bugCount
+  int bugCount
     
-    int errorCount
+  int errorCount
 
 
-    void execute() {
-        Locale locale = Locale.getDefault()
-        List sourceFiles
+  void execute() {
+    Locale locale = Locale.getDefault()
+    List sourceFiles
 
-        log.debug("Excecuting findbugs:check")
+    log.debug("Excecuting findbugs:check")
 
-        if ( this.classFilesDirectory.exists() && this.classFilesDirectory.isDirectory() ) {
-            sourceFiles = FileUtils.getFiles(classFilesDirectory, JAVA_REGEX_PATTERN, null)
-        }
-
-        if ( !skip && sourceFiles ) {
-
-            // this goes
-
-            log.debug("Here goes...............Excecuting findbugs:check")
-
-            if (!findbugsXmlOutputDirectory.exists()) {
-                if ( !findbugsXmlOutputDirectory.mkdirs() ) {
-                    fail("Cannot create xml output directory")
-                }
-            }
-
-
-            File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
-
-            def path = new XmlSlurper().parse(outputFile)
-
-            def allNodes = path.depthFirst().collect { it }
-
-            bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
-            log.debug("BugInstance size is ${bugCount}")
-
-            errorCount = allNodes.findAll {it.name() == 'Error'}.size()
-            log.debug("Error size is ${errorCount}")
-
-
-
-
-            if ( (bugCount || errorCount) && failOnError ) {
-                fail("failed with ${bugCount} bugs and ${errorCount} errors ")
-            }
-
-        }
-        else {
-            log.debug("Nothing for FindBugs to do here.")
-        }
+    if ( this.classFilesDirectory.exists() && this.classFilesDirectory.isDirectory() ) {
+      sourceFiles = FileUtils.getFiles(classFilesDirectory, JAVA_REGEX_PATTERN, null)
     }
+
+    if ( !skip && sourceFiles ) {
+
+      // this goes
+
+      log.debug("Here goes...............Excecuting findbugs:check")
+
+      if (!findbugsXmlOutputDirectory.exists()) {
+        if ( !findbugsXmlOutputDirectory.mkdirs() ) {
+          fail("Cannot create xml output directory")
+        }
+      }
+
+
+      File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
+
+      def path = new XmlSlurper().parse(outputFile)
+
+      def allNodes = path.depthFirst().collect { it }
+
+      bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
+      log.debug("BugInstance size is ${bugCount}")
+
+      errorCount = allNodes.findAll {it.name() == 'Error'}.size()
+      log.debug("Error size is ${errorCount}")
+
+
+
+
+      if ( (bugCount || errorCount) && failOnError ) {
+        fail("failed with ${bugCount} bugs and ${errorCount} errors ")
+      }
+
+    }
+    else {
+      log.debug("Nothing for FindBugs to do here.")
+    }
+  }
 
 }

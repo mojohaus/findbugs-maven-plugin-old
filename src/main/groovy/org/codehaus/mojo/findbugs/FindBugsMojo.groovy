@@ -221,7 +221,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * Threshold of minimum bug severity to report. Valid values are High, Default, Low, Ignore, and Exp (for experimental).
    *
-   * @parameter
+   * @parameter default-value="Default"
    */
   String threshold
 
@@ -279,7 +279,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * Effort of the bug finders. Valid values are Min, Default and Max.
    *
-   * @parameter
+   * @parameter default-value="Default"
    * @since 1.0-beta-1
    */
   String effort
@@ -518,6 +518,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       log.debug("XML outputFile is " + outputFile.getAbsolutePath())
       log.debug("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
+
       executeFindbugs(locale, outputFile)
 
       if (!outputDirectory.exists()) {
@@ -528,10 +529,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
       if (outputFile.exists()) {
         log.debug("Generating Findbugs HTML")
-
-        //            Locale objLocale = new Locale("pt","BR")
-        //            log.info("Country is " + objLocale.getCountry())
-        //            log.info("Language is " + objLocale.getLanguage())
 
         FindbugsReportGenerator generator = new FindbugsReportGenerator( getSink(), getBundle(locale), this.project.getBasedir(), siteTool)
 
@@ -550,9 +547,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         generator.setLog(log)
 
-        generator.setThreshold(threshold)
+        generator.threshold = threshold
 
-        generator.setEffort(effort)
+        generator.effort = effort
 
         generator.setFindbugsResults(new XmlSlurper().parse(outputFile))
 
@@ -851,24 +848,28 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    */
   protected String getThresholdParameter() {
 
+    log.debug("threshold is ${threshold}")
+
     String thresholdParameter
 
     switch ( threshold ) {
-      case threshold = "High":
+      case "High":
       thresholdParameter = "-high"; break
 
-      case threshold = "Exp":
+      case "Exp":
       thresholdParameter = "-experimental"; break
 
-      case threshold = "Low":
+      case "Low":
       thresholdParameter = "-low"; break
 
-      case threshold = "high":
+      case "high":
       thresholdParameter = "-high"; break
 
       default:
       thresholdParameter = "-medium"; break
     }
+    log.debug("thresholdParameter is ${thresholdParameter}")
+
     return thresholdParameter
 
   }
@@ -880,18 +881,22 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    *
    */
   protected String getEffortParameter() {
+    log.debug("effort is ${effort}")
+
     String effortParameter
 
     switch ( effort ) {
-      case effort = "Max":
+      case "Max":
       effortParameter = "max"; break
 
-      case effort = "Min":
+      case "Min":
       effortParameter = "min"; break
 
       default:
       effortParameter = "default"; break
     }
+
+    log.debug("effortParameter is ${effortParameter}")
 
     return "-effort:" + effortParameter
   }

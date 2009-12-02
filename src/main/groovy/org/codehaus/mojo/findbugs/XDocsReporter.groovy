@@ -161,7 +161,8 @@ class XDocsReporter implements FindBugsInfo {
 
     def xdoc = {
       mkp.xmlDeclaration()
-      BugCollection(version: getFindBugsVersion(), threshold:findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) {
+
+      BugCollection(version: getFindBugsVersion(), threshold: findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) {
         findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
 
           def classStatsValue = classStats.'@class'.text()

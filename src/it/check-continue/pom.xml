@@ -33,8 +33,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
-          <effort>Max</effort>
-          <threshold>Low</threshold>
           <failOnError>false</failOnError>
           <xmlOutput>true</xmlOutput>
         </configuration>

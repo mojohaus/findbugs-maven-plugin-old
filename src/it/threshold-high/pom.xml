@@ -15,8 +15,7 @@
     limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
@@ -24,8 +23,8 @@
     <version>testing</version>
     <relativePath>../common.xml</relativePath>
   </parent>
-  <artifactId>pluginList</artifactId>
-  <name>pluginList</name>
+  <artifactId>threshold-high</artifactId>
+  <name>threshold-high</name>
   <packaging>jar</packaging>
   <reporting>
     <excludeDefaults>true</excludeDefaults>
@@ -34,9 +33,10 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
+          <threshold>High</threshold>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
-          <pluginList>/opt/findbugs/fb-contrib-3.4.2.jar</pluginList>
+          <relaxed>true</relaxed>
         </configuration>
       </plugin>
     </plugins>

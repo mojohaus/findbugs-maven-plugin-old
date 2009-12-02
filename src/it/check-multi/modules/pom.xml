@@ -51,9 +51,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
-          <effort>Max</effort>
-          <threshold>Low</threshold>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
         </configuration>
         <executions>

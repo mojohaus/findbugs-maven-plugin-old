@@ -311,14 +311,10 @@ class FindbugsReportGenerator implements FindBugsInfo {
    *            The sink to generate the report.
    * @param bundle
    *            The resource bundle to get the messages from.
-   * @param log
-   *            The logger.
-   * @param threshold
-   *            The threshold for the report.
-   * @param isJXRReportEnabled
-   *            Is the jxr report plugin enabled.
-   * @param effort
-   *            The used effort.
+   * @param basedir
+   *            The project base directory.
+   * @param siteTool
+   *            Doxia SiteTool Handle.
    */
   FindbugsReportGenerator(Sink sink, ResourceBundle bundle, File basedir, SiteTool siteTool) {
 
