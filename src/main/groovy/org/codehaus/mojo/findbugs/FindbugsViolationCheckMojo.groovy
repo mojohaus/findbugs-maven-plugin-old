@@ -19,7 +19,7 @@ package org.codehaus.mojo.findbugs
  * under the License.
  */
 
-import org.apache.maven.artifact.repository.DefaultArtifactRepository
+import org.apache.maven.artifact.repository.ArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
 import org.codehaus.doxia.site.renderer.SiteRenderer
 import org.apache.maven.doxia.tools.SiteTool
@@ -174,7 +174,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
    * @required
    * @readonly
    */
-  DefaultArtifactRepository localRepository
+  ArtifactRepository localRepository
 
   /**
    * Remote repositories which will be searched for the coreplugin jar.
