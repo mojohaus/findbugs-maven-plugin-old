@@ -469,7 +469,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
 
         // priority
         sink.tableCell()
-        sink.text(priority)
+        sink.text(findbugsPriority[priority.toInteger()])
         sink.tableCell_()
 
         sink.tableRow_()

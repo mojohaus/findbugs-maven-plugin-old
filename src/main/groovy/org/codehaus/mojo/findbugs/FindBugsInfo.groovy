@@ -89,4 +89,6 @@ interface FindBugsInfo {
 
     def findbugsThresholds = [High: "high", Exp: "experimental", Low: "low", Medium: "medium", Default: "medium"]
 
+    def findbugsPriority = ["unknown", "High", "Medium", "Low"]
+
 }
