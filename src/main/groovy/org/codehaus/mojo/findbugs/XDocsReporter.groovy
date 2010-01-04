@@ -175,24 +175,26 @@ class XDocsReporter implements FindBugsInfo {
 
         bugClasses.each() {bugClass ->
           log.debug("finish bugClass is ${bugClass}")
-          file(classname: URLEncoder.encode(bugClass, outputEncoding))
-          findbugsResults.BugInstance.each() {bugInstance ->
+          file(classname: URLEncoder.encode(bugClass, outputEncoding)) {
+            findbugsResults.BugInstance.each() {bugInstance ->
 
-            if ( bugInstance.Class.@classname.text() == bugClass ) {
+              if ( bugInstance.Class.@classname.text() == bugClass ) {
 
-              def type = bugInstance.@type.text()
-              def category = bugInstance.@category.text()
-              def message = bugInstance.LongMessage.text()
-              def priority = evaluateThresholdParameter(bugInstance.@priority.text())
-              def line = bugInstance.SourceLine.@start[0].text()
-              log.debug(message)
+                def type = bugInstance.@type.text()
+                def category = bugInstance.@category.text()
+                def message = bugInstance.LongMessage.text()
+                def priority = evaluateThresholdParameter(bugInstance.@priority.text())
+                def line = bugInstance.SourceLine.@start[0].text()
+                log.debug(message)
 
-              BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: ((line) ? line: "-1"))
+                BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: ((line) ? line: "-1"))
 
+              }
             }
           }
 
         }
+        
         log.debug("Printing Errors")
         Error() {
           findbugsResults.Error.analysisError.each() {analysisError ->

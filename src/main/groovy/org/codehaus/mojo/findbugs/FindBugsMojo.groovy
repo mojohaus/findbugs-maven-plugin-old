@@ -488,6 +488,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     if ( canGenerateReport() ) {
 
+      log.debug("Locale is ${locale.getLanguage()}")
 
       log.debug("****** Executing FindBugsMojo *******")
 
