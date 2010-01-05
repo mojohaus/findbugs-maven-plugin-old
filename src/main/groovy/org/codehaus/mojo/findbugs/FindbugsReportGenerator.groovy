@@ -731,6 +731,9 @@ class FindbugsReportGenerator implements FindBugsInfo {
   }
 
   public void generateReport() {
+
+    log.debug("Reporter Locale is " + this.bundle.getLocale().getLanguage())
+
     doHeading()
 
     printSummary()

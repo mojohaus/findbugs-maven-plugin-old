@@ -242,7 +242,6 @@
 
     <reporting>
         <plugins>
-            <!--
             <plugin>
                 <groupId>org.codenarc</groupId>
                 <artifactId>maven-codenarc-plugin</artifactId>
@@ -251,6 +250,7 @@
                     <rulesetfiles>rulesets/basic.xml,rulesets/imports.xml,rulesets/size.xml,rulesets/unused.xml</rulesetfiles>
                 </configuration>
             </plugin>
+            <!--
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

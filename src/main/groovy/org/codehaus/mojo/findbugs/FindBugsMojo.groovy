@@ -488,7 +488,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     if ( canGenerateReport() ) {
 
-      log.debug("Locale is ${locale.getLanguage()}")
+      log.info("Locale is ${locale.getLanguage()}")
 
       log.debug("****** Executing FindBugsMojo *******")
 
@@ -641,9 +641,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
   ResourceBundle getBundle(locale) {
 
-    if ( bundle == null ) {
-      bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale)
-    }
+    this.bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale, FindBugsMojo.class.getClassLoader())
+
+    log.debug("Mojo Locale is " + this.bundle.getLocale().getLanguage())
+
     return bundle
   }
 
