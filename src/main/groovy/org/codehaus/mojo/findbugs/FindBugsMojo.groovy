@@ -674,6 +674,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     def auxClasspathElements = project.compileClasspathElements
 
+    if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
+      auxClasspathElements = project.testClasspathElements
+    }
+
     log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
 
     log.debug("outputFile is " + outputFile.getAbsolutePath())
