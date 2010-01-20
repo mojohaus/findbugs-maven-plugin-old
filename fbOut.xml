@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="http://findbugs.sourceforge.net/xsl/default.xsl"?>
+
+<BugCollection version="1.3.9" sequence="0" timestamp="1262733060000" analysisTimestamp="1262901483929" release="">
+  <Project projectName="">
+    <Jar>./classes</Jar>
+  </Project>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE" instanceHash="1e198d90e029bd94e0fcac098ac886f0" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to $L2 in new UselessAssignments(int, int)</LongMessage>
+    <Class classname="UselessAssignments" primary="true">
+      <SourceLine classname="UselessAssignments" start="4" end="31" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+        <Message>At UselessAssignments.java:[lines 4-31]</Message>
+      </SourceLine>
+      <Message>In class UselessAssignments</Message>
+    </Class>
+    <Method classname="UselessAssignments" name="&lt;init&gt;" signature="(II)V" isStatic="false" primary="true">
+      <SourceLine classname="UselessAssignments" start="4" end="10" startBytecode="0" endBytecode="18" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java"/>
+      <Message>In method new UselessAssignments(int, int)</Message>
+    </Method>
+    <LocalVariable name="?" register="2" pc="14" role="LOCAL_VARIABLE_UNKNOWN">
+      <Message>Local variable stored in JVM register 2</Message>
+    </LocalVariable>
+    <SourceLine classname="UselessAssignments" primary="true" start="7" end="7" startBytecode="13" endBytecode="13" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+      <Message>At UselessAssignments.java:[line 7]</Message>
+    </SourceLine>
+    <SourceLine classname="UselessAssignments" start="9" end="9" startBytecode="27" endBytecode="27" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java" role="SOURCE_LINE_ANOTHER_INSTANCE">
+      <Message>Another occurrence at UselessAssignments.java:[line 9]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="?"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.BASE_VALUE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.IS_PARAMETER" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.TWO_STORES_MULTIPLE_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.COPY_VALUE" value="true"/>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" abbrev="UrF" category="PERFORMANCE" instanceHash="a9ac916aaaa20f2f879ba1f5546378a2" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: UselessAssignments.bar</LongMessage>
+    <Class classname="UselessAssignments" primary="true">
+      <SourceLine classname="UselessAssignments" start="4" end="31" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+        <Message>At UselessAssignments.java:[lines 4-31]</Message>
+      </SourceLine>
+      <Message>In class UselessAssignments</Message>
+    </Class>
+    <Field classname="UselessAssignments" name="bar" signature="I" isStatic="false" primary="true">
+      <SourceLine classname="UselessAssignments" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+        <Message>In UselessAssignments.java</Message>
+      </SourceLine>
+      <Message>Field UselessAssignments.bar</Message>
+    </Field>
+    <SourceLine classname="UselessAssignments" primary="true" start="14" end="14" startBytecode="15" endBytecode="15" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+      <Message>At UselessAssignments.java:[line 14]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" abbrev="UrF" category="PERFORMANCE" instanceHash="92f970b91e234dfabebb960a2dda6cde" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: UselessAssignments.g1</LongMessage>
+    <Class classname="UselessAssignments" primary="true">
+      <SourceLine classname="UselessAssignments" start="4" end="31" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+        <Message>At UselessAssignments.java:[lines 4-31]</Message>
+      </SourceLine>
+      <Message>In class UselessAssignments</Message>
+    </Class>
+    <Field classname="UselessAssignments" name="g1" signature="I" isStatic="false" primary="true">
+      <SourceLine classname="UselessAssignments" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+        <Message>In UselessAssignments.java</Message>
+      </SourceLine>
+      <Message>Field UselessAssignments.g1</Message>
+    </Field>
+    <SourceLine classname="UselessAssignments" primary="true" start="8" end="8" startBytecode="18" endBytecode="18" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+      <Message>At UselessAssignments.java:[line 8]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UUF_UNUSED_FIELD" priority="2" abbrev="UuF" category="PERFORMANCE" instanceHash="58226112c6dad90dff9521fabd5e281a" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unused field</ShortMessage>
+    <LongMessage>Unused field: UselessAssignments.g2</LongMessage>
+    <Class classname="UselessAssignments" primary="true">
+      <SourceLine classname="UselessAssignments" start="4" end="31" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+        <Message>At UselessAssignments.java:[lines 4-31]</Message>
+      </SourceLine>
+      <Message>In class UselessAssignments</Message>
+    </Class>
+    <Field classname="UselessAssignments" name="g2" signature="I" isStatic="false" primary="true">
+      <SourceLine classname="UselessAssignments" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java">
+        <Message>In UselessAssignments.java</Message>
+      </SourceLine>
+      <Message>Field UselessAssignments.g2</Message>
+    </Field>
+    <SourceLine classname="UselessAssignments" sourcefile="UselessAssignments.java" sourcepath="UselessAssignments.java" synthetic="true">
+      <Message>In UselessAssignments.java</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE" instanceHash="6a78b99562832d13c4d4abd0ed980af1" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to $L2 in UserMistakes.main(String[])</LongMessage>
+    <Class classname="UserMistakes" primary="true">
+      <SourceLine classname="UserMistakes" start="9" end="44" sourcefile="UserMistakes.java" sourcepath="UserMistakes.java">
+        <Message>At UserMistakes.java:[lines 9-44]</Message>
+      </SourceLine>
+      <Message>In class UserMistakes</Message>
+    </Class>
+    <Method classname="UserMistakes" name="main" signature="([Ljava/lang/String;)V" isStatic="true" primary="true">
+      <SourceLine classname="UserMistakes" start="11" end="44" startBytecode="0" endBytecode="64" sourcefile="UserMistakes.java" sourcepath="UserMistakes.java"/>
+      <Message>In method UserMistakes.main(String[])</Message>
+    </Method>
+    <LocalVariable name="?" register="2" pc="76" role="LOCAL_VARIABLE_UNKNOWN">
+      <Message>Local variable stored in JVM register 2</Message>
+    </LocalVariable>
+    <SourceLine classname="UserMistakes" primary="true" start="28" end="28" startBytecode="75" endBytecode="75" sourcefile="UserMistakes.java" sourcepath="UserMistakes.java">
+      <Message>At UserMistakes.java:[line 28]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="?"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.BASE_VALUE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+  </BugInstance>
+  <BugCategory category="STYLE">
+    <Description>Dodgy</Description>
+  </BugCategory>
+  <BugCategory category="PERFORMANCE">
+    <Description>Performance</Description>
+  </BugCategory>
+  <BugPattern type="URF_UNREAD_FIELD" abbrev="UrF" category="PERFORMANCE">
+    <ShortDescription>Unread field</ShortDescription>
+    <Details><![CDATA[
+
+  <p> This field is never read.&nbsp; Consider removing it from the class.</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="DLS_DEAD_LOCAL_STORE" abbrev="DLS" category="STYLE">
+    <ShortDescription>Dead store to local variable</ShortDescription>
+    <Details><![CDATA[
+
+<p>
+This instruction assigns a value to a local variable,
+but the value is not read or used in any subsequent instruction.
+Often, this indicates an error, because the value computed is never
+used.
+</p>
+<p>
+Note that Sun's javac compiler often generates dead stores for
+final local variables.  Because FindBugs is a bytecode-based tool,
+there is no easy way to eliminate these false positives.
+</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="UUF_UNUSED_FIELD" abbrev="UuF" category="PERFORMANCE">
+    <ShortDescription>Unused field</ShortDescription>
+    <Details><![CDATA[
+
+  <p> This field is never used.&nbsp; Consider removing it from the class.</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugCode abbrev="UuF">
+    <Description>Unused field</Description>
+  </BugCode>
+  <BugCode abbrev="UrF">
+    <Description>Unread field</Description>
+  </BugCode>
+  <BugCode abbrev="DLS" cweid="563">
+    <Description>Dead local store</Description>
+  </BugCode>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Tue, 5 Jan 2010 18:11:00 -0500" total_classes="0" referenced_classes="62" total_bugs="0" total_size="0" num_packages="0" vm_version="14.3-b01-101" cpu_seconds="7.19" clock_seconds="4.09" peak_mbytes="51.22" alloc_mbytes="762.81" gc_seconds="0.12">
+    <FileStats path="UselessAssignments.java" bugCount="4" size="0" bugHash="b7bad92393b0cf620d3b9f4f65501e0d"/>
+    <FileStats path="UserMistakes.java" bugCount="1" size="0" bugHash="c0896340ef24a6bc5b0d80148f50d53d"/>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine" totalMilliseconds="14" invocations="317" avgMicrosecondsPerInvocation="47" maxMicrosecondsPerInvocation="8197" standardDeviationMircosecondsPerInvocation="464"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="15" invocations="12" avgMicrosecondsPerInvocation="1326" maxMicrosecondsPerInvocation="4667" standardDeviationMircosecondsPerInvocation="1214"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantPoolGenFactory" totalMilliseconds="18" invocations="12" avgMicrosecondsPerInvocation="1543" maxMicrosecondsPerInvocation="17681" standardDeviationMircosecondsPerInvocation="4865"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="20" invocations="27" avgMicrosecondsPerInvocation="745" maxMicrosecondsPerInvocation="18653" standardDeviationMircosecondsPerInvocation="3513"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" totalMilliseconds="21" invocations="62" avgMicrosecondsPerInvocation="340" maxMicrosecondsPerInvocation="4022" standardDeviationMircosecondsPerInvocation="714"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="40" invocations="47" avgMicrosecondsPerInvocation="867" maxMicrosecondsPerInvocation="6267" standardDeviationMircosecondsPerInvocation="1243"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="43" invocations="12" avgMicrosecondsPerInvocation="3659" maxMicrosecondsPerInvocation="20870" standardDeviationMircosecondsPerInvocation="6322"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LoadedFieldSetFactory" totalMilliseconds="45" invocations="47" avgMicrosecondsPerInvocation="974" maxMicrosecondsPerInvocation="44308" standardDeviationMircosecondsPerInvocation="6389"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="100" invocations="62" avgMicrosecondsPerInvocation="1619" maxMicrosecondsPerInvocation="30248" standardDeviationMircosecondsPerInvocation="4239"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="107" invocations="66" avgMicrosecondsPerInvocation="1624" maxMicrosecondsPerInvocation="43489" standardDeviationMircosecondsPerInvocation="5912"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="141" invocations="334" avgMicrosecondsPerInvocation="425" maxMicrosecondsPerInvocation="16650" standardDeviationMircosecondsPerInvocation="1526"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="150" invocations="47" avgMicrosecondsPerInvocation="3202" maxMicrosecondsPerInvocation="64903" standardDeviationMircosecondsPerInvocation="9880"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="215" invocations="49" avgMicrosecondsPerInvocation="4401" maxMicrosecondsPerInvocation="65832" standardDeviationMircosecondsPerInvocation="10067"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="236" invocations="47" avgMicrosecondsPerInvocation="5035" maxMicrosecondsPerInvocation="212247" standardDeviationMircosecondsPerInvocation="30558"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="285" invocations="49" avgMicrosecondsPerInvocation="5825" maxMicrosecondsPerInvocation="42585" standardDeviationMircosecondsPerInvocation="10728"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="363" invocations="330" avgMicrosecondsPerInvocation="1102" maxMicrosecondsPerInvocation="46352" standardDeviationMircosecondsPerInvocation="3787"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="414" invocations="969" avgMicrosecondsPerInvocation="427" maxMicrosecondsPerInvocation="24301" standardDeviationMircosecondsPerInvocation="1352"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="594" invocations="62" avgMicrosecondsPerInvocation="9592" maxMicrosecondsPerInvocation="96194" standardDeviationMircosecondsPerInvocation="20414"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>
