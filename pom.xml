@@ -242,16 +242,11 @@
 
   <reporting>
     <plugins>
-      <!--
       <plugin>
-        <groupId>org.codenarc</groupId>
-        <artifactId>maven-codenarc-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <configuration>
-          <rulesetfiles>rulesets/basic.xml,rulesets/imports.xml,rulesets/size.xml,rulesets/unused.xml</rulesetfiles>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>codenarc-maven-plugin</artifactId>
+        <version>0.8-alpha-SNAPSHOT</version>
       </plugin>
-       -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
