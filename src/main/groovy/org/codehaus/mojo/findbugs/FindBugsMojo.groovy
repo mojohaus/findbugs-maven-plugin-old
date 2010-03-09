@@ -683,7 +683,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     log.debug("outputFile is " + outputFile.getAbsolutePath())
     log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
-    log.debug("Temp File is " + tempFile.getAbsolutePath())
+    log.info("Temp File is " + tempFile.getAbsolutePath())
 
     //    def ant = new AntBuilder(output: "${project.build.directory}/Findbugs.debug")
     def ant = new AntBuilder()
@@ -806,39 +806,46 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     }
 
+
+    log.debug("Done FindBugs Analysis....")
+
     if (tempFile.exists()) {
 
-      def path = new XmlSlurper().parse(tempFile)
+      if (tempFile.size() > 0) {
+        def path = new XmlSlurper().parse(tempFile)
 
-      def allNodes = path.depthFirst().collect { it }
+        def allNodes = path.depthFirst().collect { it }
 
-      bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
-      log.debug("BugInstance size is ${bugCount}")
+        bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
+        log.debug("BugInstance size is ${bugCount}")
 
-      errorCount = allNodes.findAll {it.name() == 'Error'}.size()
-      log.debug("Error size is ${errorCount}")
+        errorCount = allNodes.findAll {it.name() == 'Error'}.size()
+        log.debug("Error size is ${errorCount}")
 
 
 
-      def xmlProject = path.Project
+        def xmlProject = path.Project
 
-      compileSourceRoots.each() { compileSourceRoot ->
-        xmlProject.appendNode {
-          SrcDir(compileSourceRoot)
+        compileSourceRoots.each() { compileSourceRoot ->
+          xmlProject.appendNode {
+            SrcDir(compileSourceRoot)
+          }
         }
-      }
 
-      path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
+        path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
 
-      xmlProject.appendNode {
-        WrkDir(project.build.directory)
-      }
+        xmlProject.appendNode {
+          WrkDir(project.build.directory)
+        }
 
-      def xmlBuilder = new StreamingMarkupBuilder()
+        def xmlBuilder = new StreamingMarkupBuilder()
 
-      if (outputFile.exists()) outputFile.write "\n"
+        if (outputFile.exists()) outputFile.write "\n"
         
-      outputFile << xmlBuilder.bind{ mkp.yield path }
+        outputFile << xmlBuilder.bind{ mkp.yield path }
+      } else {
+        log.info("No bugs found")
+      }
 
       tempFile.delete()
     }

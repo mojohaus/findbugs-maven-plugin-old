@@ -429,23 +429,25 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
 
       File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
-      def path = new XmlSlurper().parse(outputFile)
+      if (outputFile.exists()) {
 
-      def allNodes = path.depthFirst().collect { it }
+        def path = new XmlSlurper().parse(outputFile)
 
-      bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
-      log.debug("BugInstance size is ${bugCount}")
+        def allNodes = path.depthFirst().collect { it }
 
-      errorCount = allNodes.findAll {it.name() == 'Error'}.size()
-      log.debug("Error size is ${errorCount}")
+        bugCount = allNodes.findAll {it.name() == 'BugInstance'}.size()
+        log.info("BugInstance size is ${bugCount}")
+
+        errorCount = allNodes.findAll {it.name() == 'Error'}.size()
+        log.info("Error size is ${errorCount}")
 
 
 
 
-      if ( (bugCount || errorCount) && failOnError ) {
-        fail("failed with ${bugCount} bugs and ${errorCount} errors ")
+        if ( (bugCount || errorCount) && failOnError ) {
+          fail("failed with ${bugCount} bugs and ${errorCount} errors ")
+        }
       }
-
     }
     else {
       log.debug("Nothing for FindBugs to do here.")
