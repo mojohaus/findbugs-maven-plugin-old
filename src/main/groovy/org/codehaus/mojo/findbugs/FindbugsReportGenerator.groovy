@@ -424,11 +424,14 @@ class FindbugsReportGenerator implements FindBugsInfo {
     openClassReportSection(bugClass)
 
 
+    log.debug("printBug findbugsResults is ${findbugsResults}")
 
     findbugsResults.BugInstance.each() {bugInstance ->
 
-      if ( bugInstance.Class.@classname.text() == bugClass ) {
-//      if ( bugInstance.Class[0].@classname.text() == bugClass ) {
+
+      log.debug("bugInstance --->  ${bugInstance}")
+
+      if ( bugInstance.Class[0].@classname.text() == bugClass ) {
 
         def type = bugInstance.@type.text()
         def category = bugInstance.@category.text()
