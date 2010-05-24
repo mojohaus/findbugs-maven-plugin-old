@@ -175,7 +175,7 @@ class XDocsReporter implements FindBugsInfo {
 
         bugClasses.each() {bugClass ->
           log.debug("finish bugClass is ${bugClass}")
-          file(classname: URLEncoder.encode(bugClass, outputEncoding)) {
+          file(classname: bugClass) {
             findbugsResults.BugInstance.each() {bugInstance ->
 
               if ( bugInstance.Class.@classname.text() == bugClass ) {
@@ -198,13 +198,13 @@ class XDocsReporter implements FindBugsInfo {
         log.debug("Printing Errors")
         Error() {
           findbugsResults.Error.analysisError.each() {analysisError ->
-            AnalysisError(URLEncoder.encode(analysisError.message.text(), outputEncoding))
+            AnalysisError(analysisError.message.text())
           }
 
           log.debug("Printing Missing classes")
 
           findbugsResults.Error.MissingClass.each() {missingClass ->
-            MissingClass(URLEncoder.encode(missingClass.text, outputEncoding))
+            MissingClass(missingClass.text)
           }
         }
 
