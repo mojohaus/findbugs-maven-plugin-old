@@ -20,7 +20,7 @@ package org.codehaus.mojo.findbugs
  */
 
 import org.apache.maven.project.MavenProject
-import org.codehaus.groovy.maven.mojo.GroovyMojo
+import org.codehaus.gmaven.mojo.GroovyMojo
 
 /**
  * Launch the Findbugs GUI.

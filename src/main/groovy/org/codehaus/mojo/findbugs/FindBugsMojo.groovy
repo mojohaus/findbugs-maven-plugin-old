@@ -21,7 +21,7 @@ package org.codehaus.mojo.findbugs
 
 import org.apache.maven.artifact.repository.ArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
-import org.codehaus.doxia.site.renderer.SiteRenderer
+import org.apache.maven.doxia.siterenderer.Renderer;
 import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
@@ -33,17 +33,16 @@ import org.codehaus.plexus.util.FileUtils
 /**
  * Generates a FindBugs Report when the site plugin is run.
  * The HTML report is generated for site commands only.
- * To see more documentation about FindBugs' options, please see the
- * <a href="http://findbugs.sourceforge.net/manual/index.html">FindBugs Manual.</a>
  *
  * @goal findbugs
- * @execute phase="compile"
+ * @phase compile
  * @requiresDependencyResolution compile
  * @requiresProject
  *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
  */
+
 class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
   /**
@@ -93,11 +92,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * Doxia Site Renderer.
    *
-   * @parameter expression="${component.org.codehaus.doxia.site.renderer.SiteRenderer}"
-   * @required
-   * @readonly
+   * @component
+   *
    */
-  SiteRenderer siteRenderer
+  Renderer siteRenderer
 
   /**
    * Directory containing the class files for FindBugs to analyze.
@@ -609,10 +607,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * Return the Sire Renderer.
    *
-   * @return the Render used for generating the site.
-   * @see org.apache.maven.reporting.AbstractMavenReport#getSiteRenderer()
    */
-  protected SiteRenderer getSiteRenderer() {
+  protected Renderer getSiteRenderer() {
     return this.siteRenderer
   }
 
