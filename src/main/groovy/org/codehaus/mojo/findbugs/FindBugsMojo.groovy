@@ -430,6 +430,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
     }
 
+    log.debug("canGenerate is ${canGenerate}")
+
     return canGenerate
   }
 
