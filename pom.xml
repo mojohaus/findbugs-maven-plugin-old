@@ -73,7 +73,7 @@
   </contributors>
 
   <prerequisites>
-    <maven>2.0.8</maven>
+    <maven>2.1.0</maven>
   </prerequisites>
 
   <scm>
@@ -93,6 +93,7 @@
   <properties>
     <groovy.plugin.version>1.3</groovy.plugin.version>
     <doxiaVersion>1.1.3</doxiaVersion>
+    <project.build.java.target>1.5</project.build.java.target>
   </properties>
 
   <dependencyManagement>
@@ -194,11 +195,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>shitty-maven-plugin</artifactId>
-        <version>1.0-alpha-3</version>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <version>2.8</version>
@@ -262,22 +258,6 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-plugin-plugin</artifactId>
-        <version>2.4.3</version>
-        <configuration>
-          <requirements>
-            <jdk>1.5</jdk>
-          </requirements>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.1</version>
-      </plugin>
     </plugins>
   </reporting>
   <profiles>
@@ -295,6 +275,7 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>shitty-maven-plugin</artifactId>
+           <version>1.0-alpha-4-SNAPSHOT</version>
             <configuration>
               <verbose>true</verbose>
             </configuration>
