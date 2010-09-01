@@ -665,6 +665,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    */
   public void executeFindbugs(Locale locale, File outputFile) {
 
+    long startTime, duration
+
     File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
 
     if (!outputEncoding) { outputEncoding = "UTF-8"}
@@ -699,6 +701,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     //    ant(output: "${project.build.directory}/Findbugs.debug")
     log.info("Fork Value is ${fork}")
 
+    if (log.isDebugEnabled()) {
+      startTime = System.nanoTime()
+    }
 
     ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "${fork}", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
 
@@ -815,6 +820,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     }
 
+    if (log.isDebugEnabled()) {
+      duration = ( System.nanoTime() - startTime ) / 1000000000.00
+      log.debug("FindBugs duration is ${duration}")
+    }
 
     log.debug("Done FindBugs Analysis....")
 
