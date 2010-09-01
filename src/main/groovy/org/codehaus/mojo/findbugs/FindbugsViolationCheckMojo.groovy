@@ -377,7 +377,16 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
   boolean failOnError
 
   /**
+   * Fork a VM for FindBugs analysis.  This will allow you to set timeouts and heap size
+   *
+   * @parameter default-value="true"
+   * @since 2.3.2
+   */
+  boolean fork
+
+  /**
    * Maximum Java heap size in megabytes  (default=512).
+   * This only works if the <b>fork</b> parameter is set <b>true</b>.
    *
    * @parameter default-value="512"
    * @since 2.2
@@ -388,6 +397,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
    * Specifies the amount of time, in milliseconds, that FindBugs may run before
    *  it is assumed to be hung and is terminated.
    * The default is 600,000 milliseconds, which is ten minutes.
+   * This only works if the <b>fork</b> parameter is set <b>true</b>.
    *
    * @parameter default-value="600000"
    * @since 2.2
