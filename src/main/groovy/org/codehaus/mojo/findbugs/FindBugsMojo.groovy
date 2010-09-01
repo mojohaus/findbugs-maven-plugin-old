@@ -379,7 +379,16 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   boolean failOnError
 
   /**
+   * Fork a VM for FindBugs analysis.  This will allow you to set timeouts and heap size
+   *
+   * @parameter default-value="true"
+   * @since 2.3.2
+   */
+  boolean fork
+
+  /**
    * Maximum Java heap size in megabytes  (default=512).
+   * This only works if the <b>fork</b> parameter is set <b>true</b>.
    *
    * @parameter default-value="512"
    * @since 2.2
@@ -390,6 +399,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * Specifies the amount of time, in milliseconds, that FindBugs may run before
    *  it is assumed to be hung and is terminated.
    * The default is 600,000 milliseconds, which is ten minutes.
+   * This only works if the <b>fork</b> parameter is set <b>true</b>.
    *
    * @parameter default-value="600000"
    * @since 2.2
@@ -687,9 +697,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     def ant = new AntBuilder()
 
     //    ant(output: "${project.build.directory}/Findbugs.debug")
+    log.info("Fork Value is ${fork}")
 
 
-    ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "true", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
+    ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "${fork}", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
 
       def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
