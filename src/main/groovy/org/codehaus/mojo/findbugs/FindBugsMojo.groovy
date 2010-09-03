@@ -430,7 +430,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     def canGenerate = false
 
-    log.debug("Inside canGenerateReport.....")
+    log.debug("Inside canGenerateReport..... skip " + skip + ", classFilesDirectory.exists() " + classFilesDirectory.exists());
 
     if ( !skip && classFilesDirectory.exists() ) {
 
@@ -484,6 +484,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     return PLUGIN_NAME
   }
 
+  
 
   /**
    * Executes the generation of the report.
@@ -495,7 +496,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * @see org.apache.maven.reporting.MavenReport #executeReport(java.util.Locale)
    */
   void executeReport(Locale locale) {
-
+    
     if ( canGenerateReport() ) {
 
       log.info("Locale is ${locale.getLanguage()}")
@@ -656,6 +657,13 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     return bundle
   }
 
+  public void execute() {
+    File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
+
+    log.debug("XML outputFile is " + outputFile.getAbsolutePath())
+  	executeFindbugs(Locale.ENGLISH, outputFile) 
+  }
+
   /**
    * Set up and run the Findbugs engine.
    *
@@ -668,6 +676,13 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     long startTime, duration
 
     File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
+    
+    if (tempFile.exists()) {
+      tempFile.delete()
+    }
+
+    tempFile.mkdirs()
+    tempFile.createNewFile()
 
     if (!outputEncoding) { outputEncoding = "UTF-8"}
 
@@ -721,6 +736,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       arg(value: getThresholdParameter())
 
       if ( debug ) {
+        log.debug("progress on")
         arg(value: "-progress")
       }
 
