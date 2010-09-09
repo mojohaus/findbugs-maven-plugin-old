@@ -681,7 +681,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       tempFile.delete()
     }
 
-    tempFile.mkdirs()
+    tempFile.getParentFile().mkdirs()
     tempFile.createNewFile()
 
     if (!outputEncoding) { outputEncoding = "UTF-8"}
