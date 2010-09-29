@@ -40,7 +40,7 @@ import org.codehaus.plexus.util.FileUtils
  * @requiresProject
  *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
- * @version $Id$
+ * @version $Id: FindBugsMojo.groovy 12476 2010-09-01 01:00:01Z gleclaire $
  */
 
 class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
@@ -656,13 +656,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     return bundle
   }
 
-  public void execute() {
-    File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
-
-    log.debug("XML outputFile is " + outputFile.getAbsolutePath())
-  	executeFindbugs(Locale.ENGLISH, outputFile) 
-  }
-
   /**
    * Set up and run the Findbugs engine.
    *
@@ -675,13 +668,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     long startTime, duration
 
     File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
-
-    if (tempFile.exists()) {
-      tempFile.delete()
-    }
-
-    tempFile.getParentFile().mkdirs()
-    tempFile.createNewFile()
 
     if (!outputEncoding) { outputEncoding = "UTF-8"}
 
@@ -735,7 +721,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       arg(value: getThresholdParameter())
 
       if ( debug ) {
-        log.debug("progress on")
         arg(value: "-progress")
       }
 
