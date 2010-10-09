@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-
-//assert new File(basedir, 'target/site/findbugs.html').exists()
-
 assert new File(basedir, 'target/findbugs.xml').exists()
 
 assert new File(basedir, 'target/findbugsXml.xml').exists()
@@ -26,18 +23,6 @@ def xmlSlurper = new XmlSlurper()
 xmlSlurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 xmlSlurper.setFeature("http://xml.org/sax/features/namespaces", false)
 
-/*
-def path = xmlSlurper.parse( new File(basedir, 'target/site/findbugs.html') )
-
-println '***************************'
-println "Checking HTML file"
-println '***************************'
-
-//def bugNodes = path.body.div.findAll {it.@id == 'bodyColumn'}.div[1].table.tr[1].td[1]  //.div.table.tr.td
-//println "bugNodes value is ${bugNodes.toInteger()}"
-def findbugsErrors = path.body.div.findAll {it.@id == 'bodyColumn'}.div[1].table.tr[1].td[1].toInteger()
-println "Error Count is ${findbugsErrors}"
-*/
 println '***************************'
 println "Checking xDoc file"
 println '***************************'

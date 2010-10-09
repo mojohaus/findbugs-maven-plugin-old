@@ -20,9 +20,9 @@
 
 def module = "module-1"
 
-assert new File(basedir, "modules/${module}/target/findbugsXml.xml").exists()
+assert new File(basedir, "modules/module-1/target/findbugsXml.xml").exists()
 
-def path = new XmlSlurper().parse(new File(basedir, "modules/${module}/target/findbugsXml.xml"))
+def path = new XmlSlurper().parse(new File(basedir, "modules/module-1/target/findbugsXml.xml"))
 
 println '**********************************'
 println "Checking Findbugs Native XML file"
@@ -40,9 +40,9 @@ assert findbugsErrors > 0
 
 module = "module-2"
 
-assert new File(basedir, "modules/${module}/target/findbugsXml.xml").exists()
+assert new File(basedir, "modules/module-2/target/findbugsXml.xml").exists()
 
-path = new XmlSlurper().parse(new File(basedir, "modules/${module}/target/findbugsXml.xml"))
+path = new XmlSlurper().parse(new File(basedir, "modules/module-2/target/findbugsXml.xml"))
 
 println '**********************************'
 println "Checking Findbugs Native XML file"

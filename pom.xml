@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-parent</artifactId>
-    <version>24</version>
+    <version>25</version>
   </parent>
 
   <artifactId>findbugs-maven-plugin</artifactId>
@@ -339,13 +339,15 @@
   <profiles>
     <profile>
       <id>run-its</id>
+      <properties>
+        <findbug.debug>false</findbug.debug>
+      </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>
             <version>1.5</version>
-
             <executions>
               <execution>
                 <id>prepare-integration-test</id>
@@ -354,18 +356,20 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <projectsDirectory>src/it-tools</projectsDirectory>
+                  <projectsDirectory>${basedir}/src/it-tools</projectsDirectory>
                   <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                   <showVersion>true</showVersion>
-                  <postBuildHookScript>validate</postBuildHookScript>
                   <pomIncludes>
                     <pomInclude>*/pom.xml</pomInclude>
                   </pomIncludes>
+                  <!-- 
+                  <pom>${basedir}/src/it-tools//build-tools/pom.xml</pom>
+                   -->
                   <postBuildHookScript>verify</postBuildHookScript>
                   <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                   <goals>
                     <goal>clean</goal>
-                    <goal>${project.groupId}:${project.artifactId}:${project.version}:site</goal>
+                    <goal>install</goal>
                   </goals>
                   <settingsFile>src/it/settings.xml</settingsFile>
                 </configuration>
@@ -380,13 +384,9 @@
                   <projectsDirectory>src/it</projectsDirectory>
                   <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                   <showVersion>true</showVersion>
-                  <postBuildHookScript>validate</postBuildHookScript>
                   <pomIncludes>
                     <pomInclude>*/pom.xml</pomInclude>
                   </pomIncludes>
-                  <pomExcludes>
-                    <pomExclude>build-tools/pom.xml</pomExclude>
-                  </pomExcludes>
                   <postBuildHookScript>verify</postBuildHookScript>
                   <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                   <goals>
@@ -403,6 +403,51 @@
     </profile>    
     
     <profile>
+      <id>find-it-src-export</id>
+      <activation>
+        <file>
+          <missing>${project.build.directory}/it-src-findbugs/java/A.java</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-scm-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>prepare-integration-test-co-findbugs-src</id>
+                <phase>pre-integration-test</phase>
+                <goals> 
+                  <goal>export</goal>           
+                </goals>
+                <configuration>
+                  <!-- 
+                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugsTestCases/src/java/</connectionUrl>
+                  -->
+                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/tags/1.2.0-rc3/findbugsTestCases/src/java/</connectionUrl>
+                  
+                  <exportDirectory>${project.build.directory}/it-src-findbugs/java</exportDirectory>
+                  <providerImplementations>
+                    <svn>javasvn</svn>
+                  </providerImplementations>                  
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>com.google.code.maven-scm-provider-svnjava</groupId> 
+                <artifactId>maven-scm-provider-svnjava</artifactId> 
+                <version>1.11</version>                
+              </dependency>
+            </dependencies>
+          </plugin>        
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
       <id>maven-3</id>
       <activation>
         <file>
@@ -411,7 +456,7 @@
         </file>
       </activation>
       <properties>
-        <sitePluginVersion>3.0-beta-2-SNAPSHOT</sitePluginVersion>
+        <sitePluginVersion>3.0-beta-2</sitePluginVersion>
       </properties>
     </profile>    
     

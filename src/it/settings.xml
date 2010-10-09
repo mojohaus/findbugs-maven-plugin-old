@@ -37,6 +37,7 @@ under the License.
             <enabled>true</enabled>
           </snapshots>
         </repository>
+        <!-- 
         <repository>
           <id>apache.snapshots</id>
           <name>Apache Snapshot Repository</name>
@@ -47,7 +48,8 @@ under the License.
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
-        </repository>        
+        </repository>    
+         -->    
       </repositories>
       <pluginRepositories>
         <pluginRepository>

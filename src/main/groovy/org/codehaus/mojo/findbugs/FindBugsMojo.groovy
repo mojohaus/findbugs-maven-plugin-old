@@ -484,6 +484,24 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     return PLUGIN_NAME
   }
 
+  public void execute() {
+    log.info("called execute")
+    File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
+    log.debug("XML outputFile is " + outputFile.getAbsolutePath())
+    executeFindbugs(Locale.ENGLISH, outputFile)
+
+    if (outputFile.exists()) {
+      log.debug("Generating Findbugs HTML")
+
+      XDocsReporter xDocsReporter = new XDocsReporter(getBundle(Locale.ENGLISH), log, threshold, effort, outputEncoding )
+      xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
+      xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
+      xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+      xDocsReporter.generateReport()
+    }
+        
+  	//executeReport(Locale.ENGLISH) 
+  }
   
 
   /**
@@ -592,6 +610,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
 
     }
+    else
+    {
+      log.info("cannot generate report");  
+    } 
 
   }
 
@@ -655,13 +677,6 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     log.debug("Mojo Locale is " + this.bundle.getLocale().getLanguage())
 
     return bundle
-  }
-
-  public void execute() {
-    File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
-
-    log.debug("XML outputFile is " + outputFile.getAbsolutePath())
-  	executeFindbugs(Locale.ENGLISH, outputFile) 
   }
 
   /**

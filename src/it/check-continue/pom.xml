@@ -35,7 +35,7 @@
         <configuration>
           <failOnError>false</failOnError>
           <xmlOutput>true</xmlOutput>
-          <debug>true</debug>
+          <debug>@findbug.debug@</debug>
         </configuration>
         <executions>
           <execution>

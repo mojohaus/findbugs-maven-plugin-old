@@ -18,16 +18,71 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
-    <artifactId>common</artifactId>
-    <version>testing</version>
-    <relativePath>../common.xml</relativePath>
-  </parent>
+
+  <groupId>org.codehaus.mojo.findbugs-maven-plugin.it</groupId>
   <artifactId>build-tools</artifactId>
   <name>build-tools</name>
   <packaging>jar</packaging>
+  <version>testing</version>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-j2ee</artifactId>
+        <version>4.0.2</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5-6.0.0</version>
+        <scope>compile</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
-    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <debug>false</debug>
+          <source>5</source>
+          <target>5</target>
+          <excludes>
+            <exclude>fakeAnnotations/**</exclude>
+            <exclude>jsr305/**</exclude>
+            <exclude>Ejb3Fields.java</exclude>
+            <exclude>*Sql*.java</exclude>
+            <exclude>Volatile*.java</exclude>
+            <exclude>sfBugs/Bug1578441.java</exclude>
+            <exclude>sfBugs/Bug1718130.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>@pom.version@</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>@sitePluginVersion@</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
+
 </project>
+
