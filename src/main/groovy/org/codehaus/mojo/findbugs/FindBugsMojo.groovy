@@ -30,6 +30,7 @@ import org.codehaus.plexus.resource.loader.FileResourceLoader
 import groovy.xml.StreamingMarkupBuilder
 import org.codehaus.plexus.util.FileUtils
 
+
 /**
  * Generates a FindBugs Report when the site plugin is run.
  * The HTML report is generated for site commands only.
@@ -430,7 +431,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     def canGenerate = false
 
-    log.debug("Inside canGenerateReport.....")
+    log.debug("Inside canGenerateReport..... skip " + skip + ", classFilesDirectory.exists() " + classFilesDirectory.exists());
 
     if ( !skip && classFilesDirectory.exists() ) {
 
@@ -591,6 +592,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
 
     }
+    else
+    {
+      log.info("cannot generate report");  
+    } 
 
   }
 
@@ -660,7 +665,11 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
     log.debug("XML outputFile is " + outputFile.getAbsolutePath())
-  	executeFindbugs(Locale.ENGLISH, outputFile) 
+    
+    if ( outputFile.exists()) {
+        log.debug("Generating Findbugs XML")
+        executeFindbugs(Locale.ENGLISH, outputFile)
+    } 
   }
 
   /**
