@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-parent</artifactId>
-    <version>24</version>
+    <version>25</version>
   </parent>
 
   <artifactId>findbugs-maven-plugin</artifactId>
@@ -376,7 +376,7 @@
         </file>
       </activation>
       <properties>
-        <sitePluginVersion>3.0-beta-2-SNAPSHOT</sitePluginVersion>
+        <sitePluginVersion>3.0-beta-3-SNAPSHOT</sitePluginVersion>
       </properties>
     </profile>    
     
