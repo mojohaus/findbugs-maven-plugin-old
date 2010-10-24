@@ -430,8 +430,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   boolean canGenerateReport() {
 
     def canGenerate = false
+    log.info("Inside canGenerateReport..... ${canGenerate} ")
 
-    log.debug("Inside canGenerateReport..... skip " + skip + ", classFilesDirectory.exists() " + classFilesDirectory.exists());
+    log.info("Inside canGenerateReport..... skip " + skip + ", classFilesDirectory.exists() " + classFilesDirectory.exists())
 
     if ( !skip && classFilesDirectory.exists() ) {
 
@@ -441,7 +442,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
     }
 
-    log.debug("canGenerate is ${canGenerate}")
+    log.info("canGenerate is ${canGenerate}")
 
     return canGenerate
   }
@@ -501,7 +502,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
       log.info("Locale is ${locale.getLanguage()}")
 
-      log.debug("****** Executing FindBugsMojo *******")
+      log.info("****** FindBugsMojo executeReport *******")
 
 
       resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
@@ -662,14 +663,15 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   }
 
   public void execute() {
+    log.info("****** FindBugsMojo execute *******")
     File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
     log.debug("XML outputFile is " + outputFile.getAbsolutePath())
-    
-    if ( outputFile.exists()) {
-        log.debug("Generating Findbugs XML")
-        executeFindbugs(Locale.ENGLISH, outputFile)
-    } 
+
+    log.debug("Generating Findbugs XML")
+    if (canGenerateReport()) {
+      executeFindbugs(Locale.ENGLISH, outputFile)
+    }
   }
 
   /**
@@ -681,6 +683,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    */
   public void executeFindbugs(Locale locale, File outputFile) {
 
+    log.info("****** FindBugsMojo executeReport *******")
     long startTime, duration
 
     File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
