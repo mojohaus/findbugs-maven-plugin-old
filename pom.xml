@@ -344,37 +344,116 @@
   </reporting>
   <profiles>
     <profile>
-      <id>super-helpful-integration-tests</id>
-      <activation>
-        <property>
-          <name>shit</name>
-          <value>true</value>
-        </property>
-      </activation>
+      <id>run-its</id>
+      <properties>
+        <findbug.debug>false</findbug.debug>
+      </properties>
       <build>
-        <defaultGoal>install</defaultGoal>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>shitty-maven-plugin</artifactId>
-           <version>1.0-alpha-4-SNAPSHOT</version>
-            <configuration>
-              <verbose>true</verbose>
-            </configuration>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-invoker-plugin</artifactId>
+            <version>1.5</version>
             <executions>
               <execution>
+                <id>prepare-integration-test</id>
+                <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>clean</goal>
-                  <goal>install</goal>
-                  <goal>test</goal>
+                  <goal>run</goal>
                 </goals>
+                <configuration>
+                  <projectsDirectory>${basedir}/src/it-tools</projectsDirectory>
+                  <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                  <showVersion>true</showVersion>
+                  <pomIncludes>
+                    <pomInclude>*/pom.xml</pomInclude>
+                  </pomIncludes>
+                  <!-- 
+                  <pom>${basedir}/src/it-tools//build-tools/pom.xml</pom>
+                   -->
+                  <postBuildHookScript>verify</postBuildHookScript>
+                  <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                  <goals>
+                    <goal>clean</goal>
+                    <goal>install</goal>
+                  </goals>
+                  <settingsFile>src/it/settings.xml</settingsFile>
+                </configuration>
+              </execution>            
+              <execution>
+                <id>integration-test</id>
+                <goals>
+                  <goal>install</goal>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <projectsDirectory>src/it</projectsDirectory>
+                  <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                  <showVersion>true</showVersion>
+                  <pomIncludes>
+                    <pomInclude>*/pom.xml</pomInclude>
+                  </pomIncludes>
+                  <postBuildHookScript>verify</postBuildHookScript>
+                  <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                  <goals>
+                    <goal>clean</goal>
+                    <goal>${project.groupId}:${project.artifactId}:${project.version}:site</goal>
+                  </goals>
+                  <settingsFile>src/it/settings.xml</settingsFile>
+                </configuration>
+              </execution>
+           </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>    
+    
+    <profile>
+      <id>find-it-src-export</id>
+      <activation>
+        <file>
+          <missing>${project.build.directory}/it-src-findbugs/java/A.java</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-scm-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>prepare-integration-test-co-findbugs-src</id>
+                <phase>pre-integration-test</phase>
+                <goals> 
+                  <goal>export</goal>           
+                </goals>
+                <configuration>
+                  <!-- 
+                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugsTestCases/src/java/</connectionUrl>
+                  -->
+                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/tags/1.2.0-rc3/findbugsTestCases/src/java/</connectionUrl>
+                  
+                  <exportDirectory>${project.build.directory}/it-src-findbugs/java</exportDirectory>
+                  <providerImplementations>
+                    <svn>javasvn</svn>
+                  </providerImplementations>                  
+                </configuration>
               </execution>
             </executions>
-          </plugin>
+            <dependencies>
+              <dependency>
+                <groupId>com.google.code.maven-scm-provider-svnjava</groupId> 
+                <artifactId>maven-scm-provider-svnjava</artifactId> 
+                <version>1.11</version>                
+              </dependency>
+            </dependencies>
+          </plugin>        
         </plugins>
       </build>
     </profile>
     
+   
     <profile>
       <id>maven-3</id>
       <activation>

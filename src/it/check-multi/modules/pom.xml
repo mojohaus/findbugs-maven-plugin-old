@@ -28,30 +28,13 @@
   <name>modules</name>
   <packaging>pom</packaging>
   <build>
-    <sourceDirectory>/opt/findbugs/findbugsTestCases/src/java</sourceDirectory>
     <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <debug>false</debug>
-          <source>5</source>
-          <target>5</target>
-          <excludes>
-            <exclude>fakeAnnotations/**</exclude>
-            <exclude>jsr305/**</exclude>
-            <exclude>Ejb3Fields.java</exclude>
-            <exclude>*Sql*.java</exclude>
-            <exclude>Volatile*.java</exclude>
-            <exclude>sfBugs/Bug1578441.java</exclude>
-            <exclude>sfBugs/Bug1718130.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
           <xmlOutput>true</xmlOutput>
+          <debug>@findbug.debug@</debug>
         </configuration>
         <executions>
           <execution>

@@ -27,11 +27,11 @@
   <name>visitors</name>
   <packaging>jar</packaging>
   <reporting>
-    <excludeDefaults>true</excludeDefaults>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>@pom.version@</version>
         <configuration>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
