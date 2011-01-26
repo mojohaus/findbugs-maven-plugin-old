@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-return;
+
 assert new File(basedir, 'target/findbugs.xml').exists()
 
 assert new File(basedir, 'target/destination/findbugsXml.xml').exists()
