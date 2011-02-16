@@ -31,6 +31,8 @@ import org.codehaus.plexus.util.FileUtils
 /**
  * Fail the build if there were any FindBugs violations in the source code.
  * An XML report is put out by default in the target directory with the errors.
+ * To see more documentation about FindBugs' options, please see the <a href="http://findbugs.sourceforge.net/manual/index.html" class="externalLink">FindBugs
+Manual.</a>.
  *
  * @since 2.0
  * @goal check
