@@ -40,6 +40,7 @@ Violation Checking
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>${projectVersion}</version>
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
