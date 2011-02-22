@@ -743,6 +743,9 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             
       arg(value: "-xml:withMessages")
 
+      arg(value: "-projectName")
+      arg(value: "${project.name}")
+
       arg(value: getEffortParameter())
       arg(value: getThresholdParameter())
 
