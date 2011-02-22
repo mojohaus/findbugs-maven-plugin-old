@@ -96,6 +96,7 @@
     <sitePluginVersion>2.1.1</sitePluginVersion>
     <project.build.java.target>1.5</project.build.java.target>
     <projectVersion>${project.version}</projectVersion>
+    <jxrPluginVersion>2.2</jxrPluginVersion>
   </properties>
 
   <dependencyManagement>
@@ -433,12 +434,13 @@
                   <!-- 
                   <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugsTestCases/src/java/</connectionUrl>
                   -->
-                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/tags/1.2.0-rc3/findbugsTestCases/src/java/</connectionUrl>
+                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/branches/1.3.9/findbugsTestCases/src/java/</connectionUrl>
                   
                   <exportDirectory>${project.build.directory}/it-src-findbugs/java</exportDirectory>
                   <providerImplementations>
                     <svn>javasvn</svn>
-                  </providerImplementations>                  
+                  </providerImplementations> 
+                  <includes>**/A*.java, **/Use*.java</includes>
                 </configuration>
               </execution>
             </executions>
