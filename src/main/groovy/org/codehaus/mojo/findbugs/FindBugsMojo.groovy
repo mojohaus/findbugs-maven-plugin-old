@@ -430,9 +430,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   boolean canGenerateReport() {
 
     def canGenerate = false
-    log.info("Inside canGenerateReport..... ${canGenerate} ")
-
-    log.info("Inside canGenerateReport..... skip " + skip + ", classFilesDirectory.exists() " + classFilesDirectory.exists())
+    log.debug("Inside canGenerateReport..... ${canGenerate} ")
 
     if ( !skip && classFilesDirectory.exists() ) {
 
@@ -441,6 +439,15 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         canGenerate = true
       }
     }
+    
+    if ( !skip && testClassFilesDirectory.exists() && includeTests ) {
+ 
+      testClassFilesDirectory.eachFileRecurse {
+        if ( it.name.contains('.class') )
+        canGenerate = true
+      }
+    }
+
 
     log.info("canGenerate is ${canGenerate}")
 
