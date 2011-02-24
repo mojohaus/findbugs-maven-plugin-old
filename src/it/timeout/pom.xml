@@ -32,8 +32,9 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>@pom.version@</version>
         <configuration>
-          <timeout>10000</timeout>
+          <timeout>5000</timeout>
         </configuration>
       </plugin>
     </plugins>

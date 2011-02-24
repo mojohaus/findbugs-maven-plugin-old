@@ -1,1 +1,1 @@
-clean compile findbugs:check
+-fn clean compile findbugs:check

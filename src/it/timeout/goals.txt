@@ -1,1 +1,1 @@
-clean site:site
+-fn clean install site:site

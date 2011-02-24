@@ -276,6 +276,28 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   String excludeFilterFile
 
   /**
+   * <p>
+   * File names of the exclude filters. Bugs matching the filters are not reported.
+   * </p>
+   *
+   * <p>
+   * Potential values are a filesystem path, a URL, or a classpath resource.
+   * </p>
+   *
+   * <p>
+   * This parameter is resolved as resource, URL, then file. If successfully
+   * resolved, the contents of the configuration is copied into the
+   * <code>${project.build.directory}</code>
+   * directory before being passed to Findbugs as a filter file.
+   * <br><b>NOTE:<b>This option may not be supported by Findbugs in the future.
+   * </p>
+   *
+   * @parameter
+   * @since 2.3.2
+   */
+  String[] excludeFilterFiles
+
+  /**
    * Effort of the bug finders. Valid values are Min, Default and Max.
    *
    * @parameter default-value="Default"
@@ -795,10 +817,20 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
 
       if ( excludeFilterFile ) {
+        log.debug("  Single exclude file ->" + excludeFilterFile)
+        log.debug("    is used as ->" + getResourceFile(excludeFilterFile))
         arg(value: "-exclude")
         arg(value: getResourceFile(excludeFilterFile))
       }
 
+      if ( excludeFilterFiles ) {
+        for (String file : excludeFilterFiles) {
+          log.debug("  Exclude file ->" + file)
+          log.debug("    is used as ->" + getResourceFile(file))
+          arg(value: "-exclude")
+          arg(value: getResourceFile(file))
+        }
+      }
 
       arg(value: "-output")
       arg(value: tempFile.getAbsolutePath())
@@ -906,28 +938,28 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       tempFile.delete()
     }
 
-      if (outputFile.exists()) {
+    if (outputFile.exists()) {
 
-        log.info("xmlOutput is ${xmlOutput}")
+      log.info("xmlOutput is ${xmlOutput}")
 
 
-        if ( xmlOutput ) {
-          log.debug("  Using the xdoc format")
+      if ( xmlOutput ) {
+        log.debug("  Using the xdoc format")
 
-          if ( !xmlOutputDirectory.exists() ) {
-            if ( !xmlOutputDirectory.mkdirs() ) {
-              fail("Cannot create xdoc output directory")
-            }
+        if ( !xmlOutputDirectory.exists() ) {
+          if ( !xmlOutputDirectory.mkdirs() ) {
+            fail("Cannot create xdoc output directory")
           }
-
-          XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
-          xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
-          xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
-          xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
-
-          xDocsReporter.generateReport()
         }
+
+        XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
+        xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
+        xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
+        xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+
+        xDocsReporter.generateReport()
       }
+    }
 
   }
 
