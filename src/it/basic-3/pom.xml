@@ -26,23 +26,18 @@
   <artifactId>basic-2</artifactId>
   <name>basic-2</name>
   <packaging>jar</packaging>
-  <reporting>
-    <excludeDefaults>true</excludeDefaults>
+  <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>@pom.version@</version>
         <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
-          <findbugsXmlOutputDirectory>target/destination</findbugsXmlOutputDirectory>
+          <failOnError>false</failOnError>
+          <debug>@findbug.debug@</debug>
+          <threshold>High</threshold>
         </configuration>
       </plugin>
     </plugins>
-  </reporting>
+  </build>
 </project>

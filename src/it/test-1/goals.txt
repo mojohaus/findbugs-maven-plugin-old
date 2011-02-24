@@ -1,1 +1,1 @@
-clean compiler:compile compiler:testCompile site
+clean compiler:compile compiler:testCompile site:site

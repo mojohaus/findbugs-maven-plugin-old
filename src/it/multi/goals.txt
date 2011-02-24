@@ -1,1 +1,1 @@
-clean install site
+clean install site:site

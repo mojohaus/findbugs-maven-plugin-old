@@ -535,8 +535,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
       File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
-      log.debug("XML outputFile is " + outputFile.getAbsolutePath())
-      log.debug("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
+      log.info("XML outputFile is " + outputFile.getAbsolutePath())
+      log.info("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
 
       executeFindbugs(locale, outputFile)
@@ -579,6 +579,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         generator.generateReport()
 
 
+        log.info("xmlOutput is ${xmlOutput}")
 
 
         if ( xmlOutput ) {
@@ -690,7 +691,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    */
   public void executeFindbugs(Locale locale, File outputFile) {
 
-    log.info("****** FindBugsMojo executeReport *******")
+    log.info("****** FindBugsMojo executeFindbugs *******")
     long startTime, duration
 
     File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
@@ -905,6 +906,28 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       tempFile.delete()
     }
 
+      if (outputFile.exists()) {
+
+        log.info("xmlOutput is ${xmlOutput}")
+
+
+        if ( xmlOutput ) {
+          log.debug("  Using the xdoc format")
+
+          if ( !xmlOutputDirectory.exists() ) {
+            if ( !xmlOutputDirectory.mkdirs() ) {
+              fail("Cannot create xdoc output directory")
+            }
+          }
+
+          XDocsReporter xDocsReporter = new XDocsReporter(getBundle(locale), log, threshold, effort, outputEncoding )
+          xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
+          xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
+          xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+
+          xDocsReporter.generateReport()
+        }
+      }
 
   }
 

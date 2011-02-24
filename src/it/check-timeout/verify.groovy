@@ -15,18 +15,5 @@
  */
 
 
-assert new File(basedir, 'target/findbugsXml.xml').exists()
-
-
-println '**********************************'
-println "Checking Findbugs Native XML file"
-println '**********************************'
-
-def path = new XmlSlurper().parse(new File(basedir, 'target/findbugsXml.xml'))
-
-allNodes = path.depthFirst().collect { it }
-def findbugsErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
-println "BugInstance size is ${findbugsErrors}"
-
-assert findbugsErrors > 0
+assert !(new File(basedir, 'target/findbugsXml.xml').exists())
 

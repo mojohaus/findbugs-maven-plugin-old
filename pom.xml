@@ -370,9 +370,6 @@
                   <pomIncludes>
                     <pomInclude>*/pom.xml</pomInclude>
                   </pomIncludes>
-                  <!-- 
-                  <pom>${basedir}/src/it-tools//build-tools/pom.xml</pom>
-                   -->
                   <postBuildHookScript>verify</postBuildHookScript>
                   <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                   <goals>
@@ -409,7 +406,6 @@
         </plugins>
       </build>
     </profile>    
-    
     <profile>
       <id>find-it-src-export</id>
       <activation>
@@ -431,11 +427,7 @@
                   <goal>export</goal>           
                 </goals>
                 <configuration>
-                  <!-- 
-                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugsTestCases/src/java/</connectionUrl>
-                  -->
                   <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/branches/1.3.9/findbugsTestCases/src/java/</connectionUrl>
-                  
                   <exportDirectory>${project.build.directory}/it-src-findbugs/java</exportDirectory>
                   <providerImplementations>
                     <svn>javasvn</svn>

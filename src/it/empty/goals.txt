@@ -1,1 +1,1 @@
-clean site
+clean site:site

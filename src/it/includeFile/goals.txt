@@ -1,1 +1,1 @@
-clean compile site
+clean install site:site
