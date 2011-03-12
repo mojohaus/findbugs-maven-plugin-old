@@ -751,10 +751,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     log.info("Temp File is " + tempFile.getAbsolutePath())
 
-    //    def ant = new AntBuilder(output: "${project.build.directory}/Findbugs.debug")
     def ant = new AntBuilder()
 
-    //    ant(output: "${project.build.directory}/Findbugs.debug")
     log.info("Fork Value is ${fork}")
 
     if (log.isDebugEnabled()) {
@@ -1082,7 +1080,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         try {
           log.debug("  Processing Plugin: " + pluginFileName.toString())
 
-          urlPlugins += getResourceFile(pluginFileName.toString()).getAbsolutePath() + ((pluginJar == pluginJars[pluginJars.size() - 1]) ? "" : ",")
+          urlPlugins += getResourceFile(pluginFileName.toString()).getAbsolutePath() + ((pluginJar == pluginJars[pluginJars.size() - 1]) ? "" : File.pathSeparator)
         }
         catch (MalformedURLException exception) {
           fail("The addin plugin has an invalid URL", exception)
@@ -1090,7 +1088,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
     }
 
-    log.debug("  Plugin list is: ${urlPlugins}")
+    log.info("  Plugin list is: ${urlPlugins}")
       
     return urlPlugins
   }
