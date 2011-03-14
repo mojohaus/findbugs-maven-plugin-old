@@ -50,6 +50,17 @@
   </developers>
   <contributors>
     <contributor>
+      <name>Olivier Lamy</name>
+      <email>olamy@apache.org</email>
+      <organization></organization>
+      <organizationUrl>http://olamy.blogspot.com/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <url>https://www.xing.com/profile/Rolf_Kulemann</url>
+      <timezone>+1</timezone>
+    </contributor>
+    <contributor>
       <name>Detlef Pleiss</name>
       <email>d.pleiss@comundus.com</email>
       <organization>comundus GmbH</organization>
