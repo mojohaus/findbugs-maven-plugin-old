@@ -817,7 +817,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         includeFiles.each() {includeFile ->
           arg(value: "-include")
-          arg(value: getResourceFile(includeFile))
+          arg(value: getResourceFile(includeFile.trim()))
         }
       }
 
@@ -827,7 +827,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
         excludeFiles.each() {excludeFile ->
           arg(value: "-exclude")
-          arg(value: getResourceFile(excludeFile))
+          arg(value: getResourceFile(excludeFile.trim()))
         }
       }
       
