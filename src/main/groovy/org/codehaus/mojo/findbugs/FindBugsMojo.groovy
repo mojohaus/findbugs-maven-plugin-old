@@ -345,6 +345,24 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * @since 1.1
    */
   String onlyAnalyze
+  
+  /**
+   * This option enables or disables scanning of nested jar and zip files found
+   *  in the list of files and directories to be analyzed.
+   *
+   * @parameter default-value="false"
+   * @since 2.3.2
+   */
+  Boolean nested
+
+  /**
+   * Prints a trace of detectors run and classes analyzed to standard output.
+   * Useful for troubleshooting unexpected analysis failures.
+   *
+   * @parameter default-value="false"
+   * @since 2.3.2
+   */
+  Boolean trace
 
   /**
    * Skip entire check.
@@ -762,6 +780,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         arg(value: "-progress")
       }
 
+      if ( debug || trace ) {
+        arg(value: "-debug")
+      }
+
       if ( pluginList ) {
         arg(value: "-pluginList")
         arg(value: getPlugins())
@@ -781,7 +803,12 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       if ( relaxed ) {
         arg(value: "-relaxed")
       }
-
+      
+      if ( nested ) {
+        arg(value: "-nested:true")
+      } else {
+        arg(value: "-nested:false")
+      }
 
       if ( onlyAnalyze ) {
         arg(value: "-onlyAnalyze")
