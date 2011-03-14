@@ -207,7 +207,7 @@ mvn site
 +-----+
 
 
-* Specifying which bug dectectors to run
+* Specifying which bug detectors to run
 
   The <<<visitors>>> option specifies a comma-separated list of bug detectors which
   should be run. The bug detectors are specified by their class names, without
@@ -241,7 +241,7 @@ mvn site
 +-----+
 
 
-* Specifying which bug dectectors to skip
+* Specifying which bug detectors to skip
 
   The <<<omitVisitors>>> option is like the visitors attribute, except it specifies
   detectors which will not be run.
