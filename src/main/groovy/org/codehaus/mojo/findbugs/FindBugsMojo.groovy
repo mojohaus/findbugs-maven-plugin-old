@@ -248,6 +248,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * <code>${project.build.directory}</code>
    * directory before being passed to Findbugs as a filter file.
    * </p>
+   * This is a comma-delimited list.
    *
    * @parameter
    * @since 1.0-beta-1
@@ -269,6 +270,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * <code>${project.build.directory}</code>
    * directory before being passed to Findbugs as a filter file.
    * </p>
+   * This is a comma-delimited list.
    *
    * @parameter
    * @since 1.0-beta-1
@@ -810,17 +812,25 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
 
       if ( includeFilterFile ) {
-        arg(value: "-include")
-        arg(value: getResourceFile(includeFilterFile))
+        log.debug("  Adding Include Filter Files ")
+        String[] includeFiles = includeFilterFile.split(",")
+
+        includeFiles.each() {includeFile ->
+          arg(value: "-include")
+          arg(value: getResourceFile(includeFile))
+        }
       }
 
       if ( excludeFilterFile ) {
-        log.debug("  Single exclude file ->" + excludeFilterFile)
-        log.debug("    is used as ->" + getResourceFile(excludeFilterFile))
-        arg(value: "-exclude")
-        arg(value: getResourceFile(excludeFilterFile))
-      }
+        log.debug("  Adding Exclude Filter Files ")
+        String[] excludeFiles = excludeFilterFile.split(",")
 
+        excludeFiles.each() {excludeFile ->
+          arg(value: "-exclude")
+          arg(value: getResourceFile(excludeFile))
+        }
+      }
+      
       if ( excludeFilterFiles ) {
         for (String file : excludeFilterFiles) {
           log.debug("  Exclude file ->" + file)
