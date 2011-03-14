@@ -276,28 +276,6 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
   String excludeFilterFile
 
   /**
-   * <p>
-   * File names of the exclude filters. Bugs matching the filters are not reported.
-   * </p>
-   *
-   * <p>
-   * Potential values are a filesystem path, a URL, or a classpath resource.
-   * </p>
-   *
-   * <p>
-   * This parameter is resolved as resource, URL, then file. If successfully
-   * resolved, the contents of the configuration is copied into the
-   * <code>${project.build.directory}</code>
-   * directory before being passed to Findbugs as a filter file.
-   * <br><b>NOTE:<b>This option may not be supported by Findbugs in the future.
-   * </p>
-   *
-   * @parameter
-   * @since 2.3.2
-   */
-  String[] excludeFilterFiles
-
-  /**
    * Effort of the bug finders. Valid values are Min, Default and Max.
    *
    * @parameter default-value="Default"
