@@ -6,6 +6,7 @@
   <body>
     <menu name="Previous Versions">
       <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
+      <item name="Version 2.3.2" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.3.2/"/>
       <item name="Version 2.3.1" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.3.1/"/>
       <item name="Version 2.3" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.3/"/>
       <item name="Version 2.2" href="http://mojo.codehaus.org/findbugs-maven-plugin/2.2/"/>
