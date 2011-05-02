@@ -781,7 +781,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
 
       if ( debug || trace ) {
-        arg(value: "-debug")
+        sysproperty(key: "findbugs.debug" , value: true)
       }
 
       if ( pluginList ) {
