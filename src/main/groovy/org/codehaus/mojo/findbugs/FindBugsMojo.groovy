@@ -900,7 +900,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       log.debug("FindBugs duration is ${duration}")
     }
 
-    log.debug("Done FindBugs Analysis....")
+    log.info("Done FindBugs Analysis....")
 
     if (tempFile.exists()) {
 
@@ -932,9 +932,14 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         }
 
         def xmlBuilder = new StreamingMarkupBuilder()
-
-        if (outputFile.exists()) outputFile.write "\n"
         
+        if (outputFile.exists()) outputFile.delete()
+
+        outputFile.getParentFile().mkdirs()
+        outputFile.createNewFile()
+        
+        outputFile.write "\n"
+   
         outputFile << xmlBuilder.bind{ mkp.yield path }
       } else {
         log.info("No bugs found")
@@ -945,7 +950,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     if (outputFile.exists()) {
 
-      log.info("xmlOutput is ${xmlOutput}")
+      log.debug("xmlOutput is ${xmlOutput}")
 
 
       if ( xmlOutput ) {
