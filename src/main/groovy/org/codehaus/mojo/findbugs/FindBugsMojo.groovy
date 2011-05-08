@@ -19,9 +19,6 @@ package org.codehaus.mojo.findbugs
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.maven.artifact.repository.ArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
@@ -1168,12 +1165,17 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
             if ( !outputFile.getParentFile().exists() ) {
                 outputFile.getParentFile().mkdirs()
             }
-
-            outputFile << is
-
             
+            def os= new FileOutputStream(outputFile)
+            
+
+            os << is
+
+
         } catch ( IOException e ) {
             throw new FileResourceCreationException( "Cannot create file-based resource.", e )
+        } finally {
+            is.close()
         }
 
         return outputFile
