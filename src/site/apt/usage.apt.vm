@@ -25,7 +25,7 @@
 ~~ http://maven.apache.org/doxia/references/apt-format.html
 
 Usage
-
+<version>${projectVersion}</version>
  The following examples describe the basic usage of the FindBugs plugin.
 
 * Generate FindBugs Report As Part of the Project Reports
@@ -42,7 +42,7 @@ Usage
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
       </plugin>
     </plugins>
   </reporting>
@@ -74,7 +74,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <xmlOutput>true</xmlOutput>
           <!-- Optional derectory to put findbugs xdoc xml report -->
@@ -111,7 +111,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <!-- Optional directory to put findbugs xml report -->
@@ -149,7 +149,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
           <includeFilterFile>findbugs-include.xml</includeFilterFile>
@@ -187,7 +187,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
           <includeFilterFile>findbugs-include.xml</includeFilterFile>
@@ -222,7 +222,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <visitors>FindDeadLocalStores,UnreadFields</visitors>
         </configuration>
@@ -254,7 +254,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <omitVisitors>FindDeadLocalStores,UnreadFields</omitVisitors>
         </configuration>
@@ -286,7 +286,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
          <onlyAnalyze>org.codehaus.mojo.findbugs.*</onlyAnalyze>
         </configuration>
@@ -319,7 +319,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <pluginList>myDetectors.jar, yourDetedtors.jar</pluginList>
         </configuration>
@@ -352,7 +352,7 @@ mvn site
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>>
+        <version>${projectVersion}</version>
         <configuration>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <!-- Optional directory to put findbugs xml report -->
