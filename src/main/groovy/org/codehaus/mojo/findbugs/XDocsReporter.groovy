@@ -78,6 +78,8 @@ class XDocsReporter implements FindBugsInfo {
    */
   List compileSourceRoots
 
+  List testSourceRoots
+
   String outputEncoding
     
 
@@ -104,6 +106,7 @@ class XDocsReporter implements FindBugsInfo {
     this.findbugsResults = null
 
     this.compileSourceRoots = []
+    this.testSourceRoots = []
     this.bugClasses = []
   }
 
@@ -213,10 +216,17 @@ class XDocsReporter implements FindBugsInfo {
 
           if ( !compileSourceRoots.isEmpty() ) {
             compileSourceRoots.each() {srcDir ->
+              log.debug("SrcDir is ${srcDir}")
               SrcDir(srcDir)
             }
           }
 
+          if ( !testSourceRoots.isEmpty() ) {
+            testSourceRoots.each() {srcDir ->
+              log.debug("SrcDir is ${srcDir}")
+              SrcDir(srcDir)
+            }
+          }
         }
       }
     }

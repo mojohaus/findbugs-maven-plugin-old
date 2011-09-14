@@ -74,7 +74,7 @@ class FindbugsViolationCheckMojo extends GroovyMojo implements FindBugsInfo {
   File xmlOutputDirectory
 
   /**
-   * Turn on and off findbugs native xml output of the Findbugs report.
+   * This has been deprecated and is on by default.
    *
    * @parameter default-value="false"
    * @since 1.2.0

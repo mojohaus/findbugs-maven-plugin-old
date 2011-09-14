@@ -77,7 +77,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   File xmlOutputDirectory
 
   /**
-   * Turn on and off findbugs native xml output of the Findbugs report.
+   * This has been deprecated and is on by default.
    *
    * @parameter default-value="false"
    * @since 1.2.0
@@ -618,7 +618,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
           xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
           xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
           xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
-
+          xDocsReporter.setTestSourceRoots(this.testSourceRoots)
+ 
           xDocsReporter.generateReport()
         }
       }
@@ -924,6 +925,12 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
           xmlProject.appendNode { SrcDir(compileSourceRoot) }
         }
 
+        if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
+          testSourceRoots.each() { testSourceRoot ->
+            xmlProject.appendNode { SrcDir(testSourceRoot) }
+          }
+        }
+      
         path.FindbugsResults.FindBugsSummary.'total_bugs' = bugCount   // Fixes visitor problem
 
         xmlProject.appendNode {
@@ -965,6 +972,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         xDocsReporter.setOutputWriter(new OutputStreamWriter(new FileOutputStream(new File("${xmlOutputDirectory}/findbugs.xml")), outputEncoding))
         xDocsReporter.setFindbugsResults(new XmlSlurper().parse(outputFile))
         xDocsReporter.setCompileSourceRoots(this.compileSourceRoots)
+        xDocsReporter.setTestSourceRoots(this.testSourceRoots)
 
         xDocsReporter.generateReport()
       }
