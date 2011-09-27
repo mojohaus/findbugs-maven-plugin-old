@@ -1,1 +1,1 @@
-clean compile site:site
+-X clean compile site:site

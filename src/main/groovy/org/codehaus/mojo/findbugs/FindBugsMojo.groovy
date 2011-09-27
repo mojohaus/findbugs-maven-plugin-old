@@ -674,10 +674,14 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
     List reportPlugins = getProject().getReportPlugins()
 
     reportPlugins.each() {reportPlugin ->
+      
+      log.info("report plugin -> ${reportPlugin.getArtifactId()}")
       if ( "maven-jxr-plugin".equals(reportPlugin.getArtifactId()) || "jxr-maven-plugin".equals(reportPlugin.getArtifactId()) ) {
         isEnabled = true
       }
     }
+    
+    log.info("jxr report links are ${isEnabled?"enabled":"disabled"}")
     return isEnabled
   }
 
@@ -950,8 +954,11 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       } else {
         log.info("No bugs found")
       }
+      
+      if (!log.isDebugEnabled()) {
+        tempFile.delete()
+      }
 
-      tempFile.delete()
     }
 
     if (outputFile.exists()) {

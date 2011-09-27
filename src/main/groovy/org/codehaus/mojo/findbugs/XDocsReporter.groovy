@@ -164,7 +164,9 @@ class XDocsReporter implements FindBugsInfo {
 
     def xdoc = {
       mkp.xmlDeclaration()
+      log.debug("generateReport findbugsResults is ${findbugsResults}")
 
+      
       BugCollection(version: getFindBugsVersion(), threshold: findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) {
         findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
 
@@ -188,7 +190,7 @@ class XDocsReporter implements FindBugsInfo {
                 def message = bugInstance.LongMessage.text()
                 def priority = evaluateThresholdParameter(bugInstance.@priority.text())
                 def line = bugInstance.SourceLine.@start[0].text()
-                log.debug(message)
+                log.debug("BugInstance message is ${message}")
 
                 BugInstance(type: type, priority: priority, category: category, message: message, lineNumber: ((line) ? line: "-1"))
 

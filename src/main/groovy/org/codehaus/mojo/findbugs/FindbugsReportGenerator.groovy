@@ -438,7 +438,7 @@ class FindbugsReportGenerator implements FindBugsInfo {
         def message = bugInstance.LongMessage.text()
         def priority = bugInstance.@priority.text()
         def line = bugInstance.SourceLine[0]
-        log.debug(message)
+        log.debug("BugInstance message is ${message}")
 
         sink.tableRow()
 
@@ -610,6 +610,9 @@ class FindbugsReportGenerator implements FindBugsInfo {
    * Print the Summary Section.
    */
   protected void printSummary() {
+    
+    log.debug("Entering printSummary")
+    
     sink.section1()
 
     // the summary section
@@ -668,12 +671,16 @@ class FindbugsReportGenerator implements FindBugsInfo {
     sink.table_()
 
     sink.section1_()
+
+    log.debug("Exiting printSummary")
   }
 
   /**
    * Print the File Summary Section.
    */
   protected void printFilesSummary() {
+    log.debug("Entering printFilesSummary")
+
     sink.section1()
 
     // the Files section
@@ -732,6 +739,8 @@ class FindbugsReportGenerator implements FindBugsInfo {
     sink.table_()
 
     sink.section1_()
+
+    log.debug("Exiting printFilesSummary")
   }
 
   public void generateReport() {
