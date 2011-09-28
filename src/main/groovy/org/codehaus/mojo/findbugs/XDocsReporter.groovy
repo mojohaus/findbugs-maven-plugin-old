@@ -167,11 +167,18 @@ class XDocsReporter implements FindBugsInfo {
       log.debug("generateReport findbugsResults is ${findbugsResults}")
 
       
-      BugCollection(version: getFindBugsVersion(), threshold: findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) {
+      BugCollection(version: getFindBugsVersion(), threshold: findbugsThresholds.get(threshold), effort: findbugsEfforts.get(effort)) { 
+        
+        log.debug("findbugsResults.FindBugsSummary total_bugs is ${findbugsResults.FindBugsSummary.@total_bugs.text()}")
+        
         findbugsResults.FindBugsSummary.PackageStats.ClassStats.each() {classStats ->
 
           def classStatsValue = classStats.'@class'.text()
           def classStatsBugCount = classStats.'@bugs'.text()
+
+          log.debug("classStats...")
+          log.debug("classStatsValue is ${classStatsValue}")
+          log.debug("classStatsBugCount is ${classStatsBugCount}")
 
           if ( classStatsBugCount.toInteger() > 0 ) {
             bugClasses << classStatsValue

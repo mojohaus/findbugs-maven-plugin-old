@@ -394,10 +394,6 @@
 									</pomIncludes>
 									<postBuildHookScript>verify</postBuildHookScript>
 									<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-									<goals>
-										<goal>clean</goal>
-										<goal>${project.groupId}:${project.artifactId}:${project.version}:site</goal>
-									</goals>
 									<settingsFile>src/it/settings.xml</settingsFile>
 								</configuration>
 							</execution>
