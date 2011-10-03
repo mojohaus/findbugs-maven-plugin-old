@@ -462,6 +462,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         if ( it.name.contains('.class') )
         canGenerate = true
       }
+      log.debug("canGenerate Src is ${canGenerate}")
     }
 
     if ( !skip && testClassFilesDirectory.exists() && includeTests ) {
@@ -470,10 +471,11 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         if ( it.name.contains('.class') )
         canGenerate = true
       }
+      log.debug("canGenerate Test Src is ${canGenerate}")
     }
 
 
-    log.info("canGenerate is ${canGenerate}")
+    log.debug("canGenerate is ${canGenerate}")
 
     return canGenerate
   }
@@ -532,7 +534,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
       log.info("Locale is ${locale.getLanguage()}")
 
-      log.info("****** FindBugsMojo executeReport *******")
+      log.debug("****** FindBugsMojo executeReport *******")
 
 
       resourceManager.addSearchPath(FileResourceLoader.ID, this.project.getFile().getParentFile().getAbsolutePath())
@@ -696,7 +698,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   }
 
   public void execute() {
-    log.info("****** FindBugsMojo execute *******")
+    log.debug("****** FindBugsMojo execute *******")
     File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
     log.debug("XML outputFile is " + outputFile.getAbsolutePath())
@@ -716,7 +718,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    */
   public void executeFindbugs(Locale locale, File outputFile) {
 
-    log.info("****** FindBugsMojo executeFindbugs *******")
+    log.debug("****** FindBugsMojo executeFindbugs *******")
     long startTime, duration
 
     File tempFile = new File("${project.build.directory}/findbugsTemp.xml")
@@ -743,13 +745,19 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
 
 
-    def auxClasspathElements = project.compileClasspathElements
+    def auxClasspathElements
+
+    if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() ) {
+      auxClasspathElements = project.compileClasspathElements
+    }
 
     if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
       auxClasspathElements = project.testClasspathElements
     }
 
-    log.debug("  Plugin Artifacts to be added ->" + pluginArtifacts.toString())
+    log.info("  auxClasspathElements -> ${auxClasspathElements}")
+
+    log.info("  Plugin Artifacts to be added -> ${pluginArtifacts.toString()}")
 
     log.debug("outputFile is " + outputFile.getAbsolutePath())
     log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
@@ -872,7 +880,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
           auxClasspathList.each() {auxClasspathElement ->
 
-            log.debug("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
+            log.info("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
 
             auxClasspath += auxClasspathElement.toString() + ((auxClasspathElement == auxClasspathList[auxClasspathList.size() - 1]) ? "" : File.pathSeparator)
           }
@@ -892,8 +900,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         }
       }
 
-      log.debug("  Adding to Source Directory ->" + classFilesDirectory.absolutePath)
-      arg(value: classFilesDirectory.absolutePath)
+      if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() ) {
+        log.debug("  Adding to Source Directory ->" + classFilesDirectory.absolutePath)
+        arg(value: classFilesDirectory.absolutePath)
+      }
 
       if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
         log.debug("  Adding to Source Directory ->" + testClassFilesDirectory.absolutePath)
@@ -1117,7 +1127,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
     }
 
-    log.info("  Plugin list is: ${urlPlugins}")
+    log.debug("  Plugin list is: ${urlPlugins}")
 
     return urlPlugins
   }
