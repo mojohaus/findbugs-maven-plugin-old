@@ -23,9 +23,12 @@
     <version>testing</version>
     <relativePath>../common.xml</relativePath>
   </parent>
-  <artifactId>visitors</artifactId>
-  <name>visitors</name>
+  <artifactId>no-testsrc</artifactId>
+  <name>no-testsrc</name>
   <packaging>jar</packaging>
+  <build>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+  </build>
   <reporting>
     <plugins>
       <plugin>
@@ -33,9 +36,8 @@
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>@pom.version@</version>
         <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
           <xmlOutput>true</xmlOutput>
-          <visitors>FindDeadLocalStores,UnreadFields</visitors>
+          <includeTests>true</includeTests>
         </configuration>
       </plugin>
     </plugins>

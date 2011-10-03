@@ -15,6 +15,7 @@
  */
 
 
+
 assert new File(basedir, 'target/site/index.html').exists()
 
 assert new File(basedir, 'target/site/findbugs.html').exists()
@@ -45,23 +46,11 @@ println '***************************'
 
 path = new XmlSlurper().parse(new File(basedir, 'target/findbugs.xml'))
 
-allNodes = path.breadthFirst().collect{ it }
+allNodes = path.depthFirst().collect{ it }
 def xdocErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
 println "BugInstance size is ${xdocErrors}"
 
 assert findbugsErrors == xdocErrors
-
-xdocErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
-println "Total BugInstance with includes size is ${xdocErrors}"
-
-xdocErrors = allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "URF_UNREAD_FIELD" }.size()
-xdocErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "UUF_UNUSED_FIELD"}.size()
-xdocErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "DLS_DEAD_LOCAL_STORE"}.size()
-println "BugInstance with includes size is ${xdocErrors}"
-
-assert findbugsErrors == xdocErrors
-
-
 
 println '**********************************'
 println "Checking Findbugs Native XML file"
@@ -72,13 +61,6 @@ path = new XmlSlurper().parse(new File(basedir, 'target/findbugsXml.xml'))
 allNodes = path.depthFirst().collect{ it }
 def findbugsXmlErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
 println "BugInstance size is ${findbugsXmlErrors}"
-
-assert findbugsErrors == findbugsXmlErrors
-
-findbugsXmlErrors = allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "URF_UNREAD_FIELD" }.size()
-findbugsXmlErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "UUF_UNUSED_FIELD"}.size()
-findbugsXmlErrors += allNodes.findAll {it.name() == 'BugInstance'  && it.@type == "DLS_DEAD_LOCAL_STORE"}.size()
-println "BugInstance with includes size is ${findbugsXmlErrors}"
 
 assert findbugsErrors == findbugsXmlErrors
 
