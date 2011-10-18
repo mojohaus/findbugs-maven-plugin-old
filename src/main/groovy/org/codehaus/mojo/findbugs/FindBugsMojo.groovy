@@ -560,8 +560,8 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
       File outputFile = new File("${findbugsXmlOutputDirectory}/findbugsXml.xml")
 
-      log.info("XML outputFile is " + outputFile.getAbsolutePath())
-      log.info("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
+      log.debug("XML outputFile is " + outputFile.getAbsolutePath())
+      log.debug("XML output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
 
       executeFindbugs(locale, outputFile)
@@ -604,7 +604,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
         generator.generateReport()
 
 
-        log.info("xmlOutput is ${xmlOutput}")
+        log.debug("xmlOutput is ${xmlOutput}")
 
 
         if ( xmlOutput ) {
@@ -677,13 +677,13 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     reportPlugins.each() {reportPlugin ->
       
-      log.info("report plugin -> ${reportPlugin.getArtifactId()}")
+      log.debug("report plugin -> ${reportPlugin.getArtifactId()}")
       if ( "maven-jxr-plugin".equals(reportPlugin.getArtifactId()) || "jxr-maven-plugin".equals(reportPlugin.getArtifactId()) ) {
         isEnabled = true
       }
     }
     
-    log.info("jxr report links are ${isEnabled?"enabled":"disabled"}")
+    log.debug("jxr report links are ${isEnabled?"enabled":"disabled"}")
     return isEnabled
   }
 
@@ -755,14 +755,14 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       auxClasspathElements = project.testClasspathElements
     }
 
-    log.info("  auxClasspathElements -> ${auxClasspathElements}")
+    log.debug("  auxClasspathElements -> ${auxClasspathElements}")
 
-    log.info("  Plugin Artifacts to be added -> ${pluginArtifacts.toString()}")
+    log.debug("  Plugin Artifacts to be added -> ${pluginArtifacts.toString()}")
 
     log.debug("outputFile is " + outputFile.getAbsolutePath())
     log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
-    log.info("Temp File is " + tempFile.getAbsolutePath())
+    log.debug("Temp File is " + tempFile.getAbsolutePath())
 
     def ant = new AntBuilder()
 
@@ -880,7 +880,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
           auxClasspathList.each() {auxClasspathElement ->
 
-            log.info("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
+            log.debug("  Adding to AuxClasspath ->" + auxClasspathElement.toString())
 
             auxClasspath += auxClasspathElement.toString() + ((auxClasspathElement == auxClasspathList[auxClasspathList.size() - 1]) ? "" : File.pathSeparator)
           }
@@ -1127,7 +1127,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
     }
 
-    log.info("  Plugin list is: ${urlPlugins}")
+    log.debug("  Plugin list is: ${urlPlugins}")
 
     return urlPlugins
   }
