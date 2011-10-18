@@ -43,6 +43,7 @@ import org.codehaus.plexus.util.FileUtils
  * @phase compile
  * @requiresDependencyResolution compile
  * @requiresProject
+ * @threadSafe
  *
  * @author <a href="mailto:gleclaire@codehaus.org">Garvin LeClaire</a>
  * @version $Id$
@@ -62,7 +63,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * Turn on and off xml output of the Findbugs report.
    *
-   * @parameter default-value="false"
+   * @parameter expression="${findbugs.xmlOutput}" default-value="false"
    * @since 1.0.0
    */
   boolean xmlOutput
@@ -154,7 +155,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * Run Findbugs on the tests.
    *
-   * @parameter default-value="false"
+   * @parameter expression="${findbugs.includeTests}" default-value="false"
    * @since 2.0
    */
   boolean includeTests
@@ -292,7 +293,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * turn on Findbugs debugging
    *
-   * @parameter default-value="false"
+   * @parameter expression="${findbugs.debug}" default-value="false"
    */
   Boolean debug
 
@@ -300,7 +301,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * Relaxed reporting mode. For many detectors, this option suppresses the heuristics used to avoid reporting false
    * positives.
    *
-   * @parameter default-value="false"
+   * @parameter expression="${findbugs.relaxed}" default-value="false"
    * @since 1.1
    */
   Boolean relaxed
@@ -354,7 +355,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * This option enables or disables scanning of nested jar and zip files found
    *  in the list of files and directories to be analyzed.
    *
-   * @parameter default-value="false"
+   * @parameter expression="${findbugs.nested}" default-value="false"
    * @since 2.3.2
    */
   Boolean nested
@@ -363,7 +364,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    * Prints a trace of detectors run and classes analyzed to standard output.
    * Useful for troubleshooting unexpected analysis failures.
    *
-   * @parameter default-value="false"
+   * @parameter expression="${findbugs.trace}" default-value="false"
    * @since 2.3.2
    */
   Boolean trace
@@ -394,11 +395,10 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
    */
   protected SiteTool siteTool
 
-
   /**
    * Fail the build on an error.
    *
-   * @parameter default-value="true"
+   * @parameter expression="${findbugs.failOnError}" default-value="true"
    * @since 2.0
    */
   boolean failOnError
@@ -406,7 +406,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * Fork a VM for FindBugs analysis.  This will allow you to set timeouts and heap size
    *
-   * @parameter default-value="true"
+   * @parameter expression="${findbugs.fork}" default-value="true"
    * @since 2.3.2
    */
   boolean fork
@@ -1127,7 +1127,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
       }
     }
 
-    log.debug("  Plugin list is: ${urlPlugins}")
+    log.info("  Plugin list is: ${urlPlugins}")
 
     return urlPlugins
   }
