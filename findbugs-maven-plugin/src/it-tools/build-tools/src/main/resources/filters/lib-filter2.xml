@@ -1,6 +1,0 @@
-<FindBugsFilter>
-  <!-- A method with a dead local store false positive . -->
-  <Match>
-    <Bug pattern="DMI_INVOKING_TOSTRING_ON_ARRAY"/>
-  </Match>
-</FindBugsFilter>
