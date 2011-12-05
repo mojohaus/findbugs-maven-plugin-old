@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd ">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd ">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -9,7 +10,7 @@
   </parent>
 
   <artifactId>findbugs-maven-plugin</artifactId>
-  <version>2.3.4-SNAPSHOT</version>
+  <version>2.4.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>FindBugs Maven Plugin</name>
@@ -91,9 +92,26 @@
     <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/findbugs-maven-plugin</url>
   </scm>
   <issueManagement>
-    <system>JIRA</system>
+    <system>Google Code</system>
     <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
   </issueManagement>
+
+  <repositories>
+    <repository>
+      <id>findbugs-rc</id>
+      <url>http://findbugs.googlecode.com/svn/repos/rc-repository/</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+    </repository>
+  </repositories>
 
   <properties>
     <groovy.plugin.version>1.3</groovy.plugin.version>
@@ -102,7 +120,7 @@
     <project.build.java.target>1.5</project.build.java.target>
     <projectVersion>${project.version}</projectVersion>
     <jxrPluginVersion>2.3</jxrPluginVersion>
-    <findbugsVersion>1.3.9</findbugsVersion>
+    <findbugsVersion>2.0.0-dev-20111130-r14042</findbugsVersion>
   </properties>
 
   <dependencyManagement>
@@ -110,17 +128,6 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-      <version>1.1.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <dependency>
       <groupId>org.codehaus.gmaven</groupId>
       <artifactId>gmaven-mojo</artifactId>
@@ -428,7 +435,8 @@
                   <goal>export</goal>
                 </goals>
                 <configuration>
-                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/branches/1.3.9/findbugsTestCases/src/java/</connectionUrl>
+									<!-- <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/branches/1.3.9/findbugsTestCases/src/java/</connectionUrl> -->
+                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugsTestCases/src/java/</connectionUrl>
                   <exportDirectory>${project.build.directory}/it-src-findbugs/java</exportDirectory>
                   <providerImplementations>
                     <svn>javasvn</svn>
