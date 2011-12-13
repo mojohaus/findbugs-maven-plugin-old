@@ -1,6 +1,6 @@
 #!groovy
 
-// fb2local -f /opt/findbugs/findbugs-2.0.0-dev-20111130-r14042 -v 2.0.0-dev-20111130-r14042
+// fb2local -f /opt/findbugs/findbugs-2.0.0-rc2 -v 2.0.0-rc2
 
 def findbugsHome = System.getenv("FINDBUGS_HOME")
 def antBuilder = new AntBuilder()
