@@ -120,7 +120,7 @@
     <project.build.java.target>1.5</project.build.java.target>
     <projectVersion>${project.version}</projectVersion>
     <jxrPluginVersion>2.3</jxrPluginVersion>
-    <findbugsVersion>2.0.0-rc2</findbugsVersion>
+    <findbugsVersion>2.0.0</findbugsVersion>
   </properties>
 
   <dependencyManagement>

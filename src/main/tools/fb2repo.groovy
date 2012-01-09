@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
-// fb2repo -f /opt/findbugs/findbugs-2.0.0-rc2 -v 2.0.0-rc2 -url file:///Users/user/NetBeansProjects/findbugs-repo/rc-repository
+// fb2repo -f /opt/findbugs/findbugs-2.0.0 -v 2.0.0 -url file:///Users/user/NetBeansProjects/findbugs-repo/rc-repository
+// fb2repo -f /opt/findbugs/findbugs-2.0.0 -v 2.0.0 -url file:///Users/user/NetBeansProjects/findbugs-repo/release-repository
 
 def findbugsHome = System.getenv("FINDBUGS_HOME")
 def antBuilder = new AntBuilder()
