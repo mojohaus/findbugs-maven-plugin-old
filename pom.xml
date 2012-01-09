@@ -99,7 +99,7 @@
   <repositories>
     <repository>
       <id>findbugs-rc</id>
-      <url>http://findbugs.googlecode.com/svn/repos/rc-repository/</url>
+      <url>http://findbugs.googlecode.com/svn/repos/release-repository/</url>
       <snapshots>
         <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>
