@@ -95,7 +95,7 @@
     <system>Google Code</system>
     <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
   </issueManagement>
-
+<!--
   <repositories>
     <repository>
       <id>findbugs-rc</id>
@@ -112,7 +112,7 @@
       </releases>
     </repository>
   </repositories>
-
+-->
   <properties>
     <groovy.plugin.version>1.3</groovy.plugin.version>
     <doxiaVersion>1.1.3</doxiaVersion>
