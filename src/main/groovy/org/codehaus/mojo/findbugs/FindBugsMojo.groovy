@@ -1083,6 +1083,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
 
     // replace all occurrences of the following characters:  ? : & =
     location = location?.replaceAll("[\\?\\:\\&\\=\\%]", "_")
+    artifact = artifact?.replaceAll("[\\?\\:\\&\\=\\%]", "_")
     
     log.debug("resource is " + resource)
     log.debug("location is " + location)
