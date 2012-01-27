@@ -77,7 +77,7 @@ mvn site
         <version>${projectVersion}</version>
         <configuration>
           <xmlOutput>true</xmlOutput>
-          <!-- Optional derectory to put findbugs xdoc xml report -->
+          <!-- Optional directory to put findbugs xdoc xml report -->
           <xmlOutputDirectory>target/site</xmlOutputDirectory>
         </configuration>
       </plugin>
@@ -94,37 +94,6 @@ mvn site
 mvn site
 +-----+
 
-
-* Generate FindBugs XML Reports As Part of the Project Reports
-
-  To generate the FindBugs XML report as part of the Project Reports, add the
-  FindBugs plugin in the <<<\<reporting\>>>> section of your <<<pom.xml>>>.
-  The output file will be written as findbugsXml.xml to either the default output
-  directory of $\{project.build.directory\} or by that started in the
-  <<<\<findbugsXmlOutputDirectory\>>>> option.
-
-+-----+
-<project>
-  ...
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${projectVersion}</version>
-        <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
-          <!-- Optional directory to put findbugs xml report -->
-          <findbugsXmlOutputDirectory>target/site</findbugsXmlOutputDirectory>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-  ...
-</project>
-+-----+
-
-  Then, execute the site plugin to generate the report.
 
 
 +-----+
@@ -354,9 +323,7 @@ mvn site
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>${projectVersion}</version>
         <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
           <!-- Optional directory to put findbugs xml report -->
-          <findbugsXmlOutputDirectory>target/site</findbugsXmlOutputDirectory>
         </configuration>
       </plugin>
     </plugins>

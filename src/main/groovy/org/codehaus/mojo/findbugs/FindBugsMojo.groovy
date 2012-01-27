@@ -80,7 +80,7 @@ class FindBugsMojo extends AbstractMavenReport implements FindBugsInfo {
   /**
    * This has been deprecated and is on by default.
    *
-   * @parameter default-value="false"
+   * @parameter default-value="true"
    * @since 1.2.0
    * @deprecated
    */
