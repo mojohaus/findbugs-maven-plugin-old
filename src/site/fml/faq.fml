@@ -30,9 +30,7 @@
          </p>
          </p>
          <p>
-         You can also use the fork option which will for a new JVM.  You then use the maxHeap option to control the heap size with the 
-         <p>
-         <code>export MAVEN_OPTS=-Xmx384M</code>
+         You can also use the <bold>fork</bold> option which will for a new JVM.  You then use the <bold>maxHeap</bold> option to control the heap size.    <p>
          </p>
          </p>
        </answer>

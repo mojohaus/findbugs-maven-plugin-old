@@ -95,12 +95,6 @@ mvn site
 +-----+
 
 
-
-+-----+
-mvn site
-+-----+
-
-
 * Filter bugs to report
 
   To filter the classes and methods which are analyzed or omitted from analysis
