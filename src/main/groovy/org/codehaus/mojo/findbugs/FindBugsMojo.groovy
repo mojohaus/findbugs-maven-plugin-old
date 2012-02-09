@@ -22,17 +22,19 @@ package org.codehaus.mojo.findbugs
 
 import org.apache.maven.artifact.repository.ArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
-import org.apache.maven.doxia.siterenderer.Renderer;
+import org.apache.maven.doxia.siterenderer.Renderer
 import org.apache.maven.doxia.tools.SiteTool
 import org.apache.maven.project.MavenProject
 import org.apache.maven.reporting.AbstractMavenReport
 import org.codehaus.plexus.resource.ResourceManager
-import org.codehaus.plexus.resource.loader.FileResourceCreationException;
+import org.codehaus.plexus.resource.loader.FileResourceCreationException
 import org.codehaus.plexus.resource.loader.FileResourceLoader
-import org.codehaus.plexus.resource.loader.ResourceNotFoundException;
+import org.codehaus.plexus.resource.loader.ResourceNotFoundException
 
 import groovy.xml.StreamingMarkupBuilder
 import org.codehaus.plexus.util.FileUtils
+
+import org.sonatype.plexus.build.incremental.BuildContext
 
 
 /**
