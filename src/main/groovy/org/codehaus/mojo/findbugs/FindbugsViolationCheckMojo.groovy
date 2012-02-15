@@ -32,7 +32,7 @@ import org.codehaus.plexus.util.FileUtils
  * Fail the build if there were any FindBugs violations in the source code.
  * An XML report is put out by default in the target directory with the errors.
  * To see more documentation about FindBugs' options, please see the <a href="http://findbugs.sourceforge.net/manual/index.html" class="externalLink">FindBugs
- Manual.</a>.
+Manual.</a>.
  *
  * @since 2.0
  * @goal check
@@ -467,7 +467,20 @@ class FindbugsViolationCheckMojo extends GroovyMojo {
 				errorCount = allNodes.findAll {it.name() == 'Error'}.size()
 				log.info("Error size is ${errorCount}")
 
-
+        def xml = new XmlParser().parse(outputFile)
+        def bugs = xml.BugInstance
+        def total = bugs.size()
+        
+        if (total <= 0) {
+          log.info('No errors/warnings found')
+          return
+        }
+        
+        log.info('Total bugs: ' + total)
+        for (i in 0..total-1) {
+          def bug = bugs[i]
+          log.info( bug.LongMessage.text() + FindBugsInfo.BLANK + bug.Class.'@classname' + FindBugsInfo.BLANK + bug.Class.SourceLine.Message.text() )
+        }
 
 
 				if ( (bugCount || errorCount) && failOnError ) {
