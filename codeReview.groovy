@@ -1,11 +1,9 @@
 #!/usr/bin/env groovy
 
-
-println "Did it!!!!!!!"
 @Grapes([
      @Grab(group='org.codenarc', module='CodeNarc', version='0.16.1'),
-     @GrabConfig(systemClassLoader = true)]
-)
+     @GrabConfig(systemClassLoader = true)
+])
 
 def ant = new AntBuilder()
 

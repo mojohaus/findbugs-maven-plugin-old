@@ -39,17 +39,6 @@ import org.codehaus.gmaven.mojo.GroovyMojo
  */
 
 class FindBugsGui extends GroovyMojo {
-    /**
-     * The name of the property resource bundle (Filesystem).
-     *
-     */
-    static final String BUNDLE_NAME = "findbugs"
-
-    /**
-     * The regex pattern to search for java class files.
-     *
-     */
-    static final String JAVA_REGEX_PATTERN = "**/*.class"
 
 
     /**
@@ -93,7 +82,7 @@ class FindBugsGui extends GroovyMojo {
 
 
     /**
-     * The plugin list to include in the report. This is a comma-delimited list.
+     * The plugin list to include in the report. This is a FindBugsInfo.COMMA-delimited list.
      *
      * @parameter
      *
