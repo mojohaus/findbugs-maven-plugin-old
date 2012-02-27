@@ -20,6 +20,9 @@ package org.codehaus.mojo.findbugs
  */
 
 
+import java.io.File;
+import java.util.ArrayList;
+
 import org.apache.maven.artifact.repository.ArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
 import org.apache.maven.doxia.siterenderer.Renderer
@@ -346,6 +349,18 @@ class FindBugsMojo extends AbstractMavenReport {
 	 * @since 1.0-beta-1
 	 */
 	String pluginList
+
+	/**
+	 * <p>
+     * Collection of PluginArctifact to work on. (PluginArctifact contains groupId, artifactId, version, type.)
+     * See <a href="./usage.html">Usage</a> for details.
+	 * </p>
+	 *
+	 *
+	 * @parameter
+	 * @since 2.4.1
+	 */
+	PluginArctifact[] plugins;
 
 	/**
 	 * Restrict analysis to the given comma-separated list of classes and packages.
@@ -798,7 +813,7 @@ class FindBugsMojo extends AbstractMavenReport {
 				sysproperty(key: "findbugs.debug" , value: true)
 			}
 
-			if ( pluginList ) {
+			if ( pluginList || plugins ) {
 				arg(value: "-pluginList")
 				arg(value: getPlugins())
 			}
@@ -1107,7 +1122,7 @@ class FindBugsMojo extends AbstractMavenReport {
 		def urlPlugins = ""
 
 		if ( pluginList ) {
-			log.debug("  Adding Plugins ")
+			log.info("  Adding Plugins ")
 			String[] pluginJars = pluginList.split(FindBugsInfo.COMMA)
 
 			pluginJars.each() {pluginJar ->
@@ -1118,7 +1133,7 @@ class FindBugsMojo extends AbstractMavenReport {
 				}
 
 				try {
-					log.debug("  Processing Plugin: " + pluginFileName.toString())
+					log.info("  Processing Plugin: " + pluginFileName.toString())
 
 					urlPlugins += getResourceFile(pluginFileName.toString()).getAbsolutePath() + ((pluginJar == pluginJars[pluginJars.size() - 1]) ? "" : File.pathSeparator)
 				} catch (MalformedURLException exception) {
@@ -1127,6 +1142,22 @@ class FindBugsMojo extends AbstractMavenReport {
 			}
 		}
 
+		if ( plugins ) {
+			log.info("  Adding Plugins from a repository")
+			log.info("  Processing Plugins: " + plugins.toString())
+			
+			plugins.each() {  plugin ->
+
+				log.info("  Processing Plugin: " + plugin.toString())
+//				pomArtifact = this.factory.createArtifact( item['groupId'], item['artifactId'], item['version'],"", "jar")
+
+//				artifactResolver.resolve(pomArtifact, this.remoteRepositories, this.localRepository)
+
+//				pathelement(location: pomArtifact.file)
+			}
+		}
+
+		
 		log.debug("  Plugin list is: ${urlPlugins}")
 
 		return urlPlugins
@@ -1210,3 +1241,11 @@ class FindBugsMojo extends AbstractMavenReport {
 	}
 
 }
+
+class PluginArctifact
+{
+	String groupId, artifactId, version
+	
+	String type = "jar"
+}
+

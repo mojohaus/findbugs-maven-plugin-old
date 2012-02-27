@@ -91,7 +91,7 @@
     <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/findbugs-maven-plugin</url>
   </scm>
   <issueManagement>
-    <system>Google Code</system>
+    <system>JIRA</system>
     <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
   </issueManagement>
 <!--
@@ -374,7 +374,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>codenarc-maven-plugin</artifactId>
-        <version>0.16.1-beta-1-SNAPSHOT</version>
+        <version>0.16.1-beta-1</version>
       </plugin>
     </plugins>
   </reporting>
