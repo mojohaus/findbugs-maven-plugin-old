@@ -284,7 +284,44 @@ mvn site
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>${projectVersion}</version>
         <configuration>
-          <pluginList>myDetectors.jar, yourDetedtors.jar</pluginList>
+          <pluginList>myDetectors.jar, yourDetectors.jar</pluginList>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  ...
+</project>
++-----+
+
+  Then, execute the site plugin to generate the report.
+
+
++-----+
+mvn site
++-----+
+
+
+* Using Detectors from a Repository
+
+  The <<<plugins>>> option defines a collection of PluginArctifact to work on. (PluginArctifact contains groupId, artifactId, version, type.) 
+
++-----+
+<project>
+  ...
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>${projectVersion}</version>
+        <configuration>
+          <plugins>
+            <plugin>
+              <groupId>com.timgroup</groupId>
+              <artifactId>findbugs4jmock</artifactId>
+              <version>0.2</version>
+            </plugin>
+          </plugins>
         </configuration>
       </plugin>
     </plugins>

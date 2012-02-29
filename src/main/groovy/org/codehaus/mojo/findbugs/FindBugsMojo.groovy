@@ -22,7 +22,10 @@ package org.codehaus.mojo.findbugs
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.maven.artifact.Artifact
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository
 import org.apache.maven.artifact.resolver.ArtifactResolver
 import org.apache.maven.doxia.siterenderer.Renderer
@@ -177,6 +180,15 @@ class FindBugsMojo extends AbstractMavenReport {
 	ArrayList pluginArtifacts
 
 	/**
+	 * List of Remote Repositories used by the resolver
+	 * 
+	 * @parameter expression="${project.remoteArtifactRepositories}"
+	 * @readonly
+	 * @required
+	 */
+	 List remoteRepositories
+
+	/**
 	 * The local repository, needed to download the coreplugin jar.
 	 *
 	 * @parameter expression="${localRepository}"
@@ -244,6 +256,15 @@ class FindBugsMojo extends AbstractMavenReport {
 	 * @readonly
 	 */
 	ArtifactResolver artifactResolver
+
+	/**
+	 * Used to look up Artifacts in the remote repository.
+	 * 
+	 * @parameter expression="${component.org.apache.maven.artifact.factory.ArtifactFactory}"
+	 * @required
+	 * @readonly
+	 */
+	 ArtifactFactory factory
 
 	/**
 	 * <p>
@@ -353,7 +374,7 @@ class FindBugsMojo extends AbstractMavenReport {
 	/**
 	 * <p>
      * Collection of PluginArctifact to work on. (PluginArctifact contains groupId, artifactId, version, type.)
-     * See <a href="./usage.html">Usage</a> for details.
+     * See <a href="./usage.html#Using Detectors from a Repository">Usage</a> for details.
 	 * </p>
 	 *
 	 *
@@ -815,7 +836,7 @@ class FindBugsMojo extends AbstractMavenReport {
 
 			if ( pluginList || plugins ) {
 				arg(value: "-pluginList")
-				arg(value: getPlugins())
+				arg(value: getFindbugsPlugins())
 			}
 
 
@@ -1106,7 +1127,7 @@ class FindBugsMojo extends AbstractMavenReport {
 		//		File resourceFile = resourceManager.getResourceAsFile(resource, artifact)
 		File resourceFile = getResourceAsFile(resource, artifact, findbugsXmlOutputDirectory)
 
-		log.debug("location of configFile file is " + resourceFile)
+		log.debug("location of resourceFile file is " + resourceFile.absolutePath)
 
 		return resourceFile
 
@@ -1116,13 +1137,13 @@ class FindBugsMojo extends AbstractMavenReport {
 	 * Adds the specified plugins to findbugs. The coreplugin is always added first.
 	 *
 	 */
-	protected String getPlugins() {
+	protected String getFindbugsPlugins() {
 		URL[] pluginURL
 
 		def urlPlugins = ""
 
 		if ( pluginList ) {
-			log.info("  Adding Plugins ")
+			log.debug("  Adding Plugins ")
 			String[] pluginJars = pluginList.split(FindBugsInfo.COMMA)
 
 			pluginJars.each() {pluginJar ->
@@ -1133,9 +1154,9 @@ class FindBugsMojo extends AbstractMavenReport {
 				}
 
 				try {
-					log.info("  Processing Plugin: " + pluginFileName.toString())
+					log.debug("  Processing Plugin: " + pluginFileName.toString())
 
-					urlPlugins += getResourceFile(pluginFileName.toString()).getAbsolutePath() + ((pluginJar == pluginJars[pluginJars.size() - 1]) ? "" : File.pathSeparator)
+					urlPlugins += getResourceFile(pluginFileName.toString()).absolutePath + ((pluginJar == pluginJars[pluginJars.size() - 1]) ? "" : File.pathSeparator)
 				} catch (MalformedURLException exception) {
 					fail("The addin plugin has an invalid URL", exception)
 				}
@@ -1143,17 +1164,24 @@ class FindBugsMojo extends AbstractMavenReport {
 		}
 
 		if ( plugins ) {
-			log.info("  Adding Plugins from a repository")
-			log.info("  Processing Plugins: " + plugins.toString())
+			log.debug("  Adding Plugins from a repository")
+			
+			if (urlPlugins.size() > 0) {
+				urlPlugins += File.pathSeparator
+			}
+			
+			Artifact pomArtifact
 			
 			plugins.each() {  plugin ->
 
-				log.info("  Processing Plugin: " + plugin.toString())
-//				pomArtifact = this.factory.createArtifact( item['groupId'], item['artifactId'], item['version'],"", "jar")
+				log.debug("  Processing Plugin: " + plugin.toString())
+				log.debug("groupId is ${plugin['groupId']} ****** artifactId is ${plugin['artifactId']} ****** version is ${plugin['version']} ****** type is ${plugin['type']}")
+				pomArtifact = this.factory.createArtifact( plugin['groupId'], plugin['artifactId'], plugin['version'],"", plugin['type'])
+				log.debug("pomArtifact is ${pomArtifact} ****** groupId is ${plugin['groupId']} ****** artifactId is ${plugin['artifactId']} ****** version is ${plugin['version']} ****** type is ${plugin['type']}")
+				
+				artifactResolver.resolve(pomArtifact, this.remoteRepositories, this.localRepository)
 
-//				artifactResolver.resolve(pomArtifact, this.remoteRepositories, this.localRepository)
-
-//				pathelement(location: pomArtifact.file)
+				urlPlugins += getResourceFile(pomArtifact.file.absolutePath).absolutePath + ((plugin == plugins[plugins.size() - 1]) ? "" : File.pathSeparator)
 			}
 		}
 
