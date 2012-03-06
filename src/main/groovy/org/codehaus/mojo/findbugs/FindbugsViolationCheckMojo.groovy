@@ -425,6 +425,17 @@ class FindbugsViolationCheckMojo extends GroovyMojo {
 	 */
 	int timeout
 
+	/**
+	* <p>
+	* the arguments to pass to the forked VM (ignored if fork is disabled).
+	* </p>
+	*
+	* @parameter
+	* @since 2.4.1
+	*/
+   String jvmArgs
+
+
 	int bugCount
 
 	int errorCount

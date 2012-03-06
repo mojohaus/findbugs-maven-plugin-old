@@ -373,7 +373,7 @@ class FindBugsMojo extends AbstractMavenReport {
 
 	/**
 	 * <p>
-     * Collection of PluginArctifact to work on. (PluginArctifact contains groupId, artifactId, version, type.)
+     * Collection of PluginArtifact to work on. (PluginArtifact contains groupId, artifactId, version, type.)
      * See <a href="./usage.html#Using Detectors from a Repository">Usage</a> for details.
 	 * </p>
 	 *
@@ -381,7 +381,7 @@ class FindBugsMojo extends AbstractMavenReport {
 	 * @parameter
 	 * @since 2.4.1
 	 */
-	PluginArctifact[] plugins;
+	PluginArtifact[] plugins;
 
 	/**
 	 * Restrict analysis to the given comma-separated list of classes and packages.
@@ -471,6 +471,17 @@ class FindBugsMojo extends AbstractMavenReport {
 	 */
 	int timeout
 
+	/**
+	* <p>
+	* the arguments to pass to the forked VM (ignored if fork is disabled).
+	* </p>
+	*
+	* @parameter
+	* @since 2.4.1
+	*/
+   String jvmArgs
+
+	
 	int bugCount
 	int errorCount
 
@@ -816,6 +827,11 @@ class FindBugsMojo extends AbstractMavenReport {
 			log.debug("File Encoding is " + effectiveEncoding)
 
 			sysproperty(key: "file.encoding" , value: effectiveEncoding)
+
+			if ( jvmArgs && fork ) {
+				log.info("Adding JVM Args => ${jvmArgs}")
+				jvmarg(value: jvmArgs)
+			}
 
 			arg(value: "-xml:withMessages")
 
@@ -1270,7 +1286,7 @@ class FindBugsMojo extends AbstractMavenReport {
 
 }
 
-class PluginArctifact
+class PluginArtifact
 {
 	String groupId, artifactId, version
 	

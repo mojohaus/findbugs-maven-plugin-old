@@ -303,7 +303,7 @@ mvn site
 
 * Using Detectors from a Repository
 
-  The <<<plugins>>> option defines a collection of PluginArctifact to work on. (PluginArctifact contains groupId, artifactId, version, type.) 
+  The <<<plugins>>> option defines a collection of PluginArtifact to work on. (PluginArtifact contains groupId, artifactId, version, type.) 
 
 +-----+
 <project>

@@ -374,7 +374,10 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>codenarc-maven-plugin</artifactId>
-        <version>0.16.1-beta-1</version>
+        <version>0.16.1-beta-2-SNAPSHOT</version>
+        <configuration>
+          <sourceDirectory>${basdir}/src</sourceDirectory>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>
