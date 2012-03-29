@@ -410,6 +410,15 @@ class FindBugsMojo extends AbstractMavenReport {
 	Boolean trace
 
 	/**
+	 * Maximum bug ranking to record.
+	 *
+	 * @parameter expression="${findbugs.maxRank}"
+	 * @since 2.4.1
+	 */
+	int maxRank
+
+  
+	/**
 	 * Skip entire check.
 	 *
 	 * @parameter expression="${findbugs.skip}" default-value="false"
@@ -902,6 +911,10 @@ class FindBugsMojo extends AbstractMavenReport {
 				}
 			}
 
+			if ( maxRank ) {
+				arg(value: "-maxRank")
+				arg(value: maxRank)
+			}
 
 			arg(value: "-output")
 			arg(value: tempFile.getAbsolutePath())
