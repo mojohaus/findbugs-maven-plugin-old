@@ -311,6 +311,29 @@ class FindBugsMojo extends AbstractMavenReport {
 	String excludeFilterFile
 
 	/**
+	 * <p>
+	 * File names of the baseline files. Bugs found in the baseline files won't be reported.
+	 * </p>
+	 *
+	 * <p>
+	 * Potential values are a filesystem path, a URL, or a classpath resource.
+	 * </p>
+	 *
+	 * <p>
+	 * This parameter is resolved as resource, URL, then file. If successfully
+	 * resolved, the contents of the configuration is copied into the
+	 * <code>${project.build.directory}</code>
+	 * directory before being passed to Findbugs as a filter file.
+	 * </p>
+	 *
+	 * This is a comma-delimited list.
+	 *
+	 * @parameter
+	 * @since 2.4.1
+	 */
+	String excludeBugsFile
+
+	/**
 	 * Effort of the bug finders. Valid values are Min, Default and Max.
 	 *
 	 * @parameter default-value="Default"
@@ -907,6 +930,16 @@ class FindBugsMojo extends AbstractMavenReport {
 
 				excludeFiles.each() {excludeFile ->
 					arg(value: "-exclude")
+					arg(value: getResourceFile(excludeFile.trim()))
+				}
+			}
+
+			if ( excludeBugsFile ) {
+				log.debug("  Adding Exclude Bug Files (Baselines)")
+				String[] excludeFiles = excludeBugsFile.split(FindBugsInfo.COMMA)
+
+				excludeFiles.each() {excludeFile ->
+					arg(value: "-excludeBugs")
 					arg(value: getResourceFile(excludeFile.trim()))
 				}
 			}
