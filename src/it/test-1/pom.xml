@@ -26,6 +26,17 @@
   <artifactId>test-1</artifactId>
   <name>test-1</name>
   <packaging>jar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>jdepend</groupId>
+      <artifactId>jdepend</artifactId>
+      <version>2.9.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <testSourceDirectory>@project.build.directory@/it-src-findbugs-testcase/java</testSourceDirectory>
+  </build>
   <reporting>
     <excludeDefaults>true</excludeDefaults>
     <plugins>
