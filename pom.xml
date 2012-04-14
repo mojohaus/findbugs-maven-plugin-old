@@ -375,9 +375,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>codenarc-maven-plugin</artifactId>
         <version>0.17-1</version>
-        <configuration>
-          <sourceDirectory>${basedir}/src</sourceDirectory>
-        </configuration>
       </plugin>
     </plugins>
   </reporting>
@@ -467,6 +464,21 @@
                     <svn>javasvn</svn>
                   </providerImplementations>
                   <includes>**/A*.java, **/Use*.java</includes>
+                </configuration>
+              </execution>
+              <execution>
+                <id>prepare-integration-test-co-findbugs-testcase</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>export</goal>
+                </goals>
+                <configuration>
+                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugs/src/junit/</connectionUrl>
+                  <exportDirectory>${project.build.directory}/it-src-findbugs-testcase/java</exportDirectory>
+                  <providerImplementations>
+                    <svn>javasvn</svn>
+                  </providerImplementations>
+                  <includes>**/*.java</includes>
                 </configuration>
               </execution>
             </executions>

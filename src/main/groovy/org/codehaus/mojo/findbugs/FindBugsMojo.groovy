@@ -20,10 +20,6 @@ package org.codehaus.mojo.findbugs
  */
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.maven.artifact.Artifact
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository
@@ -35,7 +31,6 @@ import org.apache.maven.reporting.AbstractMavenReport
 import org.codehaus.plexus.resource.ResourceManager
 import org.codehaus.plexus.resource.loader.FileResourceCreationException
 import org.codehaus.plexus.resource.loader.FileResourceLoader
-import org.codehaus.plexus.resource.loader.ResourceNotFoundException
 
 import groovy.xml.StreamingMarkupBuilder
 import org.codehaus.plexus.util.FileUtils
