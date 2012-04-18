@@ -38,7 +38,7 @@
           <failOnError>false</failOnError>
           <debug>@findbug.debug@</debug>
           <threshold>High</threshold>
-          <jvmArgs>-Dfindbugs.debug=true</jvmArgs>
+          <jvmArgs>-Dfindbugs.dumpProperties=true -Dfindbugs.progress=true -Dfindbugs.verbose=true -Dfindbugs.debug=true</jvmArgs>
         </configuration>
         <executions>
           <execution>

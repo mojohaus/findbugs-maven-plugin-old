@@ -856,8 +856,14 @@ class FindBugsMojo extends AbstractMavenReport {
 			sysproperty(key: "file.encoding" , value: effectiveEncoding)
 
 			if ( jvmArgs && fork ) {
-				log.info("Adding JVM Args => ${jvmArgs}")
-				jvmarg(value: jvmArgs)
+				log.debug("Adding JVM Args => ${jvmArgs}")
+
+				String[] args = jvmArgs.split(FindBugsInfo.BLANK)
+				
+				args.each() {jvmArg ->
+    				log.debug("Adding JVM Arg => ${jvmArg}")
+					jvmarg(value: jvmArg)
+				}
 			}
 
 			arg(value: "-xml:withMessages")
