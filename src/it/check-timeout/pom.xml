@@ -32,6 +32,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
+          <failOnError>true</failOnError>
           <timeout>1000</timeout>
         </configuration>
         <executions>

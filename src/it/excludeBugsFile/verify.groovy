@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-assert new File(basedir, 'target/findbugs.xml').exists()
 
-assert new File(basedir, 'target/findbugsXml.xml').exists()
+File findbugXdoc = new File(basedir, 'target/findbugs.xml')
+assert findbugXdoc.exists()
+
+File findbugXml = new File(basedir, 'target/findbugsXml.xml')
+assert findbugXml.exists()
 
 
-def xmlSlurper = new XmlSlurper()
-xmlSlurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-xmlSlurper.setFeature("http://xml.org/sax/features/namespaces", false)
 
 println '***************************'
 println "Checking xDoc file"
 println '***************************'
 
-path = new XmlSlurper().parse(new File(basedir, 'target/findbugs.xml'))
+def path = new XmlSlurper().parse(findbugXdoc)
 
-allNodes = path.depthFirst().collect{ it }
+def allNodes = path.depthFirst().collect{ it }
 def xdocErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
 println "BugInstance size is ${xdocErrors}"
-
-//assert findbugsErrors == xdocErrors
 
 println '**********************************'
 println "Checking Findbugs Native XML file"
 println '**********************************'
 
-path = new XmlSlurper().parse(new File(basedir, 'target/findbugsXml.xml'))
+path = new XmlSlurper().parse(findbugXml)
 
 allNodes = path.depthFirst().collect{ it }
 def findbugsXmlErrors = allNodes.findAll {it.name() == 'BugInstance'}.size()
 println "BugInstance size is ${findbugsXmlErrors}"
 
 assert xdocErrors == findbugsXmlErrors
-//assert findbugsErrors == findbugsXmlErrors
 
