@@ -15,8 +15,6 @@
  */
 
 
-assert (new File(basedir, 'target/site/index.html').exists())
-
 assert !(new File(basedir, 'target/site/findbugs.html').exists())
 
 assert !(new File(basedir, 'target/findbugs.xml').exists())

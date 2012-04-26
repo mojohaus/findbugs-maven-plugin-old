@@ -16,8 +16,6 @@
 
 def thresholdLevel = 'experimental'
 
-assert new File(basedir, 'target/site/index.html').exists()
-
 File findbugsHtml =  new File(basedir, 'target/site/findbugs.html')
 
 assert findbugsHtml.exists()
