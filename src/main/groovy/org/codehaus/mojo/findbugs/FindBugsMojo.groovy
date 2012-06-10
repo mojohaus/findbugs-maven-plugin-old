@@ -785,26 +785,17 @@ class FindBugsMojo extends AbstractMavenReport {
     /**
      * Get the Findbugs command line arguments.
      *
-     * @param locale
-     *            the locale the report should be generated for
+     * @param Findbugs temp output file
+     *            
      * @return Findbugs command line arguments.
      *
      */
     private ArrayList<String> getFindbugsArgs(File tempFile) {
         def args = new ArrayList<String>()
 
-        def auxClasspathElements
-
-        if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() ) {
-            auxClasspathElements = project.compileClasspathElements
-        }
-
-        if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
-            auxClasspathElements = project.testClasspathElements
-        }
-
-
         args << "-xml:withMessages"
+
+        args << "-auxclasspathFromInput"
 
         args << "-projectName"
         args << "${project.name}"
@@ -887,6 +878,36 @@ class FindBugsMojo extends AbstractMavenReport {
         args << "-output"
         args << tempFile.getAbsolutePath()
 
+
+        if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() ) {
+            log.debug("  Adding to Source Directory ->" + classFilesDirectory.absolutePath)
+            args << classFilesDirectory.absolutePath
+        }
+
+        if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
+            log.debug("  Adding to Source Directory ->" + testClassFilesDirectory.absolutePath)
+            args << testClassFilesDirectory.absolutePath
+        }
+
+        return args
+    }
+
+    /**
+     * Get the Findbugs AuxClasspath.
+     *
+     */
+    private String getFindbugsAuxClasspath() {
+        def auxClasspathElements
+
+        if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() ) {
+            auxClasspathElements = project.compileClasspathElements
+        }
+
+        if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
+            auxClasspathElements = project.testClasspathElements
+        }
+
+
         def auxClasspath = ""
 
         pluginArtifacts.each() {pluginArtifact ->
@@ -896,7 +917,7 @@ class FindBugsMojo extends AbstractMavenReport {
         }
 
         log.debug("  auxClasspathElements -> ${auxClasspathElements}")
-        
+
         if (auxClasspathElements) {
 
             log.debug("  AuxClasspath Elements ->" + auxClasspathElements)
@@ -920,21 +941,10 @@ class FindBugsMojo extends AbstractMavenReport {
         }
 
         log.debug("  AuxClasspath is ->" + auxClasspath)
-        args << "-auxclasspath"
-        args << auxClasspath
 
-        if ( classFilesDirectory.exists() && classFilesDirectory.isDirectory() ) {
-            log.debug("  Adding to Source Directory ->" + classFilesDirectory.absolutePath)
-            args << classFilesDirectory.absolutePath
-        }
-
-        if ( testClassFilesDirectory.exists() && testClassFilesDirectory.isDirectory() && includeTests ) {
-            log.debug("  Adding to Source Directory ->" + testClassFilesDirectory.absolutePath)
-            args << testClassFilesDirectory.absolutePath
-        }
-        
-        return args
+        return auxClasspath
     }
+
 
     /**
      * Set up and run the Findbugs engine.
@@ -971,10 +981,10 @@ class FindBugsMojo extends AbstractMavenReport {
 
         log.debug("  Plugin Artifacts to be added -> ${pluginArtifacts.toString()}")
 
-        log.debug("outputFile is " + outputFile.getAbsolutePath())
+        log.debug("outputFile is " + outputFile.getCanonicalPath())
         log.debug("output Directory is " + findbugsXmlOutputDirectory.getAbsolutePath())
 
-        log.debug("Temp File is " + tempFile.getAbsolutePath())
+        log.debug("Temp File is " + tempFile.getCanonicalPath())
 
         def ant = new AntBuilder()
 
@@ -984,7 +994,10 @@ class FindBugsMojo extends AbstractMavenReport {
             startTime = System.nanoTime()
         }
 
-        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", fork: "${fork}", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
+        def findbugsArgs = getFindbugsArgs(tempFile)
+
+
+        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", inputstring: getFindbugsAuxClasspath(), fork: "${fork}", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
 
             def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
@@ -1011,7 +1024,6 @@ class FindBugsMojo extends AbstractMavenReport {
                 sysproperty(key: "findbugs.debug" , value: true)
             }
 
-
             classpath() {
 
                 pluginArtifacts.each() {pluginArtifact ->
@@ -1021,13 +1033,15 @@ class FindBugsMojo extends AbstractMavenReport {
                 }
             }
 
-            def findbugsArgs = getFindbugsArgs(tempFile)
 
             findbugsArgs.each { findbugsArg ->
                 log.info("Findbugs arg is ${findbugsArg}")
                 arg(value: findbugsArg)
             }
+
         }
+
+
 
         if (log.isDebugEnabled()) {
             duration = ( System.nanoTime() - startTime ) / 1000000000.00
