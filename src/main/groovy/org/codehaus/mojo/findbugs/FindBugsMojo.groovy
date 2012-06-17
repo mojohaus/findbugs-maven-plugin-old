@@ -744,6 +744,11 @@ class FindBugsMojo extends AbstractMavenReport {
      */
     protected boolean isJxrPluginEnabled() {
         boolean isEnabled = false
+        
+        if (xrefLocation.exists()) {
+            isEnabled = true
+            return isEnabled
+        }
 
 
         List reportPlugins = getProject().getReportPlugins()
@@ -1035,7 +1040,7 @@ class FindBugsMojo extends AbstractMavenReport {
 
 
             findbugsArgs.each { findbugsArg ->
-                log.info("Findbugs arg is ${findbugsArg}")
+                log.debug("Findbugs arg is ${findbugsArg}")
                 arg(value: findbugsArg)
             }
 
