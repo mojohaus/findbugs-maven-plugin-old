@@ -1001,8 +1001,7 @@ class FindBugsMojo extends AbstractMavenReport {
 
         def findbugsArgs = getFindbugsArgs(tempFile)
 
-
-        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", inputstring: getFindbugsAuxClasspath(), fork: "${fork}", failonerror: "false", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
+        ant.java(classname: "edu.umd.cs.findbugs.FindBugs2", inputstring: getFindbugsAuxClasspath(), fork: "${fork}", failonerror: "true", clonevm: "false", timeout: "${timeout}", maxmemory: "${maxHeap}m") {
 
             def effectiveEncoding = System.getProperty( "file.encoding", "UTF-8" )
 
