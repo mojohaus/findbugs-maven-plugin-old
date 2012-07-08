@@ -36,7 +36,7 @@
           <fork>true</fork>
           <xmlOutput>true</xmlOutput>
           <failOnError>false</failOnError>
-          <debug>@findbug.debug@</debug>
+          <debug>@findbugsTestDebug@</debug>
           <threshold>High</threshold>
           <jvmArgs>-Dfindbugs.dumpProperties=true -Dfindbugs.progress=true -Dfindbugs.verbose=true -Dfindbugs.debug=true</jvmArgs>
         </configuration>

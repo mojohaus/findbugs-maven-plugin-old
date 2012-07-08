@@ -34,7 +34,7 @@
         <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
           <xmlOutput>true</xmlOutput>
-          <debug>@findbug.debug@</debug>
+          <debug>@findbugsTestDebug@</debug>
           <failOnError>false</failOnError>
         </configuration>
         <executions>

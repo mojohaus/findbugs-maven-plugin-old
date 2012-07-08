@@ -47,7 +47,7 @@
         <configuration>
           <failOnError>false</failOnError>
           <xmlOutput>true</xmlOutput>
-          <debug>@findbug.debug@</debug>
+          <debug>@findbugsTestDebug@</debug>
           <plugins>
             <plugin>
               <groupId>com.mebigfatguy</groupId>
