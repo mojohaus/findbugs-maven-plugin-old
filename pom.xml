@@ -107,6 +107,7 @@
     <projectVersion>${project.version}</projectVersion>
     <jxrPluginVersion>2.3</jxrPluginVersion>
     <findbugsVersion>2.0.0</findbugsVersion>
+    <findbugsTestDebug>false</findbugsTestDebug>
   </properties>
 
   <dependencyManagement>
