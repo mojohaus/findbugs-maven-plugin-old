@@ -36,26 +36,6 @@
       </extension>
     </extensions>
   </build>
-  <reporting>
-    <excludeDefaults>true</excludeDefaults>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>@jxrPluginVersion@</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>@pom.version@</version>
-        <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
-          <xmlOutput>true</xmlOutput>
-          <includeFilterFile>whizbang/lib-filter.xml</includeFilterFile>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
   <modules>
     <module>module-1</module>
     <module>module-2</module>

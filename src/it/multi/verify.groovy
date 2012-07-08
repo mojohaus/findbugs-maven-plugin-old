@@ -18,6 +18,10 @@
 
 //  check module 1
 
+println '***************************'
+println "Checking Module-1"
+println '***************************'
+
 def module = "module-1"
 
 assert new File(basedir, "modules/${module}/target/site/index.html").exists()
@@ -84,6 +88,10 @@ assert findbugsErrors == findbugsXmlErrors
 
 
 //  check module 2
+
+println '***************************'
+println "Checking Module-2"
+println '***************************'
 
 module = "module-2"
 
