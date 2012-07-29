@@ -94,10 +94,20 @@
     <system>JIRA</system>
     <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
   </issueManagement>
-  <!-- <repositories> <repository> <id>findbugs-rc</id> <url>http://findbugs.googlecode.com/svn/repos/release-repository/</url> 
-    <snapshots> <enabled>true</enabled> <updatePolicy>always</updatePolicy> <checksumPolicy>warn</checksumPolicy> 
-    </snapshots> <releases> <enabled>true</enabled> <updatePolicy>always</updatePolicy> 
-    <checksumPolicy>warn</checksumPolicy> </releases> </repository> </repositories> -->
+  <repositories>
+    <repository>
+      <id>findbugs-rc</id> 
+	<!--
+      <url>http://findbugs.googlecode.com/svn/repos/release-repository/</url> 
+	-->
+      <url>http://findbugs.googlecode.com/svn/repos/rc-repository/</url> 
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy> 
+      </snapshots>
+    </repository>
+  </repositories>
   <properties>
     <gmavenVersion>1.4</gmavenVersion>
     <gmavenProviderVersion>1.8</gmavenProviderVersion>
@@ -106,7 +116,7 @@
     <project.build.java.target>1.5</project.build.java.target>
     <projectVersion>${project.version}</projectVersion>
     <jxrPluginVersion>2.3</jxrPluginVersion>
-    <findbugsVersion>2.0.0</findbugsVersion>
+    <findbugsVersion>2.0.1</findbugsVersion>
     <findbugsTestDebug>false</findbugsTestDebug>
   </properties>
 
@@ -365,7 +375,10 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>codenarc-maven-plugin</artifactId>
-        <version>0.17-1</version>
+        <version>0.17-2-SNAPSHOT</version>
+        <configuration>
+          <maxPriority3Violations>0</maxPriority3Violations>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>

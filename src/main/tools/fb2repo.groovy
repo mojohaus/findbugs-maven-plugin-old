@@ -32,7 +32,7 @@ if (System.getProperty("os.name").toLowerCase().contains("windows")) cmdPrefix =
 def modules = ["annotations", "bcel", "findbugs", "findbugs-ant", "jFormatString", "jsr305" ]
 
 modules.each(){ module ->
-    antBuilder.copy(file: new File("${module}.pom"), toFile: new File("${module}.xml") ) {
+    antBuilder.copy(file: new File("${module}.pom"), toFile: new File("${module}.xml"), overwrite: true ) {
         filterset() {
             filter(token: "findbugs.version", value: "${findbugsVersion}")
         }
