@@ -94,12 +94,11 @@
     <system>JIRA</system>
     <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
   </issueManagement>
+	<!--
   <repositories>
     <repository>
       <id>findbugs-rc</id> 
-	<!--
       <url>http://findbugs.googlecode.com/svn/repos/release-repository/</url> 
-	-->
       <url>http://findbugs.googlecode.com/svn/repos/rc-repository/</url> 
       <snapshots>
         <enabled>true</enabled>
@@ -113,6 +112,7 @@
       </releases>
     </repository>
   </repositories>
+	-->
   <properties>
     <gmavenVersion>1.4</gmavenVersion>
     <gmavenProviderVersion>1.8</gmavenProviderVersion>
