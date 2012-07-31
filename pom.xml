@@ -380,7 +380,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>codenarc-maven-plugin</artifactId>
-        <version>0.17-2-SNAPSHOT</version>
+        <version>0.17-1</version>
         <configuration>
           <maxPriority1Violations>0</maxPriority1Violations>
           <maxPriority2Violations>0</maxPriority2Violations>
