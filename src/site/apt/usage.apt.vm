@@ -25,7 +25,7 @@
 ~~ http://maven.apache.org/doxia/references/apt-format.html
 
 Usage
-<version>${projectVersion}</version>
+
  The following examples describe the basic usage of the FindBugs plugin.
 
 * Generate FindBugs Report As Part of the Project Reports
