@@ -86,13 +86,13 @@
   </prerequisites>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/findbugs-maven-plugin</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/findbugs-maven-plugin</url>
+    <connection>scm:git:https://github.com/mojohaus/findbugs-maven-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/mojohaus/findbugs-maven-plugin.git</developerConnection>
+    <url>https://github.com/mojohaus/findbugs-maven-plugin</url>
   </scm>
   <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/MFINDBUGS</url>
+    <system>github</system>
+    <url>https://github.com/mojohaus/findbugs-maven-plugin/issues/</url>
   </issueManagement>
 	<!--
   <repositories>
@@ -408,7 +408,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>
-            <version>1.5</version>
             <executions>
               <execution>
                 <id>prepare-integration-test</id>
@@ -467,20 +466,19 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-scm-plugin</artifactId>
-            <version>1.4</version>
+            <version>1.9.4</version>
             <executions>
               <execution>
                 <id>prepare-integration-test-co-findbugs-src</id>
                 <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>export</goal>
+                  <goal>checkout</goal>
                 </goals>
                 <configuration>
-                  <!-- <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/branches/1.3.9/findbugsTestCases/src/java/</connectionUrl> -->
-                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugsTestCases/src/java/</connectionUrl>
+                  <connectionUrl>scm:git:https://github.com/findbugsproject/findbugs.git</connectionUrl>
                   <exportDirectory>${project.build.directory}/it-src-findbugs/java</exportDirectory>
                   <providerImplementations>
-                    <svn>javasvn</svn>
+                    <svn>git</svn>
                   </providerImplementations>
                   <includes>**/A*.java, **/Use*.java</includes>
                 </configuration>
@@ -489,25 +487,18 @@
                 <id>prepare-integration-test-co-findbugs-testcase</id>
                 <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>export</goal>
+                  <goal>checkout</goal>
                 </goals>
                 <configuration>
-                  <connectionUrl>scm:svn:http://findbugs.googlecode.com/svn/trunk/findbugs/src/junit/</connectionUrl>
+                  <connectionUrl>scm:git:https://github.com/findbugsproject/findbugs.git</connectionUrl>
                   <exportDirectory>${project.build.directory}/it-src-findbugs-testcase/java</exportDirectory>
                   <providerImplementations>
-                    <svn>javasvn</svn>
+                    <svn>jgit</svn>
                   </providerImplementations>
                   <includes>**/*.java</includes>
                 </configuration>
               </execution>
             </executions>
-            <dependencies>
-              <dependency>
-                <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
-                <artifactId>maven-scm-provider-svnjava</artifactId>
-                <version>1.11</version>
-              </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>
